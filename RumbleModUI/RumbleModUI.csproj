@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CAA17032-5000-4195-B343-C26492084360}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RumbleModUI</RootNamespace>
+    <AssemblyName>RumbleModUI</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="BucketheadEntertainment.Plugins">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\BucketheadEntertainment.Plugins.dll</HintPath>
+    </Reference>
+    <Reference Include="Il2Cppmscorlib">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\Il2Cppmscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="MelonLoader">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\MelonLoader.dll</HintPath>
+    </Reference>
+    <Reference Include="RUMBLE.AssetStore">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.AssetStore.dll</HintPath>
+    </Reference>
+    <Reference Include="RUMBLE.AssetStore.ModernUIPack">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.AssetStore.ModernUIPack.dll</HintPath>
+    </Reference>
+    <Reference Include="RUMBLE.Platform.Info">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.Platform.Info.dll</HintPath>
+    </Reference>
+    <Reference Include="RUMBLE.Platform.Info.Steam">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.Platform.Info.Steam.dll</HintPath>
+    </Reference>
+    <Reference Include="RUMBLE.Plugins">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.Plugins.dll</HintPath>
+    </Reference>
+    <Reference Include="RUMBLE.Rendering">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.Rendering.dll</HintPath>
+    </Reference>
+    <Reference Include="RUMBLE.Runtime">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnhollowerBaseLib">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\UnhollowerBaseLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="General.cs" />
+    <Compile Include="CustomClasses.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="UI.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)obj\Debug\$(TargetFileName)" "A:\SteamLibrary\steamapps\common\RUMBLE\Mods\" /F /Y /E</PostBuildEvent>
+  </PropertyGroup>
+</Project>
