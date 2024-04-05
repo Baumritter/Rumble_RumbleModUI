@@ -1402,7 +1402,7 @@ namespace RumbleModUI
         #endregion
 
         #region Themes
-        public void ChangeTheme(Themes Theme)
+        private void ChangeTheme(Themes Theme)
         {
             bool ReactivateCoroutine = false;
 

@@ -22,7 +22,7 @@ namespace TestMod
         {
             base.OnLateInitializeMelon();
 
-            #region Gets the current UI Object - I have no idea why this works
+            #region Gets the current UI Object
             UI = RumbleModUIClass.UI_Obj;
             #endregion
 
