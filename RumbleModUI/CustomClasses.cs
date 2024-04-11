@@ -9,6 +9,35 @@ using System.Linq.Expressions;
 
 namespace RumbleModUI
 {
+    public class StringValidation
+    {
+        private int MaxLen = 0;
+        private int MinLen = 0;
+        private bool UseWhitelist = false;
+        private List<String> Whitelist = new List<String>();
+
+        #region Set
+        public void SetMaxLen(int MaxLen) { this.MaxLen = MaxLen; }
+        public void SetMinLen(int MinLen) { this.MinLen = MinLen; }
+        public void SetWhitelistUsage(bool UseWhitelist) { this.UseWhitelist = UseWhitelist; }
+        public void AddToWhiteList(string Input)
+        {
+            this.Whitelist.Add(Input);
+        }
+        public void RemoveFromWhitelist(string Input)
+        {
+            this.Whitelist.Remove(Input);
+        }
+        #endregion
+
+        #region Get
+        public int GetMaxLen() { return this.MaxLen; }
+        public int GetMinLen() { return this.MinLen; }
+        public bool GetWhiteListUsage() { return this.UseWhitelist; }
+        public List<String> GetWhiteList() { return this.Whitelist; }
+        #endregion
+
+    }
     public class ModSetting
     {
         #region Constructor
@@ -18,15 +47,19 @@ namespace RumbleModUI
         #region Variables
         public enum AvailableTypes
         {
-            Other,
+            Description,
+            String,
             Integer,
+            Float,
+            Double,
             Boolean
         }
         private string Name = "";
-        private AvailableTypes ValueType = AvailableTypes.Other;
+        private AvailableTypes ValueType = AvailableTypes.String;
         private string Value = "";
         private string Description = "";
         private int LinkGroup = 0;
+        private StringValidation StringValidation = new StringValidation();
         #endregion
 
         #region Set
@@ -50,6 +83,7 @@ namespace RumbleModUI
         {
             LinkGroup = linkGroup;
         }
+        public void SetStringValidation (StringValidation validation) { this.StringValidation = validation; }
         #endregion
 
         #region Get
@@ -73,11 +107,15 @@ namespace RumbleModUI
         {
             return LinkGroup;
         }
+        public StringValidation GetStringValidation()
+        {
+            return StringValidation;
+        }
         #endregion
 
     }
 
-    public class Mod : MonoBehaviour
+    public class Mod
     {
         public const string SettingsFile = "Settings.txt";
 
@@ -151,7 +189,7 @@ namespace RumbleModUI
             IsSaved = false;
         }
 
-        public void AddToList(string Name, AvailableTypes type = AvailableTypes.Other, string Value = "",int Group = 0,string Description = "")
+        public void AddToList(string Name, AvailableTypes type = AvailableTypes.String, string Value = "",int Group = 0,string Description = "")
         {
             ModSetting temp = new ModSetting();
             ModSetting temp2 = new ModSetting();
@@ -172,6 +210,44 @@ namespace RumbleModUI
             SavedSettings.Add(temp2);
         }
 
+        public void SetStringConstraints(string SettingName,int MinLen,int MaxLen,bool UseWhiteList, List<String> Whitelist)
+        {
+            ModSetting temp = new ModSetting();
+            StringValidation stringValidation = new StringValidation();
+
+            foreach (ModSetting Setting in TempSettings)
+            {
+                if (Setting.GetName() == SettingName)
+                {
+                    temp = Setting;
+                    break;
+                }
+            }
+
+            stringValidation.SetMinLen(MinLen);
+            stringValidation.SetMaxLen(MaxLen);
+            stringValidation.SetWhitelistUsage(UseWhiteList);
+            foreach (string x in Whitelist)
+            {
+                stringValidation.AddToWhiteList(x);
+            }
+            temp.SetStringValidation(stringValidation);
+        }
+        public void SetStringConstraints(string SettingName,StringValidation stringValidation)
+        {
+            ModSetting temp = new ModSetting();
+
+            foreach (ModSetting Setting in TempSettings)
+            {
+                if (Setting.GetName() == SettingName)
+                {
+                    temp = Setting;
+                    break;
+                }
+            }
+
+            temp.SetStringValidation(stringValidation);
+        }
         public bool ChangeValue(string Name, string Value = "")
         {
             ModSetting temp = new ModSetting();
@@ -197,34 +273,21 @@ namespace RumbleModUI
                         }
                     }
                 }
-                if (temp.GetValueType() == AvailableTypes.Boolean)
+                if (ValueValidation(Value, temp))
                 {
-                    if (ValueValidation(Value, AvailableTypes.Boolean))
+                    if (temp.GetValueType() == AvailableTypes.Boolean)
                     {
                         temp.SetValue(Value.ToLower());
-                        return true;
                     }
                     else
-                    {
-                        return false;
-                    }
-                }
-                else if(temp.GetValueType() == AvailableTypes.Integer)
-                {
-                    if (ValueValidation(Value, AvailableTypes.Integer))
                     {
                         temp.SetValue(Value);
-                        return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
                 }
                 else
                 {
-                    temp.SetValue(Value);
-                    return true;
+                    return false;
                 }
             }
             else
@@ -233,9 +296,9 @@ namespace RumbleModUI
                 return false;
             }
         }
-        private bool ValueValidation(string value,AvailableTypes type)
+        private bool ValueValidation(string value,ModSetting ReferenceSetting)
         {
-            switch (type)
+            switch (ReferenceSetting.GetValueType())
             {
                 case AvailableTypes.Boolean:
                     if (value.ToLower().Equals("true") || value.ToLower().Equals("false"))
@@ -247,9 +310,7 @@ namespace RumbleModUI
                         return false;
                     }
                 case AvailableTypes.Integer:
-                    
-                    bool Valid = int.TryParse(value, out int intVal);
-                    if (Valid)
+                    if (int.TryParse(value, out _))
                     { 
                         return true; 
                     }
@@ -257,10 +318,59 @@ namespace RumbleModUI
                     {
                         return false;
                     }
-                case AvailableTypes.Other:
-                    return true;
+                case AvailableTypes.Float:
+                    if (float.TryParse(value, out _))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                case AvailableTypes.Double:
+                    if (Double.TryParse(value, out _))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                case AvailableTypes.String:
+                    if (ReferenceSetting.GetStringValidation().GetMinLen() > 0 && value.Length < ReferenceSetting.GetStringValidation().GetMinLen())
+                    {
+                        return false;
+                    }
+                    if (ReferenceSetting.GetStringValidation().GetMaxLen() > 0 && value.Length > ReferenceSetting.GetStringValidation().GetMaxLen())
+                    {
+                        return false;
+                    }
+                    if (ReferenceSetting.GetStringValidation().GetWhiteListUsage())
+                    {
+                        bool Valid = false;
+                        foreach (string WhiteList in ReferenceSetting.GetStringValidation().GetWhiteList())
+                        {
+                            if (value == WhiteList)
+                            {
+                                Valid = true; 
+                                break;
+                            }
+                        }
+                        if (Valid)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false; 
+                        }
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 default: 
-                    return true;
+                    return false;
             }
         }
 
@@ -332,9 +442,13 @@ namespace RumbleModUI
                             }
                         }
                     }
+                    IsFileLoaded = true;
+                }
+                else
+                {
+                    IsFileLoaded = false;
                 }
             }
-            IsFileLoaded = true;
         }
     }
 

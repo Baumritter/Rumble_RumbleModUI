@@ -270,7 +270,7 @@ namespace RumbleModUI
                 }
             }
 
-            if (!IsExist)
+            if (!IsExist && Input.GetName() != "" && Input.GetVersion() != "" && Input.GetFolder() != "")
             {
                 Mod_Options.Add(Input);
                 Input.SetUIStatus(true);
@@ -278,6 +278,7 @@ namespace RumbleModUI
             else
             {
                 if (debug_UI) { MelonLogger.Msg("Modlist - Mod already exists."); }
+                if (Input.GetName() == "" || Input.GetVersion() == "" || Input.GetFolder() == "") MelonLogger.Msg("Mandatory Values not set.");
             }
         }
         public void RemoveMod(Mod Input)
@@ -305,7 +306,7 @@ namespace RumbleModUI
             Mod_UI.SetName(ModName);
             Mod_UI.SetVersion(ModVersion);
             Mod_UI.SetFolder("ModUI");
-            Mod_UI.AddToList("Description", ModSetting.AvailableTypes.Other, "", 0, ModDescription);
+            Mod_UI.AddToList("Description", ModSetting.AvailableTypes.Description, "", 0, ModDescription);
             Mod_UI.AddToList("Light Theme", ModSetting.AvailableTypes.Boolean, "true", 1, "Turns Light Theme on/off.");
             Mod_UI.AddToList("Dark Theme", ModSetting.AvailableTypes.Boolean, "false", 1, "Turns Dark Theme on/off.");
             Mod_UI.AddToList("High Contrast Theme", ModSetting.AvailableTypes.Boolean, "false", 1, "Turns High Contrast Theme on/off.");
