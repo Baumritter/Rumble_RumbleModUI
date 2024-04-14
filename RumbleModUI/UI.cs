@@ -130,6 +130,7 @@ namespace RumbleModUI
 
         #region Variables
         public string Name= "";
+        private bool DoRefresh = false;
         private bool debug_UI = false;
         private bool IsInit = false;
         private bool IsVisible = false;
@@ -250,6 +251,20 @@ namespace RumbleModUI
                 IsVisible = false;
                 if (debug_UI) { MelonLogger.Msg("UI - Hidden"); }
             }
+        }
+        public void ForceRefresh()
+        {
+            DoRefresh = true;
+        }
+        public bool IsModSelected(string name)
+        {
+            if (Mod_Options[ModSelection].GetName() == name) return true;
+            else return false;
+        }
+        public bool IsOptionSelected(string name)
+        {
+            if (Mod_Options[ModSelection].TempSettings[SettingsSelection].GetName() == name) return true;
+            else return false;
         }
         public bool IsUIVisible()
         {
@@ -479,8 +494,9 @@ namespace RumbleModUI
             while (true)
             {
                 SettingsSelection = UI_DropDown_Settings.GetComponent<TMP_Dropdown>().value;
-                if (OldValue != SettingsSelection)
+                if (OldValue != SettingsSelection || DoRefresh)
                 {
+                    DoRefresh = false;
                     if (debug_UI) { MelonLogger.Msg("Enum - Settings Selection changed."); }
                     DoOnSettingsSelect();
                     yield return null;
@@ -762,7 +778,8 @@ namespace RumbleModUI
             #endregion
 
             #region Set Text
-            SetTextProperties(T_Text, " Mod UI V1.0.0 ", 20);
+            SetTextProperties(T_Text, BuildInfo.ModName + " V"+ BuildInfo.ModVersion, 20);
+            T_Text.GetComponent<TextMeshProUGUI>().horizontalAlignment = HorizontalAlignmentOptions.Center;
             T_Text.GetComponent<TextMeshProUGUI>().verticalAlignment = VerticalAlignmentOptions.Middle;
 
             if (debug_UI) { MelonLogger.Msg("Title - Text set"); }

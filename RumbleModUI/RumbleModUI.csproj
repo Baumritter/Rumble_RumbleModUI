@@ -7,8 +7,8 @@
     <ProjectGuid>{CAA17032-5000-4195-B343-C26492084360}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RumbleModUI</RootNamespace>
-    <AssemblyName>RumbleModUI</AssemblyName>
+    <RootNamespace>ModUI</RootNamespace>
+    <AssemblyName>ModUI</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>

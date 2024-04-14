@@ -1,5 +1,3 @@
-G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\RumbleModUI.dll
-G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\RumbleModUI.pdb
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\0Harmony.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\Assembly-CSharp.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\BucketheadEntertainment.Plugins.dll
@@ -82,8 +80,6 @@ G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\MelonLoader.xml
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleModUI.csproj.AssemblyReference.cache
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleModUI.csproj.CoreCompileInputs.cache
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleModUI.csproj.CopyComplete
-G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleModUI.dll
-G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleModUI.pdb
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\UnityEngine.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\UnityEngine.ImageConversionModule.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\UnityEngine.AssetBundleModule.dll
@@ -125,3 +121,7 @@ G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\UnityEngine.UnityW
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\UnityEngine.VehiclesModule.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\UnityEngine.VirtualTexturingModule.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\UnityEngine.WindModule.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\ModUI.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\ModUI.pdb
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\ModUI.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\ModUI.pdb

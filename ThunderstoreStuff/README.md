@@ -14,7 +14,8 @@
 - This mod is meant to be a dependency. It is useless on its own.
 
 ## For Mod Creators
-- See the wiki entry for the how to's
+- See link below for my "documentation":
+	https://docs.google.com/document/d/18P73ciBnnhWv-31Pk1L0MBggmbT5wNHxCqQLNRkNX28/edit?usp=sharing
 - Contact Baumritter in the modding discord (link below) for further information or feature requests
 
 ## Help And Other Resources
