@@ -36,6 +36,8 @@ namespace TestMod
             TestMod.AddToList("Description", ModSetting.AvailableTypes.Description, "", "Does Nothing.");
             TestMod.AddToList("Bool Setting 1", true, 1, "Does Nothing.");
             TestMod.AddToList("Bool Setting 2",false, 1, "Does Nothing.");
+            TestMod.AddToList("Useless 1", true, 2, "Does Nothing.");
+            TestMod.AddToList("Useless 2", false, 2, "Does Nothing.");
             TestMod.AddToList("Int Setting", 0, "Does Nothing.");
             TestMod.AddToList("Float Setting",0.0f, "Does Nothing.");
             TestMod.AddToList("Double Setting",0.0, "Does Nothing.");

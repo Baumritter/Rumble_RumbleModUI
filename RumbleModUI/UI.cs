@@ -153,7 +153,6 @@ namespace RumbleModUI
         private object Enum_Discard;
         private object Enum_Dragger;
         private object Enum_Toggle;
-        private object Enum_Debug;
 
         private List<Mod> Mod_Options = new List<Mod>();
         private List<TextMeshProUGUI> Theme_Text = new List<TextMeshProUGUI>();
@@ -405,7 +404,6 @@ namespace RumbleModUI
             if (Enum_InputField != null) MelonCoroutines.Stop(Enum_InputField);
             if (Enum_Theme != null) MelonCoroutines.Stop(Enum_Theme);
             if (Enum_Dragger != null) MelonCoroutines.Stop(Enum_Dragger);
-            if (debug_UI && Enum_Debug != null) MelonCoroutines.Stop(Enum_Debug);
         }
 
         private void DoOnModSelect()

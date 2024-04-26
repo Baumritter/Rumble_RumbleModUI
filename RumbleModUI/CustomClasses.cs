@@ -47,6 +47,8 @@ namespace RumbleModUI
     {
         public const string SettingsFile = "Settings.txt";
 
+        private const string DuplicateErrorMsg = "AddToList failed: Name not unique";
+
         private bool debug = false;
         public string ModName { get; set; }
         public string ModVersion { get; set; }
@@ -137,6 +139,11 @@ namespace RumbleModUI
                 MelonLogger.Msg("AddToList failed: ValueType != String/Description");
                 return null;
             }
+            if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
+            {
+                MelonLogger.Msg(DuplicateErrorMsg + ": " + Name);
+                return null;
+            }
 
             ModSetting<string> InputSetting = new ModSetting<string>
             {
@@ -153,6 +160,11 @@ namespace RumbleModUI
         }
         public ModSetting<bool> AddToList(string Name, bool Value = false, int LinkGroup = 0, string Description = "")
         {
+            if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
+            {
+                MelonLogger.Msg(DuplicateErrorMsg + ": " + Name);
+                return null;
+            }
             ModSetting<bool> InputSetting = new ModSetting<bool>
             {
                 Name = Name,
@@ -171,6 +183,11 @@ namespace RumbleModUI
         }
         public ModSetting<int> AddToList(string Name, int Value = 0, string Description = "")
         {
+            if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
+            {
+                MelonLogger.Msg(DuplicateErrorMsg + ": " + Name);
+                return null;
+            }
             ModSetting<int> InputSetting = new ModSetting<int>
             {
                 Name = Name,
@@ -186,6 +203,11 @@ namespace RumbleModUI
         }
         public ModSetting<float> AddToList(string Name, float Value = 0.0f, string Description = "")
         {
+            if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
+            {
+                MelonLogger.Msg(DuplicateErrorMsg + ": " + Name);
+                return null;
+            }
             ModSetting<float> InputSetting = new ModSetting<float>
             {
                 Name = Name,
@@ -201,6 +223,11 @@ namespace RumbleModUI
         }
         public ModSetting<double> AddToList(string Name, double Value = 0.0, string Description = "")
         {
+            if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
+            {
+                MelonLogger.Msg(DuplicateErrorMsg + ": " + Name);
+                return null;
+            }
             ModSetting<double> InputSetting = new ModSetting<double>
             {
                 Name = Name,
