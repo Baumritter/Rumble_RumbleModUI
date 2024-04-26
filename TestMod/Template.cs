@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MelonLoader;
 using RumbleModUI;
+using UnityEngine;
 
 namespace TestMod
 {
@@ -28,20 +29,19 @@ namespace TestMod
             UI = RumbleModUIClass.UI_Obj;
             #endregion
 
-
-
             #region Mod Setup
-            TestMod.SetName("Test");
-            TestMod.SetVersion("0.0.0");
+            TestMod.ModName = BuildInfo.ModName;
+            TestMod.ModVersion = BuildInfo.ModVersion;
             TestMod.SetFolder("Test");
-            TestMod.AddToList("Description", ModSetting.AvailableTypes.Description, "", 0, "Does Nothing.");
-            TestMod.AddToList("Bool Setting 1", ModSetting.AvailableTypes.Boolean, "true", 1, "Does Nothing.");
-            TestMod.AddToList("Bool Setting 2", ModSetting.AvailableTypes.Boolean, "false", 1, "Does Nothing.");
-            TestMod.AddToList("Int Setting", ModSetting.AvailableTypes.Integer, "0", 0, "Does Nothing.");
-            TestMod.AddToList("Float Setting", ModSetting.AvailableTypes.Float, "0", 0, "Does Nothing.");
-            TestMod.AddToList("Double Setting", ModSetting.AvailableTypes.Double, "0", 0, "Does Nothing.");
-            TestMod.AddToList("String Setting 1", ModSetting.AvailableTypes.String, "0", 0, "Does Nothing.");
-            TestMod.AddToList("String Setting 2", ModSetting.AvailableTypes.String, "0", 0, "Does Nothing.");
+            TestMod.AddToList("Description", ModSetting.AvailableTypes.Description, "", "Does Nothing.");
+            TestMod.AddToList("Bool Setting 1", true, 1, "Does Nothing.");
+            TestMod.AddToList("Bool Setting 2",false, 1, "Does Nothing.");
+            TestMod.AddToList("Int Setting", 0, "Does Nothing.");
+            TestMod.AddToList("Float Setting",0.0f, "Does Nothing.");
+            TestMod.AddToList("Double Setting",0.0, "Does Nothing.");
+            TestMod.AddToList("String Setting 1", ModSetting.AvailableTypes.String, "Test1", "Does Nothing.");
+            TestMod.AddToList("String Setting 2", ModSetting.AvailableTypes.String, "12", "Does Nothing.");
+            TestMod.SetLinkGroup(1, "Bools");
 
             Whitelist.Clear();
             Whitelist.Add("Test1");

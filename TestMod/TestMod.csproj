@@ -46,6 +46,9 @@
     <Reference Include="MelonLoader">
       <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\MelonLoader.dll</HintPath>
     </Reference>
+    <Reference Include="ModUI">
+      <HintPath>..\RumbleModUI\obj\Debug\ModUI.dll</HintPath>
+    </Reference>
     <Reference Include="RUMBLE.AssetStore">
       <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.AssetStore.dll</HintPath>
     </Reference>
@@ -66,9 +69,6 @@
     </Reference>
     <Reference Include="RUMBLE.Runtime">
       <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="RumbleModUI">
-      <HintPath>..\RumbleModUI\obj\Debug\RumbleModUI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -84,5 +84,5 @@ G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\TestMod\obj\Debug\TestMod.csproj.CoreCom
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\TestMod\obj\Debug\TestMod.csproj.CopyComplete
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\TestMod\obj\Debug\TestMod.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\TestMod\obj\Debug\TestMod.pdb
-G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\TestMod\bin\Debug\RumbleModUI.dll
-G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\TestMod\bin\Debug\RumbleModUI.pdb
+G:\01_Rumble\10_Mods\Rumble_RumbleModUI\TestMod\bin\Debug\ModUI.dll
+G:\01_Rumble\10_Mods\Rumble_RumbleModUI\TestMod\bin\Debug\ModUI.pdb

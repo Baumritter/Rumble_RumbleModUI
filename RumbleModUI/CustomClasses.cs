@@ -38,10 +38,16 @@ namespace RumbleModUI
         #endregion
 
     }
+    public class LinkGroup
+    {
+        public string Name { get; set; }
+        public int Index { get; set; }
+    }
     public class Mod
     {
         public const string SettingsFile = "Settings.txt";
 
+        private bool debug = false;
         public string ModName { get; set; }
         public string ModVersion { get; set; }
         private bool IsFileLoaded { get; set; }
@@ -50,6 +56,7 @@ namespace RumbleModUI
 
         private General.Folders Folders = new General.Folders();
         public List<ModSetting> Settings = new List<ModSetting>();
+        public List<LinkGroup> LinkGroups = new List<LinkGroup>();
 
         #region Set
         public void SetFolder(string Folder)
@@ -95,6 +102,32 @@ namespace RumbleModUI
             IsSaved = false;
         }
 
+        public void SetLinkGroup(int index, string name = "Group")
+        {
+            string temp;
+            if (name == "Group")
+            {
+                temp = "Group" + index;
+            }
+            else
+            {
+                temp = name;
+            }
+            if (LinkGroups.Count > 0 && LinkGroups.Exists(x => x.Index == index) && name != "Group")
+            {
+                LinkGroups.Find(x => x.Index == index).Name = temp;
+            }
+            else
+            {
+                LinkGroup temp2 = new LinkGroup
+                {
+                    Index = index,
+                    Name = temp
+                };
+                LinkGroups.Add(temp2);
+            }
+        }
+
         #region AddToList - All Available Types
         public ModSetting<string> AddToList(string Name, AvailableTypes StringType, string Value = "", string Description = "")
         {
@@ -129,7 +162,10 @@ namespace RumbleModUI
                 LinkGroup = LinkGroup,
                 ValueType = AvailableTypes.Boolean
             };
-
+            if (LinkGroup != 0)
+            {
+                SetLinkGroup(LinkGroup);
+            }
             Settings.Add(InputSetting);
             return InputSetting;
         }
@@ -449,7 +485,7 @@ namespace RumbleModUI
                                 }
                                 else if (true)
                                 {
-                                    MelonLogger.Msg(ModName + " - " + setting.Name + setting.Value.ToString());
+                                    if (debug) MelonLogger.Msg(ModName + " - " + setting.Name + " " + setting.Value.ToString());
                                 }
                             }
                         }

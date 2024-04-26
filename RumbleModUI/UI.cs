@@ -110,7 +110,7 @@ namespace RumbleModUI
         private Vector2 Size_DD = new Vector2(380, 40);
         private Vector2 Size_DD_Ext = new Vector2(0, 200);
         private Vector2 Size_IF = new Vector2(380, 40);
-        private Vector2 Size_TB = new Vector2(280, 40);
+        private Vector2 Size_TB = new Vector2(200, 40);
         private Vector2 Size_DescBG = new Vector2(-20, -240);
         private Vector2 Size_DescText = new Vector2(-5f, 5f);
         private Vector2 Size_Button = new Vector2(150f, 30f);
@@ -320,6 +320,7 @@ namespace RumbleModUI
             Mod_UI.AddToList("Light Theme", true, 1, "Turns Light Theme on/off.");
             Mod_UI.AddToList("Dark Theme", false, 1, "Turns Dark Theme on/off.");
             Mod_UI.AddToList("High Contrast Theme", false, 1, "Turns High Contrast Theme on/off.");
+            Mod_UI.SetLinkGroup(1, "Themes");
 
             Mod_UI.GetFromFile();
 
@@ -368,7 +369,15 @@ namespace RumbleModUI
 
             foreach(ModSetting setting in Mod_Options[0].Settings)
             {
-                list.Add(setting.Name);
+                if (setting.ValueType == ModSetting.AvailableTypes.Boolean && setting.LinkGroup != 0)
+                {
+                    LinkGroup temp = Mod_Options[0].LinkGroups.Find(x => x.Index == setting.LinkGroup);
+                    list.Add(temp.Name + " - " + setting.Name);
+                }
+                else
+                {
+                    list.Add(setting.Name);
+                }
             }
 
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().ClearOptions();
@@ -407,7 +416,15 @@ namespace RumbleModUI
 
             foreach (ModSetting setting in Mod_Options[ModSelection].Settings)
             {
-                list.Add(setting.Name);
+                if (setting.ValueType == ModSetting.AvailableTypes.Boolean && setting.LinkGroup != 0)
+                {
+                    LinkGroup temp = Mod_Options[ModSelection].LinkGroups.Find(x => x.Index == setting.LinkGroup);
+                    list.Add(temp.Name + " - " + setting.Name);
+                }
+                else
+                {
+                    list.Add(setting.Name);
+                }
             }
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().ClearOptions();
             SettingsSelection = 0;
@@ -438,6 +455,7 @@ namespace RumbleModUI
                 yield return waitForFixedUpdate;
             }
         }
+
 
         private void DoOnSettingsSelect()
         {
