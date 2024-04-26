@@ -1,9 +1,9 @@
 ﻿using MelonLoader;
 using UnityEngine;
 using System.Collections.Generic;
-using static RumbleModUI.ModSetting;
 using Il2CppSystem;
 using System.IO;
+using static RumbleModUI.ModSetting;
 using UnityEngine.EventSystems;
 using System.Linq.Expressions;
 
@@ -38,106 +38,20 @@ namespace RumbleModUI
         #endregion
 
     }
-    public class ModSetting
-    {
-        #region Constructor
-        public ModSetting() { }
-        #endregion
-
-        #region Variables
-        public enum AvailableTypes
-        {
-            Description,
-            String,
-            Integer,
-            Float,
-            Double,
-            Boolean
-        }
-        private string Name = "";
-        private AvailableTypes ValueType = AvailableTypes.String;
-        private string Value = "";
-        private string Description = "";
-        private int LinkGroup = 0;
-        private StringValidation StringValidation = new StringValidation();
-        #endregion
-
-        #region Set
-        public void SetName(string name)
-        {
-            Name = name;
-        }
-        public void SetDescription(string description)
-        {
-            Description = description;
-        }
-        public void SetValueType(AvailableTypes type)
-        {
-            ValueType = type;
-        }
-        public void SetValue(string input)
-        {
-            Value = input;
-        }
-        public void SetLinkGroup(int linkGroup)
-        {
-            LinkGroup = linkGroup;
-        }
-        public void SetStringValidation (StringValidation validation) { this.StringValidation = validation; }
-        #endregion
-
-        #region Get
-        public string GetName()
-        {
-            return Name;
-        }
-        public string GetDescription()
-        {
-            return Description;
-        }
-        public AvailableTypes GetValueType()
-        {
-            return ValueType;
-        }
-        public string GetValue()
-        {
-            return Value;
-        }
-        public int GetLinkGroup()
-        {
-            return LinkGroup;
-        }
-        public StringValidation GetStringValidation()
-        {
-            return StringValidation;
-        }
-        #endregion
-
-    }
-
     public class Mod
     {
         public const string SettingsFile = "Settings.txt";
 
-        private string ModName { get; set; }
-        private string ModVersion { get; set; }
+        public string ModName { get; set; }
+        public string ModVersion { get; set; }
         private bool IsFileLoaded { get; set; }
         private bool IsSaved { get; set; }
         private bool IsAdded { get; set; }
 
         private General.Folders Folders = new General.Folders();
-        public List<ModSetting> TempSettings = new List<ModSetting>();
-        public List<ModSetting> SavedSettings = new List<ModSetting>();
+        public List<ModSetting> Settings = new List<ModSetting>();
 
         #region Set
-        public void SetName(string name)
-        {
-            ModName = name;
-        }
-        public void SetVersion(string Version)
-        {
-            ModVersion = Version;
-        }
         public void SetFolder(string Folder)
         {
             Folders.SetModFolderCustom(Folder);
@@ -154,14 +68,6 @@ namespace RumbleModUI
         #endregion
 
         #region Get
-        public string GetName()
-        {
-            return ModName;
-        }
-        public string GetVersion()
-        {
-            return ModVersion;
-        }
         public string GetFolder()
         {
             return Folders.GetModFolder();
@@ -189,35 +95,100 @@ namespace RumbleModUI
             IsSaved = false;
         }
 
-        public void AddToList(string Name, AvailableTypes type = AvailableTypes.String, string Value = "",int Group = 0,string Description = "")
+        #region AddToList - All Available Types
+        public ModSetting<string> AddToList(string Name, AvailableTypes StringType, string Value = "", string Description = "")
         {
-            ModSetting temp = new ModSetting();
-            ModSetting temp2 = new ModSetting();
 
-            temp.SetName(Name);
-            temp.SetValue(Value);
-            temp.SetDescription(Description);
-            temp.SetLinkGroup(Group);
-            temp.SetValueType(type);
+            if (StringType != AvailableTypes.Description && StringType != AvailableTypes.String)
+            {
+                MelonLogger.Msg("AddToList failed: ValueType != String/Description");
+                return null;
+            }
 
-            temp2.SetName(Name);
-            temp2.SetValue(Value);
-            temp2.SetDescription(Description);
-            temp2.SetLinkGroup(Group);
-            temp2.SetValueType(type);
+            ModSetting<string> InputSetting = new ModSetting<string>
+            {
+                Name = Name,
+                Description = Description,
+                Value = Value,
+                SavedValue = Value,
+                LinkGroup = 0,
+                ValueType = StringType
+            };
 
-            TempSettings.Add(temp);
-            SavedSettings.Add(temp2);
+            Settings.Add(InputSetting);
+            return InputSetting;
         }
+        public ModSetting<bool> AddToList(string Name, bool Value = false, int LinkGroup = 0, string Description = "")
+        {
+            ModSetting<bool> InputSetting = new ModSetting<bool>
+            {
+                Name = Name,
+                Description = Description,
+                Value = Value,
+                SavedValue = Value,
+                LinkGroup = LinkGroup,
+                ValueType = AvailableTypes.Boolean
+            };
 
+            Settings.Add(InputSetting);
+            return InputSetting;
+        }
+        public ModSetting<int> AddToList(string Name, int Value = 0, string Description = "")
+        {
+            ModSetting<int> InputSetting = new ModSetting<int>
+            {
+                Name = Name,
+                Description = Description,
+                Value = Value,
+                SavedValue = Value,
+                LinkGroup = 0,
+                ValueType = AvailableTypes.Integer
+            };
+
+            Settings.Add(InputSetting);
+            return InputSetting;
+        }
+        public ModSetting<float> AddToList(string Name, float Value = 0.0f, string Description = "")
+        {
+            ModSetting<float> InputSetting = new ModSetting<float>
+            {
+                Name = Name,
+                Description = Description,
+                Value = Value,
+                SavedValue = Value,
+                LinkGroup = 0,
+                ValueType = AvailableTypes.Float
+            };
+
+            Settings.Add(InputSetting);
+            return InputSetting;
+        }
+        public ModSetting<double> AddToList(string Name, double Value = 0.0, string Description = "")
+        {
+            ModSetting<double> InputSetting = new ModSetting<double>
+            {
+                Name = Name,
+                Description = Description,
+                Value = Value,
+                SavedValue = Value,
+                LinkGroup = 0,
+                ValueType = AvailableTypes.Double
+            };
+
+            Settings.Add(InputSetting);
+            return InputSetting;
+        }
+        #endregion
+
+        #region String Validations
         public void SetStringConstraints(string SettingName,int MinLen,int MaxLen,bool UseWhiteList, List<String> Whitelist)
         {
-            ModSetting temp = new ModSetting();
+            ModSetting temp = new ModSetting<string>();
             StringValidation stringValidation = new StringValidation();
 
-            foreach (ModSetting Setting in TempSettings)
+            foreach (ModSetting Setting in Settings)
             {
-                if (Setting.GetName() == SettingName)
+                if (Setting.Name == SettingName)
                 {
                     temp = Setting;
                     break;
@@ -231,78 +202,62 @@ namespace RumbleModUI
             {
                 stringValidation.AddToWhiteList(x);
             }
-            temp.SetStringValidation(stringValidation);
+            temp.StringValidation = stringValidation;
         }
         public void SetStringConstraints(string SettingName,StringValidation stringValidation)
         {
-            ModSetting temp = new ModSetting();
+            ModSetting temp = new ModSetting<string>();
 
-            foreach (ModSetting Setting in TempSettings)
+            foreach (ModSetting Setting in Settings)
             {
-                if (Setting.GetName() == SettingName)
+                if (Setting.Name == SettingName)
                 {
                     temp = Setting;
                     break;
                 }
             }
 
-            temp.SetStringValidation(stringValidation);
+            temp.StringValidation = stringValidation;
         }
+        #endregion
+
         public bool ChangeValue(string Name, string Value = "")
         {
-            ModSetting temp = new ModSetting();
-
-            foreach (ModSetting Setting in TempSettings)
+            foreach (ModSetting Setting in Settings)
             {
-                if (Setting.GetName() == Name)
+                if (Setting.Name == Name)
                 {
-                    temp = Setting;
-                    break;
-                }
-            }
-
-            if (temp.GetName() != "")
-            {
-                if (temp.GetLinkGroup() != 0 && temp.GetValueType() == AvailableTypes.Boolean && Value == "true")
-                {
-                    foreach (ModSetting Setting in TempSettings)
+                    if (Setting.LinkGroup != 0 && Setting.ValueType == AvailableTypes.Boolean && Value == "true")
                     {
-                        if (Setting.GetName() != Name && Setting.GetLinkGroup() == temp.GetLinkGroup())
+                        foreach (ModSetting Others in Settings)
                         {
-                            Setting.SetValue("false");
+                            if (Others.Name != Name && Others.LinkGroup == Setting.LinkGroup)
+                            {
+                                Others.Value = false;
+                            }
                         }
                     }
-                }
-                if (ValueValidation(Value, temp))
-                {
-                    if (temp.GetValueType() == AvailableTypes.Boolean)
-                    {
-                        temp.SetValue(Value.ToLower());
-                    }
-                    else
-                    {
-                        temp.SetValue(Value);
-                    }
-                    return true;
-                }
-                else
-                {
-                    return false;
+
+                    return ValueValidation(Value, Setting);
                 }
             }
-            else
-            {
-                MelonLogger.Msg("Mod - Setting does not exist.");
-                return false;
-            }
+
+            MelonLogger.Msg(ModName + " - Setting does not exist.");
+            return false;
+
         }
         private bool ValueValidation(string value,ModSetting ReferenceSetting)
         {
-            switch (ReferenceSetting.GetValueType())
+            switch (ReferenceSetting.ValueType)
             {
                 case AvailableTypes.Boolean:
                     if (value.ToLower().Equals("true") || value.ToLower().Equals("false"))
                     {
+                        ModSetting<bool> temp = (ModSetting<bool>)ReferenceSetting;
+
+                        if (value.ToLower().Equals("true")) temp.Value = true;
+                        else temp.Value = false;
+
                         return true;
                     }
                     else
@@ -311,7 +266,11 @@ namespace RumbleModUI
                     }
                 case AvailableTypes.Integer:
                     if (int.TryParse(value, out _))
-                    { 
+                    {
+                        ModSetting<int> temp = (ModSetting<int>)ReferenceSetting;
+
+                        temp.Value = int.Parse(value);
+
                         return true; 
                     }
                     else
@@ -321,6 +280,10 @@ namespace RumbleModUI
                 case AvailableTypes.Float:
                     if (float.TryParse(value, out _))
                     {
+                        ModSetting<float> temp = (ModSetting<float>)ReferenceSetting;
+
+                        temp.Value = float.Parse(value);
+
                         return true;
                     }
                     else
@@ -328,8 +291,12 @@ namespace RumbleModUI
                         return false;
                     }
                 case AvailableTypes.Double:
-                    if (Double.TryParse(value, out _))
+                    if (double.TryParse(value, out _))
                     {
+                        ModSetting<double> temp = (ModSetting<double>)ReferenceSetting;
+
+                        temp.Value = double.Parse(value);
+
                         return true;
                     }
                     else
@@ -337,36 +304,25 @@ namespace RumbleModUI
                         return false;
                     }
                 case AvailableTypes.String:
-                    if (ReferenceSetting.GetStringValidation().GetMinLen() > 0 && value.Length < ReferenceSetting.GetStringValidation().GetMinLen())
+                    ModSetting<string> stringset = (ModSetting<string>)ReferenceSetting;
+
+                    if (ReferenceSetting.StringValidation.GetMinLen() > 0 && value.Length < ReferenceSetting.StringValidation.GetMinLen()) return false;
+                    if (ReferenceSetting.StringValidation.GetMaxLen() > 0 && value.Length > ReferenceSetting.StringValidation.GetMaxLen()) return false;
+                    if (ReferenceSetting.StringValidation.GetWhiteListUsage())
                     {
-                        return false;
-                    }
-                    if (ReferenceSetting.GetStringValidation().GetMaxLen() > 0 && value.Length > ReferenceSetting.GetStringValidation().GetMaxLen())
-                    {
-                        return false;
-                    }
-                    if (ReferenceSetting.GetStringValidation().GetWhiteListUsage())
-                    {
-                        bool Valid = false;
-                        foreach (string WhiteList in ReferenceSetting.GetStringValidation().GetWhiteList())
+                        foreach (string WhiteList in ReferenceSetting.StringValidation.GetWhiteList())
                         {
                             if (value == WhiteList)
                             {
-                                Valid = true; 
-                                break;
+                                stringset.Value = value;
+                                return true;
                             }
                         }
-                        if (Valid)
-                        {
-                            return true;
-                        }
-                        else
-                        {
                             return false; 
-                        }
                     }
                     else
                     {
+                        stringset.Value = value;
                         return true;
                     }
                 default: 
@@ -386,30 +342,78 @@ namespace RumbleModUI
 
             Output = ModName + " " + ModVersion + Environment.NewLine + UI_String + Environment.NewLine;
 
-            foreach(ModSetting Setting in TempSettings)
+            foreach(ModSetting Setting in Settings)
             {
-                if(Setting.GetName() != "Description")
+                if(Setting.Name != "Description")
                 {
-                    Output += Setting.GetName() + ": " + Setting.GetValue() + Environment.NewLine;
+                    Output += Setting.Name + ": " + Setting.GetValueAsString() + Environment.NewLine;
                 }
             }
 
             File.WriteAllText(Path, Output);
 
-            for (int i = 0; i < TempSettings.Count; i++)
+            for (int i = 0; i < Settings.Count; i++)
             {
-                string temp = TempSettings[i].GetValue();
-                SavedSettings[i].SetValue(temp);
+                //switch (Settings[i].ValueType) 
+                //{
+                //    case AvailableTypes.String:
+                //        ModSetting<string> stringset = (ModSetting<string>)Settings[i];
+                //        stringset.Value = stringset.Value;
+                //        break;
+                //    case AvailableTypes.Boolean:
+                //        ModSetting<bool> boolset = (ModSetting<bool>)Settings[i];
+                //        boolset.Value = boolset.Value;
+                //        break;
+                //    case AvailableTypes.Integer:
+                //        ModSetting<int> intset = (ModSetting<int>)Settings[i];
+                //        intset.Value = intset.Value;
+                //        break;
+                //    case AvailableTypes.Float:
+                //        ModSetting<float> floatset = (ModSetting<float>)Settings[i];
+                //        floatset.Value = floatset.Value;
+                //        break;
+                //    case AvailableTypes.Double:
+                //        ModSetting<double> doubleset = (ModSetting<double>)Settings[i];
+                //        doubleset.Value = doubleset.Value;
+                //        break;
+                //    default:
+                //        break;
+                //}
+                Settings[i].SavedValue = Settings[i].Value;
             }
 
             IsSaved = true;
         }
         public void DiscardModData()
         {
-            for (int i = 0; i < SavedSettings.Count; i++)
+            for (int i = 0; i < Settings.Count; i++)
             {
-                string temp = SavedSettings[i].GetValue();
-                TempSettings[i].SetValue(temp);
+                //switch (Settings[i].ValueType)
+                //{
+                //    case AvailableTypes.String:
+                //        ModSetting<string> stringset = (ModSetting<string>)Settings[i];
+                //        stringset.Value = stringset.SavedValue;
+                //        break;
+                //    case AvailableTypes.Boolean:
+                //        ModSetting<bool> boolset = (ModSetting<bool>)Settings[i];
+                //        boolset.Value = boolset.SavedValue;
+                //        break;
+                //    case AvailableTypes.Integer:
+                //        ModSetting<int> intset = (ModSetting<int>)Settings[i];
+                //        intset.Value = intset.SavedValue;
+                //        break;
+                //    case AvailableTypes.Float:
+                //        ModSetting<float> floatset = (ModSetting<float>)Settings[i];
+                //        floatset.Value = floatset.SavedValue;
+                //        break;
+                //    case AvailableTypes.Double:
+                //        ModSetting<double> doubleset = (ModSetting<double>)Settings[i];
+                //        doubleset.Value = doubleset.SavedValue;
+                //        break;
+                //    default:
+                //        break;
+                //}
+                Settings[i].Value = Settings[i].SavedValue;
             }
         }
         public void GetFromFile()
@@ -418,8 +422,8 @@ namespace RumbleModUI
             string[] Lines;
             bool ValidFile = false;
 
-            if (Folders.GetSubFolder(0) != null) Path = Folders.GetFolderString(Folders.GetSubFolder(0)) + @"\Settings.txt";
-            else Path = Folders.GetFolderString() + @"\Settings.txt";
+            if (Folders.GetSubFolder(0) != null) Path = Folders.GetFolderString(Folders.GetSubFolder(0)) + @"\" + SettingsFile;
+            else Path = Folders.GetFolderString() + @"\" + SettingsFile;
 
             if (File.Exists(Path))
             {
@@ -434,11 +438,19 @@ namespace RumbleModUI
                 {
                     foreach (string line in Lines)
                     {
-                        foreach(ModSetting setting in TempSettings) 
+                        foreach(ModSetting setting in Settings) 
                         { 
-                            if(line.Contains(setting.GetName()))
+                            if(line.Contains(setting.Name))
                             {
-                                setting.SetValue(line.Substring(setting.GetName().Length + 2));
+                                bool Valid = ValueValidation(line.Substring(setting.Name.Length + 2),setting);
+                                if (!Valid)
+                                {
+                                    MelonLogger.Msg(ModName + " - " +  setting.Name + " File Read Error.");
+                                }
+                                else if (true)
+                                {
+                                    MelonLogger.Msg(ModName + " - " + setting.Name + setting.Value.ToString());
+                                }
                             }
                         }
                     }
