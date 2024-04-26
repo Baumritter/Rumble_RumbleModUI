@@ -258,12 +258,12 @@ namespace RumbleModUI
         }
         public bool IsModSelected(string name)
         {
-            if (Mod_Options[ModSelection].GetName() == name) return true;
+            if (Mod_Options[ModSelection].ModName == name) return true;
             else return false;
         }
         public bool IsOptionSelected(string name)
         {
-            if (Mod_Options[ModSelection].TempSettings[SettingsSelection].GetName() == name) return true;
+            if (Mod_Options[ModSelection].Settings[SettingsSelection].Name == name) return true;
             else return false;
         }
         public bool IsUIVisible()
@@ -279,13 +279,13 @@ namespace RumbleModUI
 
             foreach(Mod entry in Mod_Options)
             {
-                if (entry.GetName() == Input.GetName())
+                if (entry.ModName == Input.ModName)
                 {
                     IsExist = true;
                 }
             }
 
-            if (!IsExist && Input.GetName() != "" && Input.GetVersion() != "" && Input.GetFolder() != "")
+            if (!IsExist && Input.ModName != "" && Input.ModVersion != "" && Input.GetFolder() != "")
             {
                 Mod_Options.Add(Input);
                 Input.SetUIStatus(true);
@@ -293,7 +293,7 @@ namespace RumbleModUI
             else
             {
                 if (debug_UI) { MelonLogger.Msg("Modlist - Mod already exists."); }
-                if (Input.GetName() == "" || Input.GetVersion() == "" || Input.GetFolder() == "") MelonLogger.Msg("Mandatory Values not set.");
+                if (Input.ModName == "" || Input.ModVersion == "" || Input.GetFolder() == "") MelonLogger.Msg(Input.ModName + " - Mandatory Values not set.");
             }
         }
         public void RemoveMod(Mod Input)
@@ -302,7 +302,7 @@ namespace RumbleModUI
 
             foreach (Mod entry in Mod_Options)
             {
-                if (entry.GetName() == Input.GetName())
+                if (entry.ModName == Input.ModName)
                 {
                     Mod_Options.Remove(entry);
                     Input.SetUIStatus(false);
@@ -317,23 +317,32 @@ namespace RumbleModUI
         private void AddSelf()
         {
             Mod Mod_UI = new Mod();
+            if (debug_UI) MelonLogger.Msg("Mod Object Done.");
 
-            Mod_UI.SetName(ModName);
-            Mod_UI.SetVersion(ModVersion);
+            Mod_UI.ModName = ModName;
+            if (debug_UI) MelonLogger.Msg("Mod Object Name Done.");
+            Mod_UI.ModVersion = ModVersion;
+            if (debug_UI) MelonLogger.Msg("Mod Object Version Done.");
             Mod_UI.SetFolder("ModUI");
-            Mod_UI.AddToList("Description", ModSetting.AvailableTypes.Description, "", 0, ModDescription);
-            Mod_UI.AddToList("Light Theme", ModSetting.AvailableTypes.Boolean, "true", 1, "Turns Light Theme on/off.");
-            Mod_UI.AddToList("Dark Theme", ModSetting.AvailableTypes.Boolean, "false", 1, "Turns Dark Theme on/off.");
-            Mod_UI.AddToList("High Contrast Theme", ModSetting.AvailableTypes.Boolean, "false", 1, "Turns High Contrast Theme on/off.");
+            if (debug_UI) MelonLogger.Msg("Mod Object Folder Done.");
+            Mod_UI.AddToList("Description", ModSetting.AvailableTypes.Description, "", ModDescription);
+            if (debug_UI) MelonLogger.Msg("Mod Object Description Done.");
+            Mod_UI.AddToList("Light Theme", true, 1, "Turns Light Theme on/off.");
+            if (debug_UI) MelonLogger.Msg("Mod Object Setting 1 Done.");
+            Mod_UI.AddToList("Dark Theme", false, 1, "Turns Dark Theme on/off.");
+            if (debug_UI) MelonLogger.Msg("Mod Object Setting 2 Done.");
+            Mod_UI.AddToList("High Contrast Theme", false, 1, "Turns High Contrast Theme on/off.");
+            if (debug_UI) MelonLogger.Msg("Mod Object Setting 3 Done.");
 
             Mod_UI.GetFromFile();
+            if (debug_UI) MelonLogger.Msg("Mod Object Read Done.");
 
             //Initial Theme Application
-            foreach(ModSetting setting in Mod_UI.TempSettings)
+            foreach (var setting in Mod_UI.Settings)
             {
-                if (setting.GetValue() == "true")
+                if (setting.ValueType == ModSetting.AvailableTypes.Boolean && (bool)setting.Value)
                 {
-                    switch (setting.GetName())
+                    switch (setting.Name)
                     {
                         case "Light Theme":
                             currentTheme = Themes.Light;
@@ -351,6 +360,7 @@ namespace RumbleModUI
                     break;
                 }
             }
+            if (debug_UI) MelonLogger.Msg("Mod Object Theme Done.");
 
             AddMod(Mod_UI);
         }
@@ -363,7 +373,7 @@ namespace RumbleModUI
 
             foreach (Mod entry in Mod_Options)
             {
-                list.Add(entry.GetVersion() + " " + entry.GetName());
+                list.Add(entry.ModVersion + " " + entry.ModName);
             }
 
             UI_DropDown_Mod.GetComponent<TMP_Dropdown>().ClearOptions();
@@ -371,9 +381,9 @@ namespace RumbleModUI
 
             list.Clear();
 
-            foreach(ModSetting setting in Mod_Options[0].TempSettings)
+            foreach(ModSetting setting in Mod_Options[0].Settings)
             {
-                list.Add(setting.GetName());
+                list.Add(setting.Name);
             }
 
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().ClearOptions();
@@ -381,7 +391,7 @@ namespace RumbleModUI
 
             SetPlaceholder();
 
-            UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].TempSettings[SettingsSelection].GetDescription();
+            UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
 
             UI_Object.transform.position = Pos_BaseObj;
 
@@ -406,15 +416,15 @@ namespace RumbleModUI
 
             if (Enum_ModSelect != null) MelonCoroutines.Stop(Enum_ModSelect);
 
-            foreach (ModSetting setting in Mod_Options[ModSelection].TempSettings)
+            foreach (ModSetting setting in Mod_Options[ModSelection].Settings)
             {
-                list.Add(setting.GetName());
+                list.Add(setting.Name);
             }
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().ClearOptions();
             SettingsSelection = 0;
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().AddOptions(list);
 
-            UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].TempSettings[SettingsSelection].GetDescription();
+            UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
 
             SetPlaceholder();
 
@@ -444,7 +454,7 @@ namespace RumbleModUI
         {
             if (Enum_SettingsSelect != null) MelonCoroutines.Stop(Enum_SettingsSelect);
 
-            UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].TempSettings[SettingsSelection].GetDescription();
+            UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
 
             SetPlaceholder();
 
@@ -452,16 +462,16 @@ namespace RumbleModUI
         }
         private void SetPlaceholder(bool Valid = true)
         {
-            if (Mod_Options[ModSelection].TempSettings[SettingsSelection].GetName() == "Description")
+            if (Mod_Options[ModSelection].Settings[SettingsSelection].Name == "Description")
             {
                 UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
-                    "Available Settings: " + (Mod_Options[ModSelection].TempSettings.Count - 1).ToString() ;
+                    "Available Settings: " + (Mod_Options[ModSelection].Settings.Count - 1).ToString() ;
             }
             else
             {
                 UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
                     "Current Value: " +
-                    Mod_Options[ModSelection].TempSettings[SettingsSelection].GetValue();
+                    Mod_Options[ModSelection].Settings[SettingsSelection].GetValueAsString();
             }
 
             if (Valid)
@@ -511,7 +521,7 @@ namespace RumbleModUI
             switch (ReturnValue)
             {
                 case 1:
-                    bool Validity = Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].TempSettings[SettingsSelection].GetName(),UI_InputField.GetComponent<TMP_InputField>().text);
+                    bool Validity = Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].Settings[SettingsSelection].Name,UI_InputField.GetComponent<TMP_InputField>().text);
                     SetPlaceholder(Validity);
                     if (debug_UI) { MelonLogger.Msg("Enum - Submitted."); }
                     break;
@@ -572,28 +582,28 @@ namespace RumbleModUI
 
             int index = 0;
 
-            string[] ThemeOld = new string[3];
-            string[] ThemeNew = new string[3];
+            bool[] ThemeOld = new bool[3];
+            bool[] ThemeNew = new bool[3];
 
-            index = Mod_Options.FindIndex(x => x.GetName() == ModName);
+            index = Mod_Options.FindIndex(x => x.ModName == ModName);
 
-            for (int i = 1;i < Mod_Options[index].TempSettings.Count; i++)
+            for (int i = 1;i < Mod_Options[index].Settings.Count; i++)
             {
-                ThemeOld[i - 1] = Mod_Options[index].TempSettings[i].GetValue();
+                ThemeOld[i - 1] = (bool)Mod_Options[index].Settings[i].Value;
             }
 
             while (true)
             {
                 if (ModSelection == index)
                 {
-                    for (int i = 1; i < Mod_Options[index].TempSettings.Count; i++)
+                    for (int i = 1; i < Mod_Options[index].Settings.Count; i++)
                     {
-                        ThemeNew[i - 1] = Mod_Options[index].TempSettings[i].GetValue();
+                        ThemeNew[i - 1] = (bool)Mod_Options[index].Settings[i].Value;
                     }
 
                     for (int i = 0; i < ThemeOld.Length; i++)
                     {
-                        if (ThemeOld[i] == "false" && ThemeNew[i] == "true")
+                        if (!ThemeOld[i] && ThemeNew[i])
                         {
                             switch (i)
                             {

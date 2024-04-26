@@ -1,0 +1,53 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\GitHub\\Rumble_RumbleModUI\\TestMod\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{621D30A5-8FA1-4D87-9826-92C0149B033E}|TestMod.csproj|c:\\github\\rumble_rumblemodui\\testmod\\template.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{621D30A5-8FA1-4D87-9826-92C0149B033E}|TestMod.csproj|solutionrelative:template.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{621D30A5-8FA1-4D87-9826-92C0149B033E}|TestMod.csproj|C:\\GitHub\\Rumble_RumbleModUI\\TestMod\\properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{621D30A5-8FA1-4D87-9826-92C0149B033E}|TestMod.csproj|solutionrelative:properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AssemblyInfo.cs",
+              "DocumentMoniker": "C:\\GitHub\\Rumble_RumbleModUI\\TestMod\\Properties\\AssemblyInfo.cs",
+              "RelativeDocumentMoniker": "Properties\\AssemblyInfo.cs",
+              "ToolTip": "C:\\GitHub\\Rumble_RumbleModUI\\TestMod\\Properties\\AssemblyInfo.cs",
+              "RelativeToolTip": "Properties\\AssemblyInfo.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAABJAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-25T17:36:22.416Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Template.cs",
+              "DocumentMoniker": "C:\\GitHub\\Rumble_RumbleModUI\\TestMod\\Template.cs",
+              "RelativeDocumentMoniker": "Template.cs",
+              "ToolTip": "C:\\GitHub\\Rumble_RumbleModUI\\TestMod\\Template.cs",
+              "RelativeToolTip": "Template.cs",
+              "ViewState": "AQIAACcAAAAAAAAAAAAowE8AAABaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-25T17:36:22.422Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
