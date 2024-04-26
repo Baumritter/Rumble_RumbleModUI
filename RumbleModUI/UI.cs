@@ -15,6 +15,8 @@ namespace RumbleModUI
         private const string ModDescription =
             "This is the Mod UI by Baumritter.";
 
+        private const int ThemeCount = 3;
+
         #region Enums
         public enum AnchorPresets
         {
@@ -87,34 +89,19 @@ namespace RumbleModUI
         #endregion
 
         #region Positions
+        private Vector3 Scl_1x1 = new Vector3(1f, 1f, 0);
+
         private Vector3 Pos_BaseObj = new Vector3(0, 0, 0f);
-        private Vector3 Scl_BaseObj = new Vector3(1f, 1f, 0);
-
         private Vector3 Pos_OuterBG = new Vector3(0f, 0f, 0f);
-        private Vector3 Scl_OuterBG = new Vector3(1f, 1f, 0);
-
         private Vector3 Pos_DescBG = new Vector3(10f, -190f, 0f);
-        private Vector3 Scl_DescBG = new Vector3(1f, 1f, 0);
         private Vector3 Pos_DescText = new Vector3(5f, -5f, 0f);
-        private Vector3 Scl_DescText = new Vector3(1f, 1f, 0);
-
         private Vector3 Pos_Title = new Vector3(0f, 0f, 0f);
-        private Vector3 Scl_Title = new Vector3(1f, 1f, 0);
-
         private Vector3 Pos_DD1 = new Vector3(10f, -40, 0f);
-        private Vector3 Scl_DD1 = new Vector3(1f, 1f, 0);
-
         private Vector3 Pos_DD2 = new Vector3(10f, -90f, 0f);
-        private Vector3 Scl_DD2 = new Vector3(1f, 1f, 0);
-
         private Vector3 Pos_IF = new Vector3(10f, -140f, 0f);
-        private Vector3 Scl_IF = new Vector3(1f, 1f, 0);
-
+        private Vector3 Pos_TB = new Vector3(0f, 90f, 0f);
         private Vector3 Pos_B1 = new Vector3(10f, 10f, 0f);
-        private Vector3 Scl_B1 = new Vector3(1f, 1f, 0);
-
         private Vector3 Pos_B2 = new Vector3(240f, 10f, 0f);
-        private Vector3 Scl_B2 = new Vector3(1f, 1f, 0);
         #endregion
 
         #region Sizes
@@ -123,6 +110,7 @@ namespace RumbleModUI
         private Vector2 Size_DD = new Vector2(380, 40);
         private Vector2 Size_DD_Ext = new Vector2(0, 200);
         private Vector2 Size_IF = new Vector2(380, 40);
+        private Vector2 Size_TB = new Vector2(280, 40);
         private Vector2 Size_DescBG = new Vector2(-20, -240);
         private Vector2 Size_DescText = new Vector2(-5f, 5f);
         private Vector2 Size_Button = new Vector2(150f, 30f);
@@ -130,11 +118,12 @@ namespace RumbleModUI
 
         #region Variables
         public string Name= "";
-        private bool DoRefresh = false;
         private bool debug_UI = false;
+        private bool DoRefresh = false;
         private bool IsInit = false;
         private bool IsVisible = false;
         private bool Running = false;
+
 
         private int ModSelection = 0;
         private int SettingsSelection = 0;
@@ -148,6 +137,7 @@ namespace RumbleModUI
         private GameObject UI_DropDown_Mod = new GameObject();
         private GameObject UI_DropDown_Settings = new GameObject();
         private GameObject UI_InputField = new GameObject();
+        private GameObject UI_ToggleBox = new GameObject();
         private GameObject UI_ButtonSave = new GameObject();
         private GameObject UI_ButtonDisc = new GameObject();
 
@@ -162,6 +152,8 @@ namespace RumbleModUI
         private object Enum_Save;
         private object Enum_Discard;
         private object Enum_Dragger;
+        private object Enum_Toggle;
+        private object Enum_Debug;
 
         private List<Mod> Mod_Options = new List<Mod>();
         private List<TextMeshProUGUI> Theme_Text = new List<TextMeshProUGUI>();
@@ -190,31 +182,34 @@ namespace RumbleModUI
                 UI_Object.AddComponent<RectTransform>();
                 UI_Object.GetComponent<RectTransform>().sizeDelta = Size_Base;
                 UI_Object.transform.position = Pos_BaseObj;
-                UI_Object.transform.localScale = Scl_BaseObj;
+                UI_Object.transform.localScale = Scl_1x1;
 
                 SetAnchors(UI_Object, AnchorPresets.MiddleCenter);
                 SetPivot(UI_Object, PivotPresets.MiddleCenter);
 
-                UI_OuterBG = CreateBackgroundBox("Outer BG", Pos_OuterBG, Scl_OuterBG);
+                UI_OuterBG = CreateBackgroundBox("Outer BG", Pos_OuterBG);
 
                 UI_Desc = CreateDescription("Description BG");
 
-                UI_Title = CreateTitle("Title", Pos_Title, Scl_Title);
+                UI_Title = CreateTitle("Title", Pos_Title);
 
-                UI_DropDown_Mod = CreateDropdown("DropDown_Mods", Pos_DD1, Scl_DD1);
+                UI_DropDown_Mod = CreateDropdown("DropDown_Mods", Pos_DD1);
 
-                UI_DropDown_Settings = CreateDropdown("DropDown_Settings", Pos_DD2, Scl_DD2);
+                UI_DropDown_Settings = CreateDropdown("DropDown_Settings", Pos_DD2);
 
-                UI_InputField = CreateInputField("InputField", Pos_IF, Scl_IF);
+                UI_InputField = CreateInputField("InputField", Pos_IF);
 
-                UI_ButtonSave = CreateButton("SaveButton", Pos_B1, Scl_B1, "Save");
+                UI_ToggleBox = CreateToggleBox("ToggleBox", Pos_TB);
+                UI_ToggleBox.SetActive(false);
+
+                UI_ButtonSave = CreateButton("SaveButton", Pos_B1, "Save");
 
                 UI_ButtonSave.GetComponent<Button>().onClick.AddListener(new System.Action(() =>
                 {
                     ButtonHandler(0);
                 }));
 
-                UI_ButtonDisc = CreateButton("DiscardButton", Pos_B2, Scl_B2, "Discard");
+                UI_ButtonDisc = CreateButton("DiscardButton", Pos_B2, "Discard");
 
                 UI_ButtonDisc.GetComponent<Button>().onClick.AddListener(new System.Action(() =>
                 {
@@ -325,6 +320,7 @@ namespace RumbleModUI
             Mod_UI.AddToList("Light Theme", ModSetting.AvailableTypes.Boolean, "true", 1, "Turns Light Theme on/off.");
             Mod_UI.AddToList("Dark Theme", ModSetting.AvailableTypes.Boolean, "false", 1, "Turns Dark Theme on/off.");
             Mod_UI.AddToList("High Contrast Theme", ModSetting.AvailableTypes.Boolean, "false", 1, "Turns High Contrast Theme on/off.");
+            if (debug_UI) Mod_UI.AddToList("Debug Stuff", ModSetting.AvailableTypes.Integer, "0", 0, "Does Things.");
 
             Mod_UI.GetFromFile();
 
@@ -379,6 +375,9 @@ namespace RumbleModUI
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().ClearOptions();
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().AddOptions(list);
 
+            UI_ToggleBox.SetActive(false);
+            UI_InputField.SetActive(true);
+
             SetPlaceholder();
 
             UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].TempSettings[SettingsSelection].GetDescription();
@@ -390,6 +389,7 @@ namespace RumbleModUI
             Enum_InputField = MelonCoroutines.Start(WaitForInput());
             Enum_Theme = MelonCoroutines.Start(WaitForThemeChange());
             Enum_Dragger = MelonCoroutines.Start(Dragger());
+            if (debug_UI) Enum_Debug = MelonCoroutines.Start(DebugSelector());
         }
         private void DoOnHide()
         {
@@ -398,6 +398,7 @@ namespace RumbleModUI
             if (Enum_InputField != null) MelonCoroutines.Stop(Enum_InputField);
             if (Enum_Theme != null) MelonCoroutines.Stop(Enum_Theme);
             if (Enum_Dragger != null) MelonCoroutines.Stop(Enum_Dragger);
+            if (debug_UI && Enum_Debug != null) MelonCoroutines.Stop(Enum_Debug);
         }
 
         private void DoOnModSelect()
@@ -443,12 +444,43 @@ namespace RumbleModUI
         private void DoOnSettingsSelect()
         {
             if (Enum_SettingsSelect != null) MelonCoroutines.Stop(Enum_SettingsSelect);
+            if (Enum_InputField != null) MelonCoroutines.Stop(Enum_InputField);
+            if (Enum_Toggle != null) MelonCoroutines.Stop(Enum_Toggle);
 
             UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].TempSettings[SettingsSelection].GetDescription();
 
-            SetPlaceholder();
+            if (Mod_Options[ModSelection].TempSettings[SettingsSelection].GetValueType() == ModSetting.AvailableTypes.Boolean)
+            {
+                UI_InputField.SetActive(false);
+                UI_ToggleBox.SetActive(true);
+
+                SetToggle();
+
+                Enum_Toggle = MelonCoroutines.Start(WaitForToggle());
+            }
+            else
+            {
+                UI_ToggleBox.SetActive(false);
+                UI_InputField.SetActive(true);
+
+                SetPlaceholder();
+
+                Enum_InputField = MelonCoroutines.Start(WaitForInput());
+            }
 
             Enum_SettingsSelect = MelonCoroutines.Start(WaitforSettingsSelection());
+        }
+        private void SetToggle()
+        {
+            if(Mod_Options[ModSelection].TempSettings[SettingsSelection].GetValue() == "true")
+            {
+                UI_ToggleBox.GetComponent<Toggle>().isOn = true;
+            }
+            else
+            {
+                UI_ToggleBox.GetComponent<Toggle>().isOn = false;
+            }
+
         }
         private void SetPlaceholder(bool Valid = true)
         {
@@ -566,6 +598,43 @@ namespace RumbleModUI
             yield return null;
         }
 
+        private void DoOnToggle(bool value)
+        {
+            if (Enum_Toggle != null) MelonCoroutines.Stop(Enum_Toggle);
+
+            if (value)
+            {
+                Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].TempSettings[SettingsSelection].GetName(), "true");
+
+                if (debug_UI) { MelonLogger.Msg("Enum - Toggle true"); }
+            }
+            else
+            {
+                Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].TempSettings[SettingsSelection].GetName(), "false");
+
+                if (debug_UI) { MelonLogger.Msg("Enum - Toggle false"); }
+            }
+
+            Enum_Toggle = MelonCoroutines.Start(WaitForToggle());
+        }
+        private IEnumerator WaitForToggle()
+        {
+            WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
+            bool OldValue = UI_ToggleBox.GetComponent<Toggle>().isOn;
+
+            while (true)
+            {
+                bool NewValue = UI_ToggleBox.GetComponent<Toggle>().isOn;
+
+                if (OldValue != NewValue)
+                {
+                    DoOnToggle(NewValue);
+                }
+
+                yield return waitForFixedUpdate;
+            }
+        }
+
         private IEnumerator WaitForThemeChange()
         {
             WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
@@ -577,7 +646,7 @@ namespace RumbleModUI
 
             index = Mod_Options.FindIndex(x => x.GetName() == ModName);
 
-            for (int i = 1;i < Mod_Options[index].TempSettings.Count; i++)
+            for (int i = 1;i < ThemeCount + 1; i++)
             {
                 ThemeOld[i - 1] = Mod_Options[index].TempSettings[i].GetValue();
             }
@@ -586,7 +655,7 @@ namespace RumbleModUI
             {
                 if (ModSelection == index)
                 {
-                    for (int i = 1; i < Mod_Options[index].TempSettings.Count; i++)
+                    for (int i = 1; i < ThemeCount+1; i++)
                     {
                         ThemeNew[i - 1] = Mod_Options[index].TempSettings[i].GetValue();
                     }
@@ -717,6 +786,50 @@ namespace RumbleModUI
         }
         #endregion
 
+        #region Debug Stuff
+        private IEnumerator DebugSelector()
+        {
+            WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
+
+            int index = 0;
+
+            index = Mod_Options.FindIndex(x => x.GetName() == ModName);
+
+            string OldValue = Mod_Options[index].TempSettings[Mod_Options[index].TempSettings.Count - 1].GetValue();
+
+            while (true)
+            {
+                if (ModSelection == index && SettingsSelection == Mod_Options[index].TempSettings.Count - 1)
+                {
+                    string NewValue = Mod_Options[index].TempSettings[Mod_Options[index].TempSettings.Count - 1].GetValue();
+                    if (OldValue != NewValue)
+                    {
+                        DebugStuff(NewValue);
+                    }
+                }
+                yield return waitForFixedUpdate;
+            }
+        }
+        private void DebugStuff(string value)
+        {
+            if (Enum_Debug != null) MelonCoroutines.Stop(Enum_Debug);
+
+            switch (value)
+            {
+                case "1":
+                    UI_ToggleBox.SetActive(false);
+                    UI_InputField.SetActive(true);
+                    break;
+                case "2":
+                    UI_InputField.SetActive(false);
+                    UI_ToggleBox.SetActive(true);
+                    break;
+            }
+
+            Enum_Debug = MelonCoroutines.Start(DebugSelector());
+        }
+        #endregion
+
         #region UI Creation
         private void InitCustomTextures()
         {
@@ -753,7 +866,7 @@ namespace RumbleModUI
                 return Sprite.Create(Input, temp, new Vector2(0, 0));
             }
         }
-        private GameObject CreateTitle(string Name, Vector3 Position, Vector3 Scale)
+        private GameObject CreateTitle(string Name, Vector3 Position)
         {
             #region Objects
             GameObject T_Obj = new GameObject { name = Name };
@@ -801,8 +914,8 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(T_Obj, Position, Scale);
-            SetPosition(T_Text, Vector3.zero, Scale);
+            SetPosition(T_Obj, Position, Scl_1x1);
+            SetPosition(T_Text, Vector3.zero, Scl_1x1);
 
             if (debug_UI) { MelonLogger.Msg("Title - Position set"); }
             #endregion
@@ -819,7 +932,7 @@ namespace RumbleModUI
 
             return T_Obj;
         }
-        private GameObject CreateBackgroundBox(string Name, Vector3 Position, Vector3 Scale)
+        private GameObject CreateBackgroundBox(string Name, Vector3 Position)
         {
             GameObject temp = new GameObject
             {
@@ -827,7 +940,7 @@ namespace RumbleModUI
             };
             temp.transform.SetParent(UI_Object.transform);
 
-            SetPosition(temp, Position, Scale);
+            SetPosition(temp, Position, Scl_1x1);
 
             temp.AddComponent<Image>();
 
@@ -841,7 +954,7 @@ namespace RumbleModUI
 
             return temp;
         }
-        private GameObject CreateDropdown(string Name, Vector3 Position, Vector3 Scale)
+        private GameObject CreateDropdown(string Name, Vector3 Position)
         {
             #region Objects
             GameObject DD_Obj = new GameObject{ name = Name };
@@ -986,18 +1099,18 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(DD_Obj, Position, Scale);
-            SetPosition(DD_Label, Vector3.zero, Scale);
-            SetPosition(DD_Arrow, Vector3.zero, Scale);
-            SetPosition(DD_Template, Vector3.zero, Scale);
-            SetPosition(DD_Viewport, Vector3.zero, Scale);
-            SetPosition(DD_Content, Vector3.zero, Scale);
-            SetPosition(DD_Item, Vector3.zero, Scale);
-            SetPosition(DD_ItemLabel, Vector3.zero, Scale);
-            SetPosition(DD_ItemBG, Vector3.zero, Scale);
-            SetPosition(DD_Scrollbar, Vector3.zero, Scale);
-            SetPosition(DD_Slide, Vector3.zero, Scale);
-            SetPosition(DD_Handle, Vector3.zero, Scale);
+            SetPosition(DD_Obj, Position, Scl_1x1);
+            SetPosition(DD_Label, Vector3.zero, Scl_1x1);
+            SetPosition(DD_Arrow, Vector3.zero, Scl_1x1);
+            SetPosition(DD_Template, Vector3.zero, Scl_1x1);
+            SetPosition(DD_Viewport, Vector3.zero, Scl_1x1);
+            SetPosition(DD_Content, Vector3.zero, Scl_1x1);
+            SetPosition(DD_Item, Vector3.zero, Scl_1x1);
+            SetPosition(DD_ItemLabel, Vector3.zero, Scl_1x1);
+            SetPosition(DD_ItemBG, Vector3.zero, Scl_1x1);
+            SetPosition(DD_Scrollbar, Vector3.zero, Scl_1x1);
+            SetPosition(DD_Slide, Vector3.zero, Scl_1x1);
+            SetPosition(DD_Handle, Vector3.zero, Scl_1x1);
 
             if (debug_UI) { MelonLogger.Msg("DropDown - Position set"); }
             #endregion
@@ -1047,7 +1160,7 @@ namespace RumbleModUI
 
             return DD_Obj;
         }
-        private GameObject CreateInputField(string Name,Vector3 Position,Vector3 Scale)
+        private GameObject CreateInputField(string Name,Vector3 Position)
         {
             #region Objects
             GameObject IF_Obj = new GameObject { name = Name };
@@ -1134,10 +1247,10 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(IF_Obj, Position, Scale);
-            SetPosition(IF_TextArea, Vector3.zero, Scale);
-            SetPosition(IF_Placeholder, Vector3.zero, Scale);
-            SetPosition(IF_Text, Vector3.zero, Scale);
+            SetPosition(IF_Obj, Position, Scl_1x1);
+            SetPosition(IF_TextArea, Vector3.zero, Scl_1x1);
+            SetPosition(IF_Placeholder, Vector3.zero, Scl_1x1);
+            SetPosition(IF_Text, Vector3.zero, Scl_1x1);
 
             if (debug_UI) { MelonLogger.Msg("InputField - Positions set"); }
             #endregion
@@ -1159,6 +1272,106 @@ namespace RumbleModUI
             #endregion
 
             return IF_Obj;
+        }
+        private GameObject CreateToggleBox(string Name, Vector3 Position)
+        {
+            #region Objects
+            GameObject TB_Obj = new GameObject { name = Name };
+            GameObject TB_Background = new GameObject { name = "Background" };
+            GameObject TB_Checkmark = new GameObject { name = "Checkmark" };
+            //GameObject TB_Label = new GameObject { name = "Label" };
+
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Objects set"); }
+            #endregion
+
+            #region Set Transforms
+            TB_Obj.transform.SetParent(UI_Object.transform);
+            TB_Background.transform.SetParent(TB_Obj.transform);
+            TB_Checkmark.transform.SetParent(TB_Background.transform);
+            //TB_Label.transform.SetParent(TB_Obj.transform);
+
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Parents set"); }
+            #endregion
+
+            #region Add Components
+            TB_Obj.AddComponent<Toggle>();
+
+            TB_Background.AddComponent<RectTransform>();
+            TB_Background.AddComponent<Image>();
+
+            TB_Checkmark.AddComponent<RectTransform>();
+            TB_Checkmark.AddComponent<Image>();
+
+            //TB_Label.AddComponent<TextMeshProUGUI>();
+
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Components set"); }
+            #endregion
+
+            #region Set Text Settings
+            //SetTextProperties(TB_Label, "", 20);
+
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Text set"); }
+            #endregion
+
+            #region Set "Checkmark" Settings
+            TB_Checkmark.GetComponent<Image>().sprite = ConvertToSprite(CustomAssets[1], true);
+            TB_Checkmark.GetComponent<Image>().type = Image.Type.Tiled;
+            AddToFGTheme(TB_Checkmark);
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Checkmark set"); }
+            #endregion
+
+            #region Set Background Settings
+            TB_Background.GetComponent<Image>().sprite = ConvertToSprite(CustomAssets[1], true);
+            TB_Background.GetComponent<Image>().type = Image.Type.Tiled;
+            AddToBGTheme(TB_Background);
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Background set"); }
+            #endregion
+
+            #region Set Toggle Settings
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Toggle set"); }
+            #endregion
+
+            #region Set RectTransforms
+            TB_Obj.GetComponent<RectTransform>().sizeDelta = Size_TB;
+            TB_Background.GetComponent<RectTransform>().sizeDelta = Size_TB;
+            TB_Checkmark.GetComponent<RectTransform>().sizeDelta = new Vector2(Size_TB.x - 5, Size_TB.y - 5);
+            //TB_Label.GetComponent<RectTransform>().sizeDelta = new Vector2(380 - Size_TB.x, Size_TB.y);
+
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Transforms set"); }
+            #endregion
+
+            #region Link Objects
+            TB_Obj.GetComponent<Toggle>().graphic = TB_Checkmark.GetComponent<Image>();
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Objects linked"); }
+            #endregion
+
+            #region Positioning and Scaling
+            SetPosition(TB_Obj, Position, Scl_1x1);
+            SetPosition(TB_Background, Vector3.zero, Scl_1x1);
+            SetPosition(TB_Checkmark, Vector3.zero, Scl_1x1);
+            //SetPosition(TB_Label, new Vector3(5, 0f), Scl_1x1);
+
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Positions set"); }
+            #endregion
+
+            #region Alignment
+            SetAnchors(TB_Obj, AnchorPresets.MiddleCenter);
+            SetPivot(TB_Obj, PivotPresets.MiddleCenter);
+
+            SetAnchors(TB_Background, AnchorPresets.MiddleCenter);
+            SetPivot(TB_Background, PivotPresets.MiddleCenter);
+
+            SetAnchors(TB_Checkmark, AnchorPresets.MiddleCenter);
+            SetPivot(TB_Checkmark, PivotPresets.MiddleCenter);
+
+            //SetAnchors(TB_Label, AnchorPresets.MiddleRight);
+            //SetPivot(TB_Label, PivotPresets.MiddleLeft);
+
+            if (debug_UI) { MelonLogger.Msg("ToggleBox - Alignments set"); }
+            #endregion
+
+            return TB_Obj;
+
         }
         private GameObject CreateDescription(string Name)
         {
@@ -1208,8 +1421,8 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(D_Obj, Pos_DescBG, Scl_DescBG);
-            SetPosition(D_Text, Pos_DescText, Scl_DescText);
+            SetPosition(D_Obj, Pos_DescBG, Scl_1x1);
+            SetPosition(D_Text, Pos_DescText, Scl_1x1);
 
             if (debug_UI) { MelonLogger.Msg("Description - Position set"); }
             #endregion
@@ -1226,7 +1439,7 @@ namespace RumbleModUI
 
             return D_Obj;
         }
-        private GameObject CreateButton(string Name, Vector3 Position, Vector3 Scale,string Text)
+        private GameObject CreateButton(string Name, Vector3 Position,string Text)
         {
             #region Objects
             GameObject B_Obj = new GameObject { name = Name };
@@ -1281,8 +1494,8 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(B_Obj, Position, Scale);
-            SetPosition(B_Text, Vector3.zero, Scale);
+            SetPosition(B_Obj, Position, Scl_1x1);
+            SetPosition(B_Text, Vector3.zero, Scl_1x1);
 
             if (debug_UI) { MelonLogger.Msg("Button - Position set"); }
             #endregion
