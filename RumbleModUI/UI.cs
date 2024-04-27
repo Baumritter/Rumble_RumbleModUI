@@ -165,10 +165,11 @@ namespace RumbleModUI
         {
             return IsInit;
         }
-        public void InitUI(string Name)
+        public Mod InitUI(string Name)
         {
             if (!IsInit)
             {
+                Mod temp;
                 InitCustomTextures();
                 Pos_BaseObj = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
@@ -181,7 +182,7 @@ namespace RumbleModUI
                 UI_Object.AddComponent<RectTransform>();
                 UI_Object.GetComponent<RectTransform>().sizeDelta = Size_Base;
                 UI_Object.transform.position = Pos_BaseObj;
-                UI_Object.transform.localScale = Scl_1x1;
+                UI_Object.transform.localScale = new Vector3(1.5f,1.5f,0);
 
                 SetAnchors(UI_Object, AnchorPresets.MiddleCenter);
                 SetPivot(UI_Object, PivotPresets.MiddleCenter);
@@ -215,15 +216,18 @@ namespace RumbleModUI
                     ButtonHandler(1);
                 }));
 
-                AddSelf();
+                temp = AddSelf();
 
                 IsInit = true;
 
                 if (debug_UI) { MelonLogger.Msg("UI - Initialised"); }
+
+                return temp;
             }
             else
             {
                 if (debug_UI) { MelonLogger.Msg("UI - Already initialised"); }
+                return null;
             }
         }
         public void ShowUI()
@@ -308,7 +312,7 @@ namespace RumbleModUI
                 if (debug_UI) { MelonLogger.Msg("Modlist - Mod doesn't exist."); }
             }
         }
-        private void AddSelf()
+        private Mod AddSelf()
         {
             Mod Mod_UI = new Mod();
 
@@ -319,6 +323,7 @@ namespace RumbleModUI
             Mod_UI.AddToList("Light Theme", true, 1, "Turns Light Theme on/off.");
             Mod_UI.AddToList("Dark Theme", false, 1, "Turns Dark Theme on/off.");
             Mod_UI.AddToList("High Contrast Theme", false, 1, "Turns High Contrast Theme on/off.");
+            Mod_UI.AddToList("Enable VR Menu Input", true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time");
             Mod_UI.SetLinkGroup(1, "Themes");
 
             Mod_UI.GetFromFile();
@@ -348,6 +353,8 @@ namespace RumbleModUI
             }
 
             AddMod(Mod_UI);
+
+            return Mod_UI;
         }
         #endregion
 
