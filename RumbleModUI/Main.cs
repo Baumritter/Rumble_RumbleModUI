@@ -44,7 +44,7 @@ namespace RumbleModUI
         }
 
         //Run every update
-        public override void OnFixedUpdate()
+        public override void OnUpdate()
         {
             //Base Updates
             base.OnUpdate();

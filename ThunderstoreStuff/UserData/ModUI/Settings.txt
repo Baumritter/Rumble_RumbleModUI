@@ -1,5 +1,0 @@
-RumbleModUI 1.0.1
-Created by: RumbleModUI 1.0.1
-Light Theme: false
-Dark Theme: true
-High Contrast Theme: false
