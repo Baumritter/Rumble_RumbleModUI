@@ -1,43 +1,11 @@
-﻿using MelonLoader;
-using UnityEngine;
+﻿using Il2CppSystem;
+using MelonLoader;
 using System.Collections.Generic;
-using Il2CppSystem;
 using System.IO;
 using static RumbleModUI.ModSetting;
-using UnityEngine.EventSystems;
-using System.Linq.Expressions;
 
 namespace RumbleModUI
 {
-    public class StringValidation
-    {
-        private int MaxLen = 0;
-        private int MinLen = 0;
-        private bool UseWhitelist = false;
-        private List<String> Whitelist = new List<String>();
-
-        #region Set
-        public void SetMaxLen(int MaxLen) { this.MaxLen = MaxLen; }
-        public void SetMinLen(int MinLen) { this.MinLen = MinLen; }
-        public void SetWhitelistUsage(bool UseWhitelist) { this.UseWhitelist = UseWhitelist; }
-        public void AddToWhiteList(string Input)
-        {
-            this.Whitelist.Add(Input);
-        }
-        public void RemoveFromWhitelist(string Input)
-        {
-            this.Whitelist.Remove(Input);
-        }
-        #endregion
-
-        #region Get
-        public int GetMaxLen() { return this.MaxLen; }
-        public int GetMinLen() { return this.MinLen; }
-        public bool GetWhiteListUsage() { return this.UseWhitelist; }
-        public List<String> GetWhiteList() { return this.Whitelist; }
-        #endregion
-
-    }
     public class LinkGroup
     {
         public string Name { get; set; }
@@ -145,6 +113,7 @@ namespace RumbleModUI
                 return null;
             }
 
+
             ModSetting<string> InputSetting = new ModSetting<string>
             {
                 Name = Name,
@@ -243,46 +212,10 @@ namespace RumbleModUI
         }
         #endregion
 
-        #region String Validations
-        public void SetStringConstraints(string SettingName,int MinLen,int MaxLen,bool UseWhiteList, List<String> Whitelist)
+        public void AddValidation(string name, ValidationParameters parameters)
         {
-            ModSetting temp = new ModSetting<string>();
-            StringValidation stringValidation = new StringValidation();
-
-            foreach (ModSetting Setting in Settings)
-            {
-                if (Setting.Name == SettingName)
-                {
-                    temp = Setting;
-                    break;
-                }
-            }
-
-            stringValidation.SetMinLen(MinLen);
-            stringValidation.SetMaxLen(MaxLen);
-            stringValidation.SetWhitelistUsage(UseWhiteList);
-            foreach (string x in Whitelist)
-            {
-                stringValidation.AddToWhiteList(x);
-            }
-            temp.StringValidation = stringValidation;
+            this.Settings.Find(x => x.Name == name).validationParameters = parameters;
         }
-        public void SetStringConstraints(string SettingName,StringValidation stringValidation)
-        {
-            ModSetting temp = new ModSetting<string>();
-
-            foreach (ModSetting Setting in Settings)
-            {
-                if (Setting.Name == SettingName)
-                {
-                    temp = Setting;
-                    break;
-                }
-            }
-
-            temp.StringValidation = stringValidation;
-        }
-        #endregion
 
         public bool ChangeValue(string Name, string Value = "")
         {
@@ -369,25 +302,10 @@ namespace RumbleModUI
                 case AvailableTypes.String:
                     ModSetting<string> stringset = (ModSetting<string>)ReferenceSetting;
 
-                    if (ReferenceSetting.StringValidation.GetMinLen() > 0 && value.Length < ReferenceSetting.StringValidation.GetMinLen()) return false;
-                    if (ReferenceSetting.StringValidation.GetMaxLen() > 0 && value.Length > ReferenceSetting.StringValidation.GetMaxLen()) return false;
-                    if (ReferenceSetting.StringValidation.GetWhiteListUsage())
-                    {
-                        foreach (string WhiteList in ReferenceSetting.StringValidation.GetWhiteList())
-                        {
-                            if (value == WhiteList)
-                            {
-                                stringset.Value = value;
-                                return true;
-                            }
-                        }
-                            return false; 
-                    }
-                    else
-                    {
-                        stringset.Value = value;
-                        return true;
-                    }
+                    if (!stringset.validationParameters.DoValidation(value)) return false;
+                    stringset.Value = value;
+                    return true;
+
                 default: 
                     return false;
             }

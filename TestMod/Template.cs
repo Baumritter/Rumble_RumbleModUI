@@ -13,12 +13,24 @@ namespace TestMod
         public const string Author = "YourNameHere";
         public const string Company = "";
     }
+    public class Validation : ValidationParameters
+    {
+        public Validation(int i)
+        {
+            this.Length = i;
+        }
+        private int Length;
+        public override bool DoValidation(string Input)
+        {
+            if (Input.Length == Length) { return true; }
+            return false;
+        }
+    }
     public class TemplateClass : MelonMod
     {
         #region Necessary Objects - Names can be changed ofc
         RumbleModUI.UI UI = RumbleModUIClass.UI_Obj;
         Mod TestMod = new Mod();
-        List<Il2CppSystem.String> Whitelist = new List<Il2CppSystem.String>();
         #endregion
 
         public override void OnLateInitializeMelon()
@@ -37,20 +49,12 @@ namespace TestMod
             TestMod.AddToList("Int Setting", 0, "Does Nothing.");
             TestMod.AddToList("Float Setting",0.0f, "Does Nothing.");
             TestMod.AddToList("Double Setting",0.0, "Does Nothing.");
-            TestMod.AddToList("String Setting 1", ModSetting.AvailableTypes.String, "Test1", "Does Nothing.");
-            TestMod.AddToList("String Setting 2", ModSetting.AvailableTypes.String, "12", "Does Nothing.");
+            TestMod.AddToList("String Setting 1", ModSetting.AvailableTypes.String, "1", "Does Nothing.");
+            TestMod.AddToList("String Setting 2", ModSetting.AvailableTypes.String, "Test", "Does Nothing.");
             TestMod.SetLinkGroup(1, "Bools");
 
-            Whitelist.Clear();
-            Whitelist.Add("Test1");
-            Whitelist.Add("Test2");
-            Whitelist.Add("Test3");
-            TestMod.SetStringConstraints("String Setting 1", 0, 0, true, Whitelist);
-
-            Whitelist.Clear();
-            Whitelist.Add("");
-            TestMod.SetStringConstraints("String Setting 2", 1, 3, false, Whitelist);
-
+            TestMod.AddValidation("String Setting 1", new Validation(1));
+            TestMod.AddValidation("String Setting 2", new Validation(4));
 
             TestMod.GetFromFile();
             #endregion

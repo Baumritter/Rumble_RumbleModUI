@@ -145,14 +145,10 @@ namespace RumbleModUI
         private string[] CustomAssetsNames = new string[4];
         private byte[] Bytes;
 
-        private object Enum_ModSelect;
-        private object Enum_SettingsSelect;
-        private object Enum_InputField;
         private object Enum_Theme;
         private object Enum_Save;
         private object Enum_Discard;
         private object Enum_Dragger;
-        private object Enum_Toggle;
 
         private List<Mod> Mod_Options = new List<Mod>();
         private List<TextMeshProUGUI> Theme_Text = new List<TextMeshProUGUI>();
@@ -194,12 +190,16 @@ namespace RumbleModUI
                 UI_Title = CreateTitle("Title", Pos_Title);
 
                 UI_DropDown_Mod = CreateDropdown("DropDown_Mods", Pos_DD1);
+                UI_DropDown_Mod.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(new System.Action<int>(value => { OnModSelectionChange(value); }));
 
                 UI_DropDown_Settings = CreateDropdown("DropDown_Settings", Pos_DD2);
+                UI_DropDown_Settings.GetComponent<TMP_Dropdown>().onValueChanged.AddListener(new System.Action<int>(value => { OnSettingsSelectionChange(value); }));
 
                 UI_InputField = CreateInputField("InputField", Pos_IF);
+                UI_InputField.GetComponent<TMP_InputField>().onSubmit.AddListener(new System.Action<string>(value => { OnInputFieldChange(value); }));
 
                 UI_ToggleBox = CreateToggleBox("ToggleBox", Pos_TB);
+                UI_ToggleBox.GetComponent<Toggle>().onValueChanged.AddListener(new System.Action<bool>(value => { OnToggleChange(value); }));
                 UI_ToggleBox.SetActive(false);
 
                 UI_ButtonSave = CreateButton("SaveButton", Pos_B1, "Save");
@@ -359,6 +359,25 @@ namespace RumbleModUI
         #endregion
 
         #region UI Interaction
+        private void OnModSelectionChange(int Input)
+        {
+            ModSelection = Input;
+            DoOnModSelect();
+        }
+        private void OnSettingsSelectionChange(int Input)
+        {
+            SettingsSelection = Input;
+            DoOnSettingsSelect();
+        }
+        private void OnInputFieldChange(string Input)
+        {
+            DoOnInput(Input);
+        }
+        private void OnToggleChange(bool Input)
+        {
+            DoOnToggle(Input);
+        }
+
         private void DoOnShow()
         {
             Il2CppSystem.Collections.Generic.List<string> list = new Il2CppSystem.Collections.Generic.List<string>();
@@ -392,32 +411,27 @@ namespace RumbleModUI
             UI_ToggleBox.SetActive(false);
             UI_InputField.SetActive(true);
 
-            SetPlaceholder();
+            ModSelection = 0;
+            SettingsSelection = 0;
+
+            Inputfield_SetPlaceholder();
 
             UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
 
             UI_Object.transform.position = Pos_BaseObj;
 
-            Enum_ModSelect = MelonCoroutines.Start(WaitforModSelection());
-            Enum_SettingsSelect = MelonCoroutines.Start(WaitforSettingsSelection());
-            Enum_InputField = MelonCoroutines.Start(WaitForInput());
             Enum_Theme = MelonCoroutines.Start(WaitForThemeChange());
             Enum_Dragger = MelonCoroutines.Start(Dragger());
         }
         private void DoOnHide()
         {
-            if(Enum_ModSelect != null) MelonCoroutines.Stop(Enum_ModSelect);
-            if (Enum_SettingsSelect != null) MelonCoroutines.Stop(Enum_SettingsSelect);
-            if (Enum_InputField != null) MelonCoroutines.Stop(Enum_InputField);
             if (Enum_Theme != null) MelonCoroutines.Stop(Enum_Theme);
             if (Enum_Dragger != null) MelonCoroutines.Stop(Enum_Dragger);
         }
-
         private void DoOnModSelect()
         {
             Il2CppSystem.Collections.Generic.List<string> list = new Il2CppSystem.Collections.Generic.List<string>();
 
-            if (Enum_ModSelect != null) MelonCoroutines.Stop(Enum_ModSelect);
 
             foreach (ModSetting setting in Mod_Options[ModSelection].Settings)
             {
@@ -437,37 +451,11 @@ namespace RumbleModUI
 
             UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
 
-            SetPlaceholder();
+            Inputfield_SetPlaceholder();
 
-            Enum_ModSelect = MelonCoroutines.Start(WaitforModSelection());
         }
-        private IEnumerator WaitforModSelection()
-        {
-            WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
-            int OldValue = UI_DropDown_Mod.GetComponent<TMP_Dropdown>().value;
-
-            if (debug_UI) { MelonLogger.Msg("Enum - Waiting for change of Mod Selection."); }
-
-            while (true)
-            {
-                ModSelection = UI_DropDown_Mod.GetComponent<TMP_Dropdown>().value;
-                if (OldValue != ModSelection)
-                {
-                    if (debug_UI) { MelonLogger.Msg("Enum - Mod Selection changed."); }
-                    DoOnModSelect();
-                    yield return null;
-                }
-                yield return waitForFixedUpdate;
-            }
-        }
-
-
         private void DoOnSettingsSelect()
         {
-            if (Enum_SettingsSelect != null) MelonCoroutines.Stop(Enum_SettingsSelect);
-            if (Enum_InputField != null) MelonCoroutines.Stop(Enum_InputField);
-            if (Enum_Toggle != null) MelonCoroutines.Stop(Enum_Toggle);
-
             UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
 
             if (Mod_Options[ModSelection].Settings[SettingsSelection].ValueType == ModSetting.AvailableTypes.Boolean)
@@ -475,23 +463,40 @@ namespace RumbleModUI
                 UI_InputField.SetActive(false);
                 UI_ToggleBox.SetActive(true);
 
-                SetToggle();
-
-                Enum_Toggle = MelonCoroutines.Start(WaitForToggle());
+                ToggleBox_AdjustValue();
             }
             else
             {
                 UI_ToggleBox.SetActive(false);
                 UI_InputField.SetActive(true);
 
-                SetPlaceholder();
-
-                Enum_InputField = MelonCoroutines.Start(WaitForInput());
+                Inputfield_SetPlaceholder();
             }
 
-            Enum_SettingsSelect = MelonCoroutines.Start(WaitforSettingsSelection());
         }
-        private void SetToggle()
+        private void DoOnInput(string Input)
+        {
+            bool Validity = Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].Settings[SettingsSelection].Name, Input);
+            Inputfield_SetPlaceholder(Validity);
+            UI_InputField.GetComponent<TMP_InputField>().text = "";
+        }
+        private void DoOnToggle(bool value)
+        {
+            if (value)
+            {
+                Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].Settings[SettingsSelection].Name, "true");
+
+                if (debug_UI) { MelonLogger.Msg("Enum - Toggle true"); }
+            }
+            else
+            {
+                Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].Settings[SettingsSelection].Name, "false");
+
+                if (debug_UI) { MelonLogger.Msg("Enum - Toggle false"); }
+            }
+        }
+
+        private void ToggleBox_AdjustValue()
         {
             if((bool)Mod_Options[ModSelection].Settings[SettingsSelection].Value == true)
             {
@@ -503,7 +508,7 @@ namespace RumbleModUI
             }
 
         }
-        private void SetPlaceholder(bool Valid = true)
+        private void Inputfield_SetPlaceholder(bool Valid = true)
         {
             if (Mod_Options[ModSelection].Settings[SettingsSelection].Name == "Description")
             {
@@ -537,124 +542,7 @@ namespace RumbleModUI
                 UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().color = Color.red;
             }
         }
-        private IEnumerator WaitforSettingsSelection()
-        {
-            WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
-            int OldValue = UI_DropDown_Settings.GetComponent<TMP_Dropdown>().value;
 
-            if (debug_UI) { MelonLogger.Msg("Enum - Waiting for change of Settings Selection."); }
-
-            while (true)
-            {
-                SettingsSelection = UI_DropDown_Settings.GetComponent<TMP_Dropdown>().value;
-                if (OldValue != SettingsSelection || DoRefresh)
-                {
-                    DoRefresh = false;
-                    if (debug_UI) { MelonLogger.Msg("Enum - Settings Selection changed."); }
-                    DoOnSettingsSelect();
-                    yield return null;
-                }
-                yield return waitForFixedUpdate;
-            }
-        }
-
-        private void DoOnInput(int ReturnValue)
-        {
-            if (Enum_InputField != null) MelonCoroutines.Stop(Enum_InputField);
-            switch (ReturnValue)
-            {
-                case 1:
-                    bool Validity = Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].Settings[SettingsSelection].Name,UI_InputField.GetComponent<TMP_InputField>().text);
-                    SetPlaceholder(Validity);
-                    if (debug_UI) { MelonLogger.Msg("Enum - Submitted."); }
-                    break;
-                case 2:
-                    if (debug_UI) { MelonLogger.Msg("Enum - Cancelled."); }
-                    break;
-                case 3:
-                    if (debug_UI) { MelonLogger.Msg("Enum - Focus Lost."); }
-                    break;
-                default:
-                    if (debug_UI) { MelonLogger.Msg("Enum - Unhandled Case."); }
-                    break;
-            }
-
-            UI_InputField.GetComponent<TMP_InputField>().text = "";
-
-            Enum_InputField = MelonCoroutines.Start(WaitForInput());
-        }
-        private IEnumerator WaitForInput()
-        {
-            WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
-            int ReturnValue = 0;
-
-            if (debug_UI) { MelonLogger.Msg("Enum - Waiting for focus."); }
-
-            while (UI_InputField.GetComponent<TMP_InputField>().isFocused == false)
-            {
-                yield return waitForFixedUpdate;
-            }
-
-            if (debug_UI) { MelonLogger.Msg("Enum - Waiting for submit/cancel."); }
-
-            while (!Input.GetKeyDown(KeyCode.Return) && UI_InputField.GetComponent<TMP_InputField>().wasCanceled == false && UI_InputField.GetComponent<TMP_InputField>().isFocused == true)
-            {
-                yield return waitForFixedUpdate;
-            }
-
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                ReturnValue = 1;
-            }
-            else if (UI_InputField.GetComponent<TMP_InputField>().wasCanceled)
-            {
-                ReturnValue = 2;
-            }
-            else if (!UI_InputField.GetComponent<TMP_InputField>().isFocused)
-            {
-                ReturnValue = 3;
-            }
-            
-            DoOnInput(ReturnValue);
-            yield return null;
-        }
-
-        private void DoOnToggle(bool value)
-        {
-            if (Enum_Toggle != null) MelonCoroutines.Stop(Enum_Toggle);
-
-            if (value)
-            {
-                Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].Settings[SettingsSelection].Name, "true");
-
-                if (debug_UI) { MelonLogger.Msg("Enum - Toggle true"); }
-            }
-            else
-            {
-                Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].Settings[SettingsSelection].Name, "false");
-
-                if (debug_UI) { MelonLogger.Msg("Enum - Toggle false"); }
-            }
-
-            Enum_Toggle = MelonCoroutines.Start(WaitForToggle());
-        }
-        private IEnumerator WaitForToggle()
-        {
-            WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
-            bool OldValue = UI_ToggleBox.GetComponent<Toggle>().isOn;
-
-            while (true)
-            {
-                bool NewValue = UI_ToggleBox.GetComponent<Toggle>().isOn;
-
-                if (OldValue != NewValue)
-                {
-                    DoOnToggle(NewValue);
-                }
-
-                yield return waitForFixedUpdate;
-            }
-        }
         private IEnumerator WaitForThemeChange()
         {
             WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();
@@ -773,6 +661,7 @@ namespace RumbleModUI
             yield return null;
 
         }
+
         private IEnumerator Dragger()
         {
             WaitForFixedUpdate waitForFixedUpdate = new WaitForFixedUpdate();

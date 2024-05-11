@@ -1,6 +1,4 @@
-﻿using RumbleModUI;
-using System;
-using System.CodeDom;
+﻿using System;
 
 namespace RumbleModUI
 {
@@ -27,8 +25,9 @@ namespace RumbleModUI
         public AvailableTypes ValueType = AvailableTypes.String;
         public string Description = "";
         public int LinkGroup = 0;
-        public StringValidation StringValidation = new StringValidation();
+        public ValidationParameters validationParameters = new ValidationTemplate();
         #endregion
+
 
         public abstract string GetValueAsString();
         public abstract object Value { get; set; }
