@@ -1,4 +1,6 @@
-﻿using MelonLoader;
+﻿using Il2CppSystem.Collections.Generic;
+using Il2CppSystem.Runtime.ExceptionServices;
+using MelonLoader;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,7 +9,7 @@ namespace RumbleModUI
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.2.0";
+        public const string ModVersion = "1.2.2";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
@@ -90,6 +92,14 @@ namespace RumbleModUI
             return false;
         }
 
+        private GameObject CheckNameContains(Transform t, string name)
+        {
+            if (t.name.Contains(name))
+            {
+                return t.gameObject;
+            }
+            return null;
+        }
 
         //Overrides
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)

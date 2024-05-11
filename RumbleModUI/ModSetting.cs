@@ -52,6 +52,10 @@ namespace RumbleModUI
 
         public override string GetValueAsString()
         {
+            if (ValueType == AvailableTypes.Boolean) 
+            {
+                return BG_TempVariable.ToString().ToLower();
+            }
             return BG_TempVariable.ToString();
         }
 

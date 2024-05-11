@@ -1,3 +1,5 @@
+# Version 1.2.1
+- Fixed a minor oversight in the saving of files
 # Version 1.2.0
 - Added a keybind for opening the menu while in VR (both triggers + both primary buttons)
 - Boolean Settings now feature a checkbox for easier input

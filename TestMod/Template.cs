@@ -16,7 +16,7 @@ namespace TestMod
     public class TemplateClass : MelonMod
     {
         #region Necessary Objects - Names can be changed ofc
-        RumbleModUI.UI UI;
+        RumbleModUI.UI UI = RumbleModUIClass.UI_Obj;
         Mod TestMod = new Mod();
         List<Il2CppSystem.String> Whitelist = new List<Il2CppSystem.String>();
         #endregion
@@ -24,10 +24,6 @@ namespace TestMod
         public override void OnLateInitializeMelon()
         {
             base.OnLateInitializeMelon();
-
-            #region Gets the current UI Object
-            UI = RumbleModUIClass.UI_Obj;
-            #endregion
 
             #region Mod Setup
             TestMod.ModName = BuildInfo.ModName;

@@ -407,7 +407,7 @@ namespace RumbleModUI
 
             foreach(ModSetting Setting in Settings)
             {
-                if(Setting.Name != "Description")
+                if(Setting.ValueType != AvailableTypes.Description)
                 {
                     Output += Setting.Name + ": " + Setting.GetValueAsString() + Environment.NewLine;
                 }
@@ -495,6 +495,8 @@ namespace RumbleModUI
                 if (Lines[0].Contains(ModName) && Lines[0].Contains(ModVersion))
                 {
                     ValidFile = true;
+                    Lines[0] = "";
+                    Lines[1] = "";
                 }
 
                 if (ValidFile)
