@@ -1,4 +1,8 @@
-﻿using MelonLoader;
+﻿using Il2CppSystem.Collections.Generic;
+using MelonLoader;
+using System.Collections;
+using System.Linq;
+using System.Net.Configuration;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,7 +11,7 @@ namespace RumbleModUI
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.3.1";
+        public const string ModVersion = "1.4.0";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
@@ -54,9 +58,28 @@ namespace RumbleModUI
                 ModUI = UI_Obj.InitUI("Mod_Setting_UI");
                 VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
             }
-            if (ModUI != null && ModUI.GetSaveStatus())
+            if (UI_Obj.GetInit())
             {
-                VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
+                if (ModUI != null && ModUI.GetSaveStatus() && ModUI.LinkGroups[0].HasChanged)
+                {
+                    UI_Obj.RefreshTheme();
+                    ModUI.LinkGroups[0].HasChanged = false;
+                    ModUI.ConfirmSave();
+                }
+                else if (ModUI != null && ModUI.GetSaveStatus())
+                {
+                    VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
+                    ModUI.ConfirmSave();
+                }
+                if (ModUI != null && UI_Obj.IsOptionSelected("SubWindowTest"))
+                {
+                    UI_Obj.SubWindow.ShowWindow();
+                }
+                else
+                {
+
+                    UI_Obj.SubWindow.HideWindow();
+                }
             }
 
             if (Input.GetKeyDown(KeyCode.F10) || (VRButtonsAllowed && VRActivationAction()))
@@ -88,6 +111,7 @@ namespace RumbleModUI
             }
             return false;
         }
+
 
         //Overrides
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)

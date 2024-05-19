@@ -10,6 +10,8 @@ namespace RumbleModUI
     {
         public string Name { get; set; }
         public int Index { get; set; }
+        public bool HasChanged { get; set; }
+        public List<ModSetting> Settings = new List<ModSetting>();
     }
     public class Mod
     {
@@ -83,9 +85,12 @@ namespace RumbleModUI
             {
                 temp = name;
             }
-            if (LinkGroups.Count > 0 && LinkGroups.Exists(x => x.Index == index) && name != "Group")
+            if (LinkGroups.Count > 0 && LinkGroups.Exists(x => x.Index == index))
             {
-                LinkGroups.Find(x => x.Index == index).Name = temp;
+                if (name != "Group")
+                {
+                    LinkGroups.Find(x => x.Index == index).Name = temp;
+                }
             }
             else
             {
@@ -146,6 +151,7 @@ namespace RumbleModUI
             if (LinkGroup != 0)
             {
                 SetLinkGroup(LinkGroup);
+                LinkGroups.Find(x => x.Index == LinkGroup).Settings.Add(InputSetting);
             }
             Settings.Add(InputSetting);
             return InputSetting;
