@@ -26,11 +26,12 @@ namespace TestMod
             return false;
         }
     }
+
     public class TemplateClass : MelonMod
     {
         #region Necessary Objects - Names can be changed ofc
         RumbleModUI.UI UI = RumbleModUIClass.UI_Obj;
-        Mod TestMod = new Mod();
+        Mod Mod = new Mod();
         #endregion
 
         public override void OnLateInitializeMelon()
@@ -38,42 +39,43 @@ namespace TestMod
             base.OnLateInitializeMelon();
 
             #region Mod Setup
-            TestMod.ModName = BuildInfo.ModName;
-            TestMod.ModVersion = BuildInfo.ModVersion;
-            TestMod.SetFolder("Test");
-            TestMod.AddToList("Description", ModSetting.AvailableTypes.Description, "", "Does Nothing.");
-            TestMod.AddToList("Bool Setting 1", true, 1, "Does Nothing.");
-            TestMod.AddToList("Bool Setting 2",false, 1, "Does Nothing.");
-            TestMod.AddToList("Useless 1", true, 2, "Does Nothing.");
-            TestMod.AddToList("Useless 2", false, 2, "Does Nothing.");
-            TestMod.AddToList("Int Setting", 0, "Does Nothing.");
-            TestMod.AddToList("Float Setting",0.0f, "Does Nothing.");
-            TestMod.AddToList("Double Setting",0.0, "Does Nothing.");
-            TestMod.AddToList("String Setting 1", ModSetting.AvailableTypes.String, "1", "Does Nothing.");
-            TestMod.AddToList("String Setting 2", ModSetting.AvailableTypes.String, "Test", "Does Nothing.");
-            TestMod.SetLinkGroup(1, "Bools");
+            Mod.ModName = BuildInfo.ModName;
+            Mod.ModVersion = BuildInfo.ModVersion;
+            Mod.SetFolder("Test");
+            Mod.AddToList("Description", ModSetting.AvailableTypes.Description, "", BuildInfo.Description);
+            Mod.AddToList("Bool Setting 1", true, 1, "Is Bool.");
+            Mod.AddToList("Bool Setting 2",false, 1, "Is Bool.");
+            Mod.AddToList("Useless 1", true, 2, "Is also Bool.");
+            Mod.AddToList("Useless 2", false, 2, "Is also Bool");
+            Mod.AddToList("Int Setting", 0, "Is Integer.");
+            Mod.AddToList("Float Setting", 0.0f, "Is Float");
+            Mod.AddToList("Double Setting",0.0, "Is Double.");
+            Mod.AddToList("String Setting 1", ModSetting.AvailableTypes.String, "1", "Is 1-character string.");
+            Mod.AddToList("String Setting 2", ModSetting.AvailableTypes.String, "Test", "Is 4-character string.");
+            Mod.SetLinkGroup(1, "Bools");
 
-            TestMod.AddValidation("String Setting 1", new Validation(1));
-            TestMod.AddValidation("String Setting 2", new Validation(4));
+            Mod.AddValidation("String Setting 1", new Validation(1));
+            Mod.AddValidation("String Setting 2", new Validation(4));
 
-            TestMod.GetFromFile();
+            Mod.GetFromFile();
             #endregion
         }
-
+        
         public override void OnUpdate()
         {
             //Base Updates
             base.OnUpdate();
 
             #region Adds the Mod to the UI ONCE
-            if (UI.GetInit() && !TestMod.GetUIStatus())
+            if (UI.GetInit() && !Mod.GetUIStatus())
             {
-                UI.AddMod(TestMod);
-                MelonLogger.Msg("Added Mod.");
+                UI.AddMod(Mod);
+                MelonLogger.Msg("Error Code 418");
             }
             #endregion
 
         }
+        
     }
 }
 

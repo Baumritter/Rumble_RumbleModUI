@@ -2,6 +2,7 @@
 using MelonLoader;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,14 +64,6 @@ namespace RumbleModUI
             Dark,
             HighContrast
         }
-        #endregion
-
-        #region Assets
-        const string ModData = @"\ModUI\";
-        const string UI_BaseLight = "UI_BaseLight.png";
-        const string UI_BaseGrey = "UI_BaseGrey.png";
-        const string UI_Arrow = "UI_Arrow.png";
-        const string UI_DP_Mask = "UI_Mask.png";
         #endregion
 
         #region Colors
@@ -143,7 +136,6 @@ namespace RumbleModUI
 
         private Texture2D[] CustomAssets = new Texture2D[4];
         private string[] CustomAssetsNames = new string[4];
-        private byte[] Bytes;
 
         private object Enum_Theme;
         private object Enum_Save;
@@ -449,7 +441,7 @@ namespace RumbleModUI
             SettingsSelection = 0;
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().AddOptions(list);
 
-            UI_Desc.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
+            DoOnSettingsSelect();
 
             Inputfield_SetPlaceholder();
 
@@ -698,18 +690,25 @@ namespace RumbleModUI
         #region UI Creation
         private void InitCustomTextures()
         {
-            CustomAssetsNames[0] = UI_Arrow;
-            CustomAssetsNames[1] = UI_BaseLight;
-            CustomAssetsNames[2] = UI_BaseGrey;
-            CustomAssetsNames[3] = UI_DP_Mask;
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            System.IO.Stream stream;
+            
+
+            CustomAssetsNames[0] = assembly.GetName().Name + ".Assets.UI_Arrow.png";
+            CustomAssetsNames[1] = assembly.GetName().Name + ".Assets.UI_BaseLight.png";
+            CustomAssetsNames[2] = assembly.GetName().Name + ".Assets.UI_BaseLight.png";
+            CustomAssetsNames[3] = assembly.GetName().Name + ".Assets.UI_Mask.png";
 
             for (int i = 0;i < CustomAssets.Length;i++)
             {
+                stream = assembly.GetManifestResourceStream(CustomAssetsNames[i]);
+                byte[] Bytes = new byte[stream.Length];
+                stream.Read(Bytes, 0, Bytes.Length);
+
                 CustomAssets[i] = new Texture2D(2, 2);
-                Bytes = System.IO.File.ReadAllBytes(MelonUtils.UserDataDirectory + ModData + CustomAssetsNames[i]);
                 ImageConversion.LoadImage(CustomAssets[i], Bytes);
                 CustomAssets[i].hideFlags = HideFlags.HideAndDontSave;
-                if (debug_UI) { MelonLogger.Msg("UI - Import:" + MelonUtils.UserDataDirectory + ModData + CustomAssetsNames[i]); }
+                if (debug_UI) { MelonLogger.Msg("UI - Import:" + CustomAssetsNames[i]); }
             }
         }
         private Sprite ConvertToSprite(Texture2D Input,bool DoBorders = false, float border = 20)

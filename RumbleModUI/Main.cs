@@ -7,7 +7,7 @@ namespace RumbleModUI
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.3.0";
+        public const string ModVersion = "1.3.1";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
@@ -72,7 +72,6 @@ namespace RumbleModUI
             }
 
         }
-
         private bool VRActivationAction()
         {
             float High = 0.9f;
@@ -88,15 +87,6 @@ namespace RumbleModUI
                 VRButtonsPressed = false;
             }
             return false;
-        }
-
-        private GameObject CheckNameContains(Transform t, string name)
-        {
-            if (t.name.Contains(name))
-            {
-                return t.gameObject;
-            }
-            return null;
         }
 
         //Overrides

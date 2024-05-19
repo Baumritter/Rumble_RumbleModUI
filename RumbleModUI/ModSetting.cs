@@ -25,9 +25,8 @@ namespace RumbleModUI
         public AvailableTypes ValueType = AvailableTypes.String;
         public string Description = "";
         public int LinkGroup = 0;
-        public ValidationParameters validationParameters = new ValidationTemplate();
+        public ValidationParameters ValidationParameters = new ValidationTemplate();
         #endregion
-
 
         public abstract string GetValueAsString();
         public abstract object Value { get; set; }

@@ -124,6 +124,13 @@
     <Compile Include="UI.cs" />
     <Compile Include="Validation.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\UI_Arrow.png" />
+    <EmbeddedResource Include="Assets\UI_BaseLight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\UI_Mask.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy "$(ProjectDir)obj\Debug\$(TargetFileName)" "A:\SteamLibrary\steamapps\common\RUMBLE\Mods\" /F /Y /E</PostBuildEvent>

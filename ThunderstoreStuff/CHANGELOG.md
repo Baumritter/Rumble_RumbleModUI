@@ -1,3 +1,10 @@
+# Version 1.3.1
+- Fixed some bugs
+# Version 1.3.0
+- Refactored the UI Methods
+- Implemented a better version for the string validation
+- Fixed a bug where the switching between toggle box and input field would not work 
+- Embedded all UI-Elements in the assembly
 # Version 1.2.1
 - Fixed a minor oversight in the saving of files
 # Version 1.2.0

@@ -214,7 +214,7 @@ namespace RumbleModUI
 
         public void AddValidation(string name, ValidationParameters parameters)
         {
-            this.Settings.Find(x => x.Name == name).validationParameters = parameters;
+            this.Settings.Find(x => x.Name == name).ValidationParameters = parameters;
         }
 
         public bool ChangeValue(string Name, string Value = "")
@@ -302,7 +302,7 @@ namespace RumbleModUI
                 case AvailableTypes.String:
                     ModSetting<string> stringset = (ModSetting<string>)ReferenceSetting;
 
-                    if (!stringset.validationParameters.DoValidation(value)) return false;
+                    if (!stringset.ValidationParameters.DoValidation(value)) return false;
                     stringset.Value = value;
                     return true;
 
@@ -426,6 +426,7 @@ namespace RumbleModUI
                             if(line.Contains(setting.Name))
                             {
                                 bool Valid = ValueValidation(line.Substring(setting.Name.Length + 2),setting);
+                                if (Valid) setting.SavedValue = setting.Value;
                                 if (!Valid)
                                 {
                                     MelonLogger.Msg(ModName + " - " +  setting.Name + " File Read Error.");

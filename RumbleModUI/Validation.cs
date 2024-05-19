@@ -13,7 +13,6 @@ namespace RumbleModUI
             //Logic for Validation
             //return true when validation successful
             //return false when validation error
-            MelonLogger.Error("String Validation not implemented.");
             return true;
         }
     }
