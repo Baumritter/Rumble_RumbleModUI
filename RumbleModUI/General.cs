@@ -195,5 +195,44 @@ namespace RumbleModUI
             #endregion
 
         }
+
+        internal class StringExtension
+        {
+            public static string SanitizeName(string Input)
+            {
+                bool RemoveChars = false;
+                char[] chars = Input.ToCharArray();
+                string Output = "";
+
+                if (Input.Contains("<u>")) Input.Replace("<u>", "");
+                if (Input.Contains(",")) Input.Replace(",", "");
+
+                for (int c = 0; c < Input.Length; c++)
+                {
+                    if (chars[c] == '<' && c != Input.Length)
+                    {
+                        if (chars[c + 1] == '#' || chars[c + 1] == 'c')
+                        {
+                            RemoveChars = true;
+                        }
+                    }
+                    if (!RemoveChars)
+                    {
+                        Output += chars[c];
+                    }
+                    if (chars[c] == '>')
+                    {
+                        RemoveChars = false;
+                    }
+                }
+                return Output;
+            }
+            public static string ReturnHexedString(string Input, Color32 Color)
+            {
+                string HexCode = "#" + (Color.r.ToString("X2")) + (Color.g.ToString("X2")) + (Color.b.ToString("X2"));
+
+                return "<color=" + HexCode + ">" + Input + "</color>";
+            }
+        }
     }
 }

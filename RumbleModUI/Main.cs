@@ -1,8 +1,6 @@
-﻿using Il2CppSystem.Collections.Generic;
-using MelonLoader;
-using System.Collections;
-using System.Linq;
-using System.Net.Configuration;
+﻿using MelonLoader;
+using ModUI;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -26,7 +24,6 @@ namespace RumbleModUI
 
         //objects
         General.Delay Delay = new General.Delay { name = "Delay" };
-        public static UI UI_Obj = new UI();
 
         private static UnityEngine.InputSystem.InputActionMap map = new InputActionMap("Tha Map");
         private static InputAction rightTrigger = map.AddAction("Right Trigger");
@@ -34,7 +31,12 @@ namespace RumbleModUI
         private static InputAction leftTrigger  = map.AddAction("Left Trigger");
         private static InputAction leftPrimary  = map.AddAction("Left Primary");
 
+        [Obsolete("Please use UI.instance instead")]
+        public static UI UI_Obj = UI.instance;
+
         private Mod ModUI;
+        private TS_API.Status VersionStatus;
+        
 
         public override void OnLateInitializeMelon()
         {
@@ -45,6 +47,12 @@ namespace RumbleModUI
             leftTrigger.AddBinding("<XRController>{LeftHand}/trigger");
             leftPrimary.AddBinding("<XRController>{LeftHand}/primaryButton");
             map.Enable();
+
+            TS_API.Team = "Baumritter";
+            TS_API.Package = "RumbleModUI";
+            TS_API.LocalVersion = BuildInfo.ModVersion;
+            TS_API.OnVersionGet += VersionCheck;
+            TS_API.CheckVersion();
         }
 
         //Run every update
@@ -53,16 +61,18 @@ namespace RumbleModUI
             //Base Updates
             base.OnUpdate();
 
-            if (!UI_Obj.GetInit() && Delay.Done)
+            if (!UI.instance.GetInit() && Delay.Done)
             {
-                ModUI = UI_Obj.InitUI("Mod_Setting_UI");
+                ModUI = UI.instance.InitUI();
+                VersionCheckCheck();
                 VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
             }
-            if (UI_Obj.GetInit())
+            if (UI.instance.GetInit())
             {
                 if (ModUI != null && ModUI.GetSaveStatus() && ModUI.LinkGroups[0].HasChanged)
                 {
-                    UI_Obj.RefreshTheme();
+                    UI.instance.RefreshTheme();
+                    VersionCheckCheck();
                     ModUI.LinkGroups[0].HasChanged = false;
                     ModUI.ConfirmSave();
                 }
@@ -71,26 +81,17 @@ namespace RumbleModUI
                     VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
                     ModUI.ConfirmSave();
                 }
-                if (ModUI != null && UI_Obj.IsOptionSelected("SubWindowTest"))
-                {
-                    UI_Obj.SubWindow.ShowWindow();
-                }
-                else
-                {
-
-                    UI_Obj.SubWindow.HideWindow();
-                }
             }
 
             if (Input.GetKeyDown(KeyCode.F10) || (VRButtonsAllowed && VRActivationAction()))
             {
-                if (UI_Obj.IsUIVisible())
+                if (UI.instance.IsUIVisible())
                 {
-                    UI_Obj.HideUI();
+                    UI.instance.HideUI();
                 }
                 else
                 {
-                    UI_Obj.ShowUI();
+                    UI.instance.ShowUI();
                 }
             }
 
@@ -111,7 +112,28 @@ namespace RumbleModUI
             }
             return false;
         }
-
+        private void VersionCheck(TS_API.Status Input)
+        {
+            VersionStatus = Input;
+        }
+        private void VersionCheckCheck()
+        {
+            switch (VersionStatus)
+            {
+                case TS_API.Status.BothSame:
+                    ModUI.Settings.Find(x => x.Name == "VersionChecker").Description = 
+                        General.StringExtension.ReturnHexedString("Version up-to-date", ThemeHandler.ActiveTheme.Color_Text_Valid);
+                    break;
+                case TS_API.Status.LocalNewer:
+                    ModUI.Settings.Find(x => x.Name == "VersionChecker").Description =
+                        General.StringExtension.ReturnHexedString("Dev Build", Color.blue);
+                    break;
+                case TS_API.Status.GlobalNewer:
+                    ModUI.Settings.Find(x => x.Name == "VersionChecker").Description =
+                        General.StringExtension.ReturnHexedString("Newer Version available", ThemeHandler.ActiveTheme.Color_Text_Error);
+                    break;
+            }
+        }
 
         //Overrides
         public override void OnSceneWasLoaded(int buildIndex, string sceneName)

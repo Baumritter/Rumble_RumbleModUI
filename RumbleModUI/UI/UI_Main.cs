@@ -3,6 +3,7 @@ using Il2CppSystem;
 using MelonLoader;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
@@ -18,8 +19,9 @@ namespace RumbleModUI
         private const string ModDescription =
             "This is the Mod UI by Baumritter.";
 
-        #region Positions
+        public static UI instance = new UI();
 
+        #region Positions
         private Vector3 Pos_MainWindow;
         private Vector3 Pos_SubWindow;
         private Vector3 Pos_OuterBG = new Vector3(0f, 0f, 0f);
@@ -51,6 +53,14 @@ namespace RumbleModUI
         private Color Dark_Text = Color.white;
         private Color HighContrast_Text = Color.yellow;
 
+        private Color Light_Text_Error = Color.red;
+        private Color Dark_Text_Error = Color.red;
+        private Color HighContrast_Text_Error = Color.magenta;
+
+        private Color Light_Text_Valid = Color.green;
+        private Color Dark_Text_Valid = Color.green;
+        private Color HighContrast_Text_Valid = Color.green;
+
         private Color Light_FG = new Color(.9f, .9f, .9f, .9f);
         private Color Light_BG = new Color(.7f, .7f, .7f, .9f);
 
@@ -75,16 +85,8 @@ namespace RumbleModUI
 
         private GameObject UI_Parent;
         private GameObject Obj_MainWdw;
-        private GameObject Obj_SubWdw;
         private Window MainWindow;
-        public Window SubWindow;
-
-        private GameObject Sub_Title;
-        private GameObject Sub_Description;
-        private Vector3 Pos_SubBG = new Vector3(10f, -40f, 0f);
-        private Vector3 Pos_SubText = new Vector3(5f, -5f, 0f);
-        private Vector2 Size_SubBG = new Vector2(-20, -50);
-        private Vector2 Size_SubText = new Vector2(-5, -5);
+        public List<Window> SubWindow = new List<Window>();
 
         private GameObject UI_Title;
         private GameObject UI_Description;
@@ -100,6 +102,8 @@ namespace RumbleModUI
         private object Enum_Theme;
 
         private List<Mod> Mod_Options = new List<Mod>();
+
+        public event System.Action UI_Initialized;
         #endregion
 
         #region General UI
@@ -107,26 +111,27 @@ namespace RumbleModUI
         {
             return IsInit;
         }
-        public Mod InitUI(string Name)
+        public Mod InitUI()
         {
             if (!IsInit)
             {
 
                 UI_Parent = GameObject.Find("Game Instance/UI");
-                this.Name = Name;
+                this.Name = "Mod_Setting_UI";
 
-                ThemeHandler.AvailableThemes.Add(new Theme("Light", Light_Text, Light_FG, Light_BG));
-                ThemeHandler.AvailableThemes.Add(new Theme("Dark", Dark_Text, Dark_FG, Dark_BG));
-                ThemeHandler.AvailableThemes.Add(new Theme("HighContrast", HighContrast_Text, HighContrast_FG, HighContrast_BG));
+                ThemeHandler.AvailableThemes.Add(new Theme("Light", Light_Text, Light_Text_Valid, Light_Text_Error, Light_FG, Light_BG));
+                ThemeHandler.AvailableThemes.Add(new Theme("Dark", Dark_Text, Dark_Text_Valid, Dark_Text_Error, Dark_FG, Dark_BG));
+                ThemeHandler.AvailableThemes.Add(new Theme("HighContrast", HighContrast_Text, HighContrast_Text_Valid, HighContrast_Text_Error, HighContrast_FG, HighContrast_BG));
 
                 #region Main Window
 
-                Pos_MainWindow = new Vector3(Screen.width / 2, Screen.height / 2, 0);
+                Pos_MainWindow = new Vector3((Screen.width / 2) - 300, Screen.height / 2, 0);
+                Pos_SubWindow = new Vector3((Screen.width / 2) + 300, Screen.height / 2, 0);
 
                 MainWindow = new Window("MainWindow", false);
                 Obj_MainWdw = new GameObject();
                 Obj_MainWdw.SetActive(false);
-                Obj_MainWdw.name = Name;
+                Obj_MainWdw.name = "Mod_Setting_UI";
                 Obj_MainWdw.transform.SetParent(UI_Parent.transform);
                 Obj_MainWdw.AddComponent<RectTransform>();
                 Obj_MainWdw.GetComponent<RectTransform>().sizeDelta = Size_Base;
@@ -164,36 +169,10 @@ namespace RumbleModUI
                 UI_ButtonDisc.GetComponent<Button>().onClick.AddListener(new System.Action(() => { ButtonHandler(1); }));
                 #endregion
 
-                #region SubWindow
-
-                Pos_SubWindow = new Vector3((Screen.width / 2) + 600, Screen.height / 2, 0);
-
-                SubWindow = new Window("SubWindow", false);
-                Obj_SubWdw = new GameObject();
-                Obj_SubWdw.SetActive(false);
-                Obj_SubWdw.name = Name;
-                Obj_SubWdw.transform.SetParent(UI_Parent.transform);
-                Obj_SubWdw.AddComponent<RectTransform>();
-                Obj_SubWdw.GetComponent<RectTransform>().sizeDelta = Size_Base;
-                Obj_SubWdw.transform.position = Pos_SubWindow;
-                Obj_SubWdw.transform.localScale = new Vector3(1.5f, 1.5f, 0);
-
-                SetAnchors(Obj_SubWdw, AnchorPresets.MiddleCenter);
-                SetPivot(Obj_SubWdw, PivotPresets.MiddleCenter);
-
-                SubWindow.ParentObject = Obj_SubWdw;
-
-                SubWindow.CreateBackgroundBox("Outer BG", SubWindow.ParentObject.transform, Pos_OuterBG);
-                Sub_Title = SubWindow.CreateTitle("Title", SubWindow.ParentObject.transform, Pos_Title, Size_Title);
-                Sub_Description = SubWindow.CreateTextBox("Description", SubWindow.ParentObject.transform, Pos_SubBG, Pos_SubText, Size_SubBG, Size_SubText);
-                
-                Sub_Title.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Window 2";
-                Sub_Description.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Electric Boogaloo";
-                #endregion
-
                 Mod temp = AddSelf();
 
                 IsInit = true;
+                UI_Initialized?.Invoke();
 
                 if (debug_UI) { MelonLogger.Msg("UI - Initialised"); }
 
@@ -293,13 +272,12 @@ namespace RumbleModUI
             Mod_UI.ModVersion = ModVersion;
             Mod_UI.SetFolder("ModUI");
             Mod_UI.AddToList("Description", ModSetting.AvailableTypes.Description, "", ModDescription);
+            Mod_UI.AddToList("VersionChecker", ModSetting.AvailableTypes.Description, BuildInfo.ModVersion, "");
             Mod_UI.AddToList("Enable VR Menu Input", true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time");
-            Mod_UI.AddToList("SubWindowTest", ModSetting.AvailableTypes.Description,"", "Should open the Window by hovering");
             Mod_UI.AddToList("Light Theme", true, 1, "Turns Light Theme on/off.");
             Mod_UI.AddToList("Dark Theme", false, 1, "Turns Dark Theme on/off.");
             Mod_UI.AddToList("High Contrast Theme", false, 1, "Turns High Contrast Theme on/off.");
             Mod_UI.SetLinkGroup(1, "Themes");
-
             Mod_UI.GetFromFile();
 
             AddMod(Mod_UI);
@@ -384,10 +362,15 @@ namespace RumbleModUI
             UI_Description.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
 
             MainWindow.ParentObject.transform.position = Pos_MainWindow;
-            SubWindow.ParentObject.transform.position = Pos_SubWindow;
+            foreach(Window window in SubWindow)
+            {
+                window.ParentObject.transform.position = Pos_SubWindow;
+            }
         }
         private void DoOnHide()
         {
+            foreach (Window window in SubWindow)
+                window.HideWindow();
             if (debug_UI) { MelonLogger.Msg("UI - OnHide"); }
         }
         private void DoOnModSelect()
@@ -491,11 +474,11 @@ namespace RumbleModUI
 
             if (Valid)
             {
-                UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().color = ThemeHandler.ActiveTheme.Color_Text;
+                UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().color = ThemeHandler.ActiveTheme.Color_Text_Base;
             }
             else
             {
-                UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().color = Color.red;
+                UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().color = ThemeHandler.ActiveTheme.Color_Text_Error;
             }
         }
 
@@ -569,7 +552,16 @@ namespace RumbleModUI
             yield return null;
 
         }
+        #endregion
 
+        #region Theme
+        public void AddTheme(Theme newTheme,string Description)
+        {
+            ThemeHandler.AvailableThemes.Add(newTheme);
+            Mod_Options.Find(x => x.ModName == ModName).AddToList(newTheme.Name, false, 1, Description);
+            Mod_Options.Find(x => x.ModName == ModName).GetFromFile();
+            RefreshTheme();
+        }
         public void RefreshTheme()
         {
             Enum_Theme = MelonCoroutines.Start(UpdateTheme());
@@ -591,6 +583,7 @@ namespace RumbleModUI
         }
         #endregion
 
+        #region Helpers
         private void SetAnchors(GameObject Input, AnchorPresets alignment)
         {
             switch (alignment)
@@ -686,5 +679,6 @@ namespace RumbleModUI
             Input.GetComponent<RectTransform>().anchorMin = new Vector2(xmin, ymin);
             Input.GetComponent<RectTransform>().anchorMax = new Vector2(xmax, ymax);
         }
+        #endregion
     }
 }

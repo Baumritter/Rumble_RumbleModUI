@@ -116,6 +116,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TS_API.cs" />
     <Compile Include="General.cs" />
     <Compile Include="Mod\Mod_Main.cs" />
     <Compile Include="Mod\Mod_ModSetting.cs" />

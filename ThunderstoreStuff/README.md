@@ -15,10 +15,12 @@
 
 ## For Mod Creators
 - See link below for my "documentation":
-	v1.0.0: https://docs.google.com/document/d/18P73ciBnnhWv-31Pk1L0MBggmbT5wNHxCqQLNRkNX28/edit?usp=sharing
-	v1.2.0: https://docs.google.com/document/d/1_JMvI9KP1dQFUEFMzvtFmBE2cBYE7LimUKsRJbTCnuk/edit?usp=sharing
-	v1.3.0: https://docs.google.com/document/d/1Jsgp4MKM7D6qwqaOr4YcJLfozQSRefU21vJabV-9LBM/edit?usp=sharing
+	- v1.0.0: https://docs.google.com/document/d/18P73ciBnnhWv-31Pk1L0MBggmbT5wNHxCqQLNRkNX28/edit?usp=sharing
+	- v1.2.0: https://docs.google.com/document/d/1_JMvI9KP1dQFUEFMzvtFmBE2cBYE7LimUKsRJbTCnuk/edit?usp=sharing
+	- v1.3.0: https://docs.google.com/document/d/1Jsgp4MKM7D6qwqaOr4YcJLfozQSRefU21vJabV-9LBM/edit?usp=sharing
+	- v1.4.0: https://docs.google.com/document/d/1T249iCcBqo6-hLivE69VM_eg9AQ2wVIJyjbc5StzR4s/edit?usp=sharing
 - Contact Baumritter in the modding discord (link below) for further information or feature requests
+- And please at least try to read the documentation
 
 ## Help And Other Resources
 Get help and find other resources in the Modding Discord:

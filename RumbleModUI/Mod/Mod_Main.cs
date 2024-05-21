@@ -15,7 +15,7 @@ namespace RumbleModUI
     }
     public class Mod
     {
-        public const string SettingsFile = "Settings.txt";
+        public string SettingsFile = "Settings.txt";
 
         private const string DuplicateErrorMsg = "AddToList failed: Name not unique";
 
@@ -43,6 +43,10 @@ namespace RumbleModUI
         public void SetUIStatus(bool Status)
         {
             IsAdded = Status;
+        }
+        public void EnableDebug()
+        {
+            debug = true;
         }
         #endregion
 
@@ -72,6 +76,10 @@ namespace RumbleModUI
         public void ConfirmSave()
         {
             IsSaved = false;
+        }
+        public void ConfirmRead()
+        {
+            IsFileLoaded = false;
         }
 
         public void SetLinkGroup(int index, string name = "Group")

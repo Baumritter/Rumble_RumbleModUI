@@ -305,6 +305,7 @@ namespace RumbleModUI
             #region Change Settings
             DD_Template.GetComponent<ScrollRect>().verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
             DD_Template.GetComponent<ScrollRect>().movementType = ScrollRect.MovementType.Clamped;
+            DD_Template.GetComponent<ScrollRect>().scrollSensitivity = 30;
             DD_Scrollbar.GetComponent<Scrollbar>().SetDirection(Scrollbar.Direction.BottomToTop, false);
             #endregion
 
@@ -864,6 +865,8 @@ namespace RumbleModUI
             Mouse = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 
             Offset = (Vector2)ParentObject.transform.position - Mouse;
+
+            ParentObject.transform.SetSiblingIndex(ParentObject.transform.parent.childCount - 1);
 
             while (Obj_Title.GetComponent<Button>().currentSelectionState == Selectable.SelectionState.Pressed)
             {

@@ -76,7 +76,6 @@ namespace RumbleModUI
         private static List<Image> Theme_Foreground = new List<Image>();
         private static List<Image> Theme_Background = new List<Image>();
 
-
         public static void ChangeTheme(int Theme)
         {
             int tempval = Theme;
@@ -84,7 +83,7 @@ namespace RumbleModUI
 
             Theme temp = AvailableThemes[tempval];
 
-            ChangeTextColor(temp.Color_Text);
+            ChangeTextColor(temp.Color_Text_Base);
             ChangeFGColor(temp.Color_FG);
             ChangeBGColor(temp.Color_BG);
             ActiveTheme = temp;
@@ -137,16 +136,20 @@ namespace RumbleModUI
     public class Theme
     {
         public Theme() { }
-        public Theme(string name, Color color_Text, Color color_FG, Color color_BG)
+        public Theme(string name, Color Text_Base, Color Text_Valid ,Color Text_Error, Color FG, Color BG)
         {
             Name = name;
-            Color_Text = color_Text;
-            Color_FG = color_FG;
-            Color_BG = color_BG;
+            Color_Text_Base = Text_Base;
+            Color_Text_Error = Text_Error;
+            Color_Text_Valid = Text_Valid;
+            Color_FG = FG;
+            Color_BG = BG;
         }
 
         public string Name { get; set; }
-        public Color Color_Text { get; set; }
+        public Color Color_Text_Base { get; set; }
+        public Color Color_Text_Error { get; set; }
+        public Color Color_Text_Valid { get; set; }
         public Color Color_FG { get; set; }
         public Color Color_BG { get; set; }
 

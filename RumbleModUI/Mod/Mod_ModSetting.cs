@@ -26,7 +26,12 @@ namespace RumbleModUI
         public string Description = "";
         public int LinkGroup = 0;
         public ValidationParameters ValidationParameters = new ValidationTemplate();
+        public virtual event System.Action CurrentValueChanged;
+        public event System.Action SavedValueChanged;
         #endregion
+
+        public void OnCurrentValueChange() { CurrentValueChanged?.Invoke(); }
+        public void OnSavedValueChange() { SavedValueChanged?.Invoke(); }
 
         public abstract string GetValueAsString();
         public abstract object Value { get; set; }
@@ -40,12 +45,21 @@ namespace RumbleModUI
         public override object Value
         {
             get => BG_TempVariable;
-            set => BG_TempVariable = (T)value;
-        }
+            set 
+            {
+                OnCurrentValueChange();
+                BG_TempVariable = (T)value;
+            }
+
+    }
         public override object SavedValue
         {
             get => BG_SaveVariable;
-            set => BG_SaveVariable = (T)value;
+            set
+            {
+                OnSavedValueChange(); 
+                BG_SaveVariable = (T)value;
+            }
         }
 
         public override string GetValueAsString()

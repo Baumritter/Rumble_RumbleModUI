@@ -1,3 +1,11 @@
+# Version 1.4.0
+- Added events to a lot of stuff (See documentation)
+- Refactored the UI-Creation methods to allow for easy creation of multiple windows
+- Added an automatic version check that will inform the user/mod creator that an update to this package has been published
+- Included a template for mod creators (See Template folder (Should include 2 .cs files that are also found in the documentation))
+- Added some methods for the creation of custom themes
+- Refactored a lot of code (All changes are documented)
+- ~~Removed Herobrine~~
 # Version 1.3.1
 - Fixed some bugs
 # Version 1.3.0
