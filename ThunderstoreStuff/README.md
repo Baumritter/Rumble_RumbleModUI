@@ -22,6 +22,9 @@
 - Contact Baumritter in the modding discord (link below) for further information or feature requests
 - And please at least try to read the documentation
 
+## Other
+- The current mod version is downwards compatible up to 1.2.0.
+
 ## Help And Other Resources
 Get help and find other resources in the Modding Discord:
 https://discord.gg/fsbcnZgzfa

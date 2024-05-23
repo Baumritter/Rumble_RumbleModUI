@@ -9,7 +9,7 @@ namespace RumbleModUI
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.4.0";
+        public const string ModVersion = "1.4.1";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
@@ -31,7 +31,7 @@ namespace RumbleModUI
         private static InputAction leftTrigger  = map.AddAction("Left Trigger");
         private static InputAction leftPrimary  = map.AddAction("Left Primary");
 
-        [Obsolete("Please use UI.instance instead")]
+        [Obsolete("Please use UI.instance instead", true)]
         public static UI UI_Obj = UI.instance;
 
         private Mod ModUI;
@@ -64,23 +64,9 @@ namespace RumbleModUI
             if (!UI.instance.GetInit() && Delay.Done)
             {
                 ModUI = UI.instance.InitUI();
+                ModUI.ModSaved += OnModSaved;
                 VersionCheckCheck();
                 VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
-            }
-            if (UI.instance.GetInit())
-            {
-                if (ModUI != null && ModUI.GetSaveStatus() && ModUI.LinkGroups[0].HasChanged)
-                {
-                    UI.instance.RefreshTheme();
-                    VersionCheckCheck();
-                    ModUI.LinkGroups[0].HasChanged = false;
-                    ModUI.ConfirmSave();
-                }
-                else if (ModUI != null && ModUI.GetSaveStatus())
-                {
-                    VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
-                    ModUI.ConfirmSave();
-                }
             }
 
             if (Input.GetKeyDown(KeyCode.F10) || (VRButtonsAllowed && VRActivationAction()))
@@ -133,6 +119,16 @@ namespace RumbleModUI
                         General.StringExtension.ReturnHexedString("Newer Version available", ThemeHandler.ActiveTheme.Color_Text_Error);
                     break;
             }
+        }
+        private void OnModSaved()
+        {
+            if (ModUI.LinkGroups[0].HasChanged)
+            {
+                UI.instance.RefreshTheme();
+                VersionCheckCheck();
+                ModUI.LinkGroups[0].HasChanged = false;
+            }
+            VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
         }
 
         //Overrides

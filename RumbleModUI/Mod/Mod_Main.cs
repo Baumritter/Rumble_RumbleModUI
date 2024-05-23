@@ -1,5 +1,6 @@
 ﻿using Il2CppSystem;
 using MelonLoader;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using static RumbleModUI.ModSetting;
@@ -25,6 +26,8 @@ namespace RumbleModUI
         private bool IsFileLoaded { get; set; }
         private bool IsSaved { get; set; }
         private bool IsAdded { get; set; }
+
+        public event System.Action ModSaved;
 
         private General.Folders Folders = new General.Folders();
         public List<ModSetting> Settings = new List<ModSetting>();
@@ -63,6 +66,7 @@ namespace RumbleModUI
         {
             return IsFileLoaded;
         }
+        [System.Obsolete("Use event ModSaved",true)]
         public bool GetSaveStatus()
         {
             return IsSaved;
@@ -72,7 +76,7 @@ namespace RumbleModUI
             return IsAdded;
         }
         #endregion
-
+        [System.Obsolete("Use event ModSaved", true)]
         public void ConfirmSave()
         {
             IsSaved = false;
@@ -335,13 +339,13 @@ namespace RumbleModUI
 
             Folders.CheckAllFoldersExist();
 
-            Output = ModName + " " + ModVersion + Environment.NewLine + UI_String + Environment.NewLine;
+            Output = ModName + " " + ModVersion + Il2CppSystem.Environment.NewLine + UI_String + Il2CppSystem.Environment.NewLine;
 
             foreach(ModSetting Setting in Settings)
             {
                 if(Setting.ValueType != AvailableTypes.Description)
                 {
-                    Output += Setting.Name + ": " + Setting.GetValueAsString() + Environment.NewLine;
+                    Output += Setting.Name + ": " + Setting.GetValueAsString() + Il2CppSystem.Environment.NewLine;
                 }
             }
 
@@ -376,7 +380,7 @@ namespace RumbleModUI
                 //}
                 Settings[i].SavedValue = Settings[i].Value;
             }
-
+            ModSaved?.Invoke();
             IsSaved = true;
         }
         public void DiscardModData()

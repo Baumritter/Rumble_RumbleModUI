@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 // ...
 [assembly: MelonInfo(typeof(RumbleModUIClass), RumbleModUI.BuildInfo.ModName, RumbleModUI.BuildInfo.ModVersion, RumbleModUI.BuildInfo.Author)]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
+[assembly: VerifyLoaderVersion(0,5,7)]
 [assembly: MelonColor(System.ConsoleColor.DarkGreen)]
 
 // General Information about an assembly is controlled through the following

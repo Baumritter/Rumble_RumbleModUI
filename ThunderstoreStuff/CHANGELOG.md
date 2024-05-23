@@ -1,3 +1,6 @@
+# Version 1.4.1
+- Deprecated some methods and added events as replacements (yay for performance)
+- Added melon loader version verification
 # Version 1.4.0
 - Added events to a lot of stuff (See documentation)
 - Refactored the UI-Creation methods to allow for easy creation of multiple windows
