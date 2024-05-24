@@ -25,13 +25,16 @@ namespace RumbleModUI
         public AvailableTypes ValueType = AvailableTypes.String;
         public string Description = "";
         public int LinkGroup = 0;
+
         public ValidationParameters ValidationParameters = new ValidationTemplate();
+        public DescriptionTags Tags = new DescriptionTags(false, false);
+
         public virtual event System.Action CurrentValueChanged;
         public event System.Action SavedValueChanged;
         #endregion
 
-        public void OnCurrentValueChange() { CurrentValueChanged?.Invoke(); }
-        public void OnSavedValueChange() { SavedValueChanged?.Invoke(); }
+        protected void OnCurrentValueChange() { CurrentValueChanged?.Invoke(); }
+        protected void OnSavedValueChange() { SavedValueChanged?.Invoke(); }
 
         public abstract string GetValueAsString();
         public abstract object Value { get; set; }
@@ -47,18 +50,23 @@ namespace RumbleModUI
             get => BG_TempVariable;
             set 
             {
-                OnCurrentValueChange();
-                BG_TempVariable = (T)value;
+                if (!value.Equals(BG_TempVariable))
+                {
+                    OnCurrentValueChange();
+                    BG_TempVariable = (T)value; 
+                }
             }
-
-    }
+        }
         public override object SavedValue
         {
             get => BG_SaveVariable;
             set
             {
-                OnSavedValueChange(); 
-                BG_SaveVariable = (T)value;
+                if (!value.Equals(BG_SaveVariable))
+                {
+                    OnSavedValueChange();
+                    BG_SaveVariable = (T)value;
+                }
             }
         }
 
@@ -72,5 +80,16 @@ namespace RumbleModUI
         }
 
     }
+    public class DescriptionTags
+    {
+        public DescriptionTags() { }
+        public DescriptionTags(bool isSummary, bool isEmpty)
+        {
+            IsSummary = isSummary;
+            IsEmpty = isEmpty;
+        }
 
+        public bool IsSummary { get; set; }
+        public bool IsEmpty { get; set; }
+    }
 }

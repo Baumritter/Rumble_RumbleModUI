@@ -1,6 +1,6 @@
 {
   "name": "RumbleModUI",
-  "version_number": "1.4.1",
+  "version_number": "1.4.2",
   "website_url": "",
   "description": "Adds a pop-up window for centralized management of mod settings",
   "dependencies": [

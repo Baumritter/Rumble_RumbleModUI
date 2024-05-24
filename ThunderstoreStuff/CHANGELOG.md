@@ -1,3 +1,5 @@
+# Version 1.4.2
+- Changed the events CurrentValueChanged and SavedValueChanged to only trigger when the newvalue != oldvalue
 # Version 1.4.1
 - Deprecated some methods and added events as replacements (yay for performance)
 - Added melon loader version verification

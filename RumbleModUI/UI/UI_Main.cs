@@ -266,13 +266,14 @@ namespace RumbleModUI
         }
         private Mod AddSelf()
         {
-            Mod Mod_UI = new Mod();
-
-            Mod_UI.ModName = ModName;
-            Mod_UI.ModVersion = ModVersion;
+            Mod Mod_UI = new Mod
+            {
+                ModName = ModName,
+                ModVersion = ModVersion
+            };
             Mod_UI.SetFolder("ModUI");
-            Mod_UI.AddToList("Description", ModSetting.AvailableTypes.Description, "", ModDescription);
-            Mod_UI.AddToList("VersionChecker", ModSetting.AvailableTypes.Description, BuildInfo.ModVersion, "");
+            Mod_UI.AddDescription("Description","", ModDescription,true,false);
+            Mod_UI.AddDescription("VersionChecker", BuildInfo.ModVersion, "");
             Mod_UI.AddToList("Enable VR Menu Input", true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time");
             Mod_UI.AddToList("Light Theme", true, 1, "Turns Light Theme on/off.");
             Mod_UI.AddToList("Dark Theme", false, 1, "Turns Dark Theme on/off.");
@@ -460,10 +461,23 @@ namespace RumbleModUI
         }
         private void Inputfield_SetPlaceholder(bool Valid = true)
         {
-            if (Mod_Options[ModSelection].Settings[SettingsSelection].Name == "Description")
+            if (Mod_Options[ModSelection].Settings[SettingsSelection].ValueType == ModSetting.AvailableTypes.Description)
             {
-                UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
-                    "Available Settings: " + (Mod_Options[ModSelection].Settings.Count - 1).ToString();
+                if (Mod_Options[ModSelection].Settings[SettingsSelection].Tags.IsSummary)
+                {
+                    UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
+                        "Available Settings: " + (Mod_Options[ModSelection].Settings.Count - 1).ToString();
+                }
+                else if (Mod_Options[ModSelection].Settings[SettingsSelection].Tags.IsEmpty)
+                {
+                    UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text = "";
+                }
+                else
+                {
+                    UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
+                        "Current Value: " +
+                        Mod_Options[ModSelection].Settings[SettingsSelection].GetValueAsString();
+                }
             }
             else
             {
