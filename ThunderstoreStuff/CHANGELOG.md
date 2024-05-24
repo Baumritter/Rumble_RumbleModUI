@@ -1,3 +1,8 @@
+# Version 1.4.5
+- Fixed some broken code
+- Revised the ReadMe/Changelog/Documentation
+# Version 1.4.4
+- Added some obnoxious log messages when the mod isnt up to date
 # Version 1.4.3
 - Deprecated some methods and added clearer replacements
 - Updated the icon to be more reflective of the mod
@@ -13,7 +18,6 @@
 - Included a template for mod creators (See Template folder (Should include 2 .cs files that are also found in the documentation))
 - Added some methods for the creation of custom themes
 - Refactored a lot of code (All changes are documented)
-- ~~Removed Herobrine~~
 # Version 1.3.1
 - Fixed some bugs
 # Version 1.3.0
