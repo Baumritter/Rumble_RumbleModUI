@@ -46,7 +46,7 @@ namespace TestMod
             Mod.ModName = BuildInfo.ModName;
             Mod.ModVersion = BuildInfo.ModVersion;
             Mod.SetFolder("Test");
-            Mod.AddToList("Description", ModSetting.AvailableTypes.Description, "", BuildInfo.Description);
+            Mod.AddDescription("Description", "", BuildInfo.Description);
 
             Mod.AddToList("Bool Setting 1", true, 1, "Is Bool.");
             Mod.AddToList("Bool Setting 2", false, 1, "Is Bool.");
@@ -61,8 +61,8 @@ namespace TestMod
 
             Mod.AddToList("Double Setting", 0.0, "Is Double.");
 
-            Mod.AddToList("String Setting 1", ModSetting.AvailableTypes.String, "1", "Is 1-character string.");
-            Mod.AddToList("String Setting 2", ModSetting.AvailableTypes.String, "Test", "Is 4-character string.");
+            Mod.AddToList("String Setting 1", "1", "Is 1-character string.");
+            Mod.AddToList("String Setting 2", "Test", "Is 4-character string.");
 
             Mod.AddValidation("String Setting 1", new Validation(1));
             Mod.AddValidation("String Setting 2", new Validation(4));

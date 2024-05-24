@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: MelonInfo(typeof(TestMod.TestMod), TestMod.BuildInfo.ModName, TestMod.BuildInfo.ModVersion, TestMod.BuildInfo.Author)]
+[assembly: VerifyLoaderVersion(0,5,7)]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
 
 [assembly: AssemblyTitle(TestMod.BuildInfo.ModName)]

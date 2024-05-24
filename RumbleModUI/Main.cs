@@ -9,7 +9,7 @@ namespace RumbleModUI
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.4.2";
+        public const string ModVersion = "1.4.3";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
@@ -64,8 +64,6 @@ namespace RumbleModUI
             {
                 ModUI = UI.instance.InitUI();
                 ModUI.ModSaved += OnModSaved;
-                ModUI.Settings.Find(x => x.Name == "Test").CurrentValueChanged += Test1;
-                ModUI.Settings.Find(x => x.Name == "Test").SavedValueChanged += Test2;
                 VersionCheckCheck();
                 VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
             }
@@ -82,14 +80,6 @@ namespace RumbleModUI
                 }
             }
 
-        }
-        private void Test1()
-        {
-            MelonLogger.Msg("Funny1");
-        }
-        private void Test2()
-        {
-            MelonLogger.Msg("Funny2");
         }
 
         private bool VRActivationAction()
