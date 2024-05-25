@@ -1,15 +1,15 @@
 ﻿using MelonLoader;
-using ModUI;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static RumbleModUI.Baum_API.ThunderStore;
 
 namespace RumbleModUI
 {
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.4.5";
+        public const string ModVersion = "1.4.6";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
@@ -23,7 +23,7 @@ namespace RumbleModUI
         private bool VRButtonsAllowed = false;
 
         //objects
-        General.Delay Delay = new General.Delay { name = "Delay" };
+        Baum_API.Delay Delay = new Baum_API.Delay { name = "Delay" };
 
         private static UnityEngine.InputSystem.InputActionMap map = new InputActionMap("Tha Map");
         private static InputAction rightTrigger = map.AddAction("Right Trigger");
@@ -35,7 +35,7 @@ namespace RumbleModUI
         public static UI UI_Obj = UI.instance;
 
         private Mod ModUI;
-        private TS_API.Status VersionStatus;
+        private ThunderStoreRequest.Status VersionStatus;
 
         public override void OnLateInitializeMelon()
         {
@@ -47,11 +47,11 @@ namespace RumbleModUI
             leftPrimary.AddBinding("<XRController>{LeftHand}/primaryButton");
             map.Enable();
 
-            TS_API.Team = "Baumritter";
-            TS_API.Package = "RumbleModUI";
-            TS_API.LocalVersion = BuildInfo.ModVersion;
-            TS_API.OnVersionGet += VersionCheck;
-            TS_API.CheckVersion();
+            ThunderStoreRequest.Team = "Baumritter";
+            ThunderStoreRequest.Package = "RumbleModUI";
+            ThunderStoreRequest.LocalVersion = BuildInfo.ModVersion;
+            ThunderStoreRequest.OnVersionGet += VersionCheck;
+            ThunderStoreRequest.CheckVersion();
         }
 
         //Run every update
@@ -98,7 +98,7 @@ namespace RumbleModUI
             }
             return false;
         }
-        private void VersionCheck(TS_API.Status Input)
+        private void VersionCheck(ThunderStoreRequest.Status Input)
         {
             VersionStatus = Input;
         }
@@ -106,17 +106,17 @@ namespace RumbleModUI
         {
             switch (VersionStatus)
             {
-                case TS_API.Status.BothSame:
+                case ThunderStoreRequest.Status.BothSame:
                     ModUI.Settings.Find(x => x.Name == "VersionChecker").Description = 
-                        General.StringExtension.ReturnHexedString("Version up-to-date", ThemeHandler.ActiveTheme.Color_Text_Valid);
+                        Baum_API.StringExtension.ReturnHexedString("Version up-to-date", ThemeHandler.ActiveTheme.Color_Text_Valid);
                     break;
-                case TS_API.Status.LocalNewer:
+                case ThunderStoreRequest.Status.LocalNewer:
                     ModUI.Settings.Find(x => x.Name == "VersionChecker").Description =
-                        General.StringExtension.ReturnHexedString("Dev Build", Color.blue);
+                        Baum_API.StringExtension.ReturnHexedString("Dev Build", Color.blue);
                     break;
-                case TS_API.Status.GlobalNewer:
+                case ThunderStoreRequest.Status.GlobalNewer:
                     ModUI.Settings.Find(x => x.Name == "VersionChecker").Description =
-                        General.StringExtension.ReturnHexedString("Newer Version available", ThemeHandler.ActiveTheme.Color_Text_Error);
+                        Baum_API.StringExtension.ReturnHexedString("Newer Version available", ThemeHandler.ActiveTheme.Color_Text_Error);
                     break;
             }
         }

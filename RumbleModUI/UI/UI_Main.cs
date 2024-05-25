@@ -8,6 +8,7 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static RumbleModUI.Baum_API;
 using static RumbleModUI.Window;
 
 namespace RumbleModUI
@@ -272,8 +273,8 @@ namespace RumbleModUI
                 ModVersion = ModVersion
             };
             Mod_UI.SetFolder("ModUI");
-            Mod_UI.AddDescription("Description","", ModDescription,true,false);
-            Mod_UI.AddDescription("VersionChecker", BuildInfo.ModVersion, "");
+            Mod_UI.AddDescription("Description","", ModDescription, true,false);
+            Mod_UI.AddDescription("VersionChecker", BuildInfo.ModVersion, "",false,true);
             Mod_UI.AddToList("Enable VR Menu Input", true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time");
             Mod_UI.AddToList("Light Theme", true, 1, "Turns Light Theme on/off.");
             Mod_UI.AddToList("Dark Theme", false, 1, "Turns Dark Theme on/off.");

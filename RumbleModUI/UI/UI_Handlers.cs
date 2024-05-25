@@ -22,10 +22,10 @@ namespace RumbleModUI
             System.IO.Stream stream;
 
 
-            CustomAssetsNames[0] = assembly.GetName().Name + ".Assets.UI_Arrow.png";
-            CustomAssetsNames[1] = assembly.GetName().Name + ".Assets.UI_BaseLight.png";
-            CustomAssetsNames[2] = assembly.GetName().Name + ".Assets.UI_BaseLight.png";
-            CustomAssetsNames[3] = assembly.GetName().Name + ".Assets.UI_Mask.png";
+            CustomAssetsNames[0] = "RumbleModUI.Assets.UI_Arrow.png";
+            CustomAssetsNames[1] = "RumbleModUI.Assets.UI_BaseLight.png";
+            CustomAssetsNames[2] = "RumbleModUI.Assets.UI_BaseLight.png";
+            CustomAssetsNames[3] = "RumbleModUI.Assets.UI_Mask.png";
 
             for (int i = 0; i < CustomAssets.Length; i++)
             {

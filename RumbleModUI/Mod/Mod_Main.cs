@@ -29,7 +29,7 @@ namespace RumbleModUI
 
         public event System.Action ModSaved;
 
-        private General.Folders Folders = new General.Folders();
+        private Baum_API.Folders Folders = new Baum_API.Folders();
         public List<ModSetting> Settings = new List<ModSetting>();
         public List<LinkGroup> LinkGroups = new List<LinkGroup>();
 
