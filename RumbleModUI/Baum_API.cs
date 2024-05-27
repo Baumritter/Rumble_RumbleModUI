@@ -1,4 +1,5 @@
 ﻿using MelonLoader;
+using Photon.Pun;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,8 +7,15 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
+using HarmonyLib;
+using RUMBLE.Managers;
+using RUMBLE.Players;
+using UnhollowerBaseLib;
+using RUMBLE.Environment;
 
 namespace RumbleModUI
 {
@@ -312,6 +320,17 @@ namespace RumbleModUI
                 public int Rating_score { get; set; }
                 public string Latest_version { get; set; }
             }
+            public class PackageData
+            {
+                public PackageData(string team, string package)
+                {
+                    Team = team;
+                    Package = package;
+                }
+
+                public string Team { get; set; }
+                public string Package { get; set; }
+            }
             public static class ThunderStoreRequest
             {
                 public enum Status
@@ -327,31 +346,25 @@ namespace RumbleModUI
                 private static HttpClient client = new HttpClient();
 
                 private static PackageMetrics PackageMetrics { get; set; }
-                private static Status VersionStatus = Status.BothSame;
                 public static string LocalVersion;
-                public static string Team;
-                public static string Package;
                 public static event Action<Status> OnVersionGet;
 
-                public static void CheckVersion()
+                public static void CheckVersion(PackageData data)
                 {
-                    RequestData().GetAwaiter().GetResult();
-                    OnMetricsGet();
-                    OnVersionGet?.Invoke(VersionStatus);
+                    RequestData(data).GetAwaiter().GetResult();
+                    OnVersionGet?.Invoke(OnMetricsGet());
                 }
 
-                private static void OnMetricsGet()
+                private static Status OnMetricsGet()
                 {
                     Version Local = new Version(LocalVersion);
                     Version Global = new Version(PackageMetrics.Latest_version);
 
                     int Compare = Local.CompareTo(Global);
 
-                    if (Compare < 0) VersionStatus = Status.GlobalNewer;
-                    else if (Compare > 0) VersionStatus = Status.LocalNewer;
-                    else VersionStatus = Status.BothSame;
-
-                    if (debug) { MelonLogger.Msg(VersionStatus); }
+                    if (Compare < 0) return Status.GlobalNewer;
+                    else if (Compare > 0) return Status.LocalNewer;
+                    else return Status.BothSame;
 
                 }
 
@@ -389,7 +402,7 @@ namespace RumbleModUI
                     return packageMetrics;
                 }
 
-                private static async Task RequestData()
+                private static async Task RequestData(PackageData Input)
                 {
                     client.BaseAddress = new Uri(URL);
                     client.DefaultRequestHeaders.Accept.Clear();
@@ -397,7 +410,7 @@ namespace RumbleModUI
 
                     try
                     {
-                        string temp = await GetPackageMetrics(Command + "/" + Team + "/" + Package);
+                        string temp = await GetPackageMetrics(Command + "/" + Input.Team + "/" + Input.Package);
 
                         if (debug) MelonLogger.Msg("API - Response: " + temp);
 
@@ -415,5 +428,110 @@ namespace RumbleModUI
                 }
             }
         }
+        public static class ModNetworking
+        {
+            public class HandlerObject
+            {
+                public GameObject GO { get; set; }
+                public BaumPun BaumPun { get; set; }
+
+                public void ModStringHandler(string Message)
+                {
+                    MelonLogger.Msg("String received.");
+                }
+                public void Initialize()
+                {
+                    GO = new GameObject("ModNetworkingObject");
+                    GameObject.DontDestroyOnLoad(GO);
+                    BaumPun = GO.AddComponent<BaumPun>();
+                    BaumPun.BuildPersonalModString();
+                    PhotonView view = GO.AddComponent<PhotonView>();
+                    view.ViewID = 2907;
+                    BaumPun.OnModStringReceived.AddListener(new System.Action<string>(value => { this.ModStringHandler(value); }));
+                }
+            }
+
+            public static class NetworkHandler
+            {
+                public static HandlerObject NetworkedObject = new HandlerObject();
+
+
+                public static void RPC_DevChat(RpcTarget Target, string Nickname = "User", string Message = "Message")
+                {
+                    PhotonView cachedView = NetworkedObject.GO.GetComponent<PhotonView>();
+                    Il2CppSystem.Object[] parameters = new Il2CppSystem.Object[2];
+
+                    parameters[0] = Nickname;
+                    parameters[1] = Message;
+
+                    cachedView.RPC("DevChat", Target, parameters);
+                }
+
+                public static void RPC_RequestModString()
+                {
+                    PhotonView cachedView = NetworkedObject.GO.GetComponent<PhotonView>();
+
+                    Il2CppSystem.Object[] parameter = new Il2CppSystem.Object[1];
+
+                    parameter[0] = PhotonHandler.instance.Client.LocalPlayer.NickName;
+
+                    cachedView.RPC("RequestModString", RpcTarget.Others,parameter);
+                }
+            }
+        }
+        public static class LoadHandler
+        {
+            private static bool debug = false;
+            public static event System.Action PlayerLoaded;
+
+            private static bool StartupToggle { get; set; }
+            public static event System.Action StartupDone;
+
+            [HarmonyPatch(typeof(PlayerManager), "SpawnPlayerController", new Type[] { typeof(Player),typeof(SpawnPointHandler.SpawnPointType)})]
+            public static class Patch
+            {
+                private static void Postfix()
+                {
+                    PlayerLoaded?.Invoke();
+                    if (!StartupToggle)
+                    {
+                        StartupToggle = true;
+                        StartupDone += ModNetworking.NetworkHandler.NetworkedObject.Initialize;
+                        StartupDone?.Invoke();
+                        if (debug) MelonLogger.Msg("Startup Load");
+                    }
+                    if (debug) MelonLogger.Msg("SpawnPlayerController 1 Postfix");
+                }
+            }
+            [HarmonyPatch(typeof(PlayerManager), "SpawnPlayerControllers")]
+            public static class Patch1
+            {
+                private static void Postfix()
+                {
+                    //OnPlayersLoaded?.Invoke();
+                    if (debug) MelonLogger.Msg("SpawnPlayerControllers Postfix");
+                }
+            }
+            [HarmonyPatch(typeof(PlayerManager), "SpawnPlayerController", new Type[] { typeof(Player), typeof(Vector3), typeof(Quaternion)})]
+            public static class Patch2
+            {
+                private static void Postfix()
+                {
+                    //OnPlayersLoaded?.Invoke();
+                    if (debug) MelonLogger.Msg("SpawnPlayerController 2 Postfix");
+                }
+            }
+
+            [HarmonyPatch(typeof(ParkBoardGymVariant), "OnPlayerEnteredTrigger")]
+            public static class Patch3
+            {
+                private static void Prefix()
+                {
+                    ParkBoardGymVariant parkBoardGymVariant = GameObject.Find("--------------LOGIC--------------/Heinhouser products/Parkboard").GetComponent<ParkBoardGymVariant>();
+                    parkBoardGymVariant.hostPlayerCapacity = 2;
+                }
+            }
+        }
+
     }
 }

@@ -46,6 +46,30 @@
     <Reference Include="MelonLoader">
       <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\MelonLoader.dll</HintPath>
     </Reference>
+    <Reference Include="Photon3Unity3D, Version=4.1.6.9, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\Photon3Unity3D.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonChat, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\PhotonChat.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonRealtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\PhotonRealtime.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonUnityNetworking, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\PhotonUnityNetworking.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonVoice, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\PhotonVoice.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonVoice.API, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\PhotonVoice.API.dll</HintPath>
+    </Reference>
     <Reference Include="RUMBLE.AssetStore">
       <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\Managed\RUMBLE.AssetStore.dll</HintPath>
     </Reference>
@@ -117,8 +141,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Baum_API.cs" />
+    <Compile Include="InjectedClasses.cs" />
     <Compile Include="Mod\Mod_Main.cs" />
     <Compile Include="Mod\Mod_ModSetting.cs" />
+    <Compile Include="NicksNetworkingThing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="UI\UI_Main.cs" />

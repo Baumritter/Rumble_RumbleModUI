@@ -1,4 +1,5 @@
 ﻿using MelonLoader;
+using Photon.Pun;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -9,7 +10,7 @@ namespace RumbleModUI
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.4.6";
+        public const string ModVersion = "1.5.0";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
@@ -37,9 +38,11 @@ namespace RumbleModUI
         private Mod ModUI;
         private ThunderStoreRequest.Status VersionStatus;
 
-        public override void OnLateInitializeMelon()
+        public override void OnInitializeMelon()
         {
-            base.OnLateInitializeMelon();
+            base.OnInitializeMelon();
+
+            NetworkRPCManager.Initialize();
 
             rightTrigger.AddBinding("<XRController>{RightHand}/trigger");
             rightPrimary.AddBinding("<XRController>{RightHand}/primaryButton");
@@ -47,11 +50,11 @@ namespace RumbleModUI
             leftPrimary.AddBinding("<XRController>{LeftHand}/primaryButton");
             map.Enable();
 
-            ThunderStoreRequest.Team = "Baumritter";
-            ThunderStoreRequest.Package = "RumbleModUI";
+            Baum_API.LoadHandler.StartupDone += InitUI;
+
             ThunderStoreRequest.LocalVersion = BuildInfo.ModVersion;
             ThunderStoreRequest.OnVersionGet += VersionCheck;
-            ThunderStoreRequest.CheckVersion();
+            ThunderStoreRequest.CheckVersion(new PackageData("Baumritter", "RumbleModUI"));
         }
 
         //Run every update
@@ -59,14 +62,6 @@ namespace RumbleModUI
         {
             //Base Updates
             base.OnUpdate();
-
-            if (!UI.instance.GetInit() && Delay.Done)
-            {
-                ModUI = UI.instance.InitUI();
-                ModUI.ModSaved += OnModSaved;
-                VersionCheckCheck();
-                VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
-            }
 
             if (Input.GetKeyDown(KeyCode.F10) || (VRButtonsAllowed && VRActivationAction()))
             {
@@ -79,7 +74,6 @@ namespace RumbleModUI
                     UI.instance.ShowUI();
                 }
             }
-
         }
 
         private bool VRActivationAction()
@@ -107,18 +101,26 @@ namespace RumbleModUI
             switch (VersionStatus)
             {
                 case ThunderStoreRequest.Status.BothSame:
-                    ModUI.Settings.Find(x => x.Name == "VersionChecker").Description = 
+                    ModUI.Settings.Find(x => x.Name == GlobalConstants.VerChck).Description = 
                         Baum_API.StringExtension.ReturnHexedString("Version up-to-date", ThemeHandler.ActiveTheme.Color_Text_Valid);
                     break;
                 case ThunderStoreRequest.Status.LocalNewer:
-                    ModUI.Settings.Find(x => x.Name == "VersionChecker").Description =
+                    ModUI.Settings.Find(x => x.Name == GlobalConstants.VerChck).Description =
                         Baum_API.StringExtension.ReturnHexedString("Dev Build", Color.blue);
                     break;
                 case ThunderStoreRequest.Status.GlobalNewer:
-                    ModUI.Settings.Find(x => x.Name == "VersionChecker").Description =
+                    ModUI.Settings.Find(x => x.Name == GlobalConstants.VerChck).Description =
                         Baum_API.StringExtension.ReturnHexedString("Newer Version available", ThemeHandler.ActiveTheme.Color_Text_Error);
                     break;
             }
+        }
+
+        private void InitUI()
+        {
+            ModUI = UI.instance.InitUI();
+            ModUI.ModSaved += OnModSaved;
+            VersionCheckCheck();
+            VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.VRMenuInput).Value;
         }
         private void OnModSaved()
         {
@@ -128,15 +130,35 @@ namespace RumbleModUI
                 VersionCheckCheck();
                 ModUI.LinkGroups[0].HasChanged = false;
             }
-            VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == "Enable VR Menu Input").Value;
+            if ((bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.DevChat).Value == true)
+            {
+                if (PhotonHandler.instance.Client.InRoom)
+                {
+                    Baum_API.ModNetworking.NetworkHandler.RPC_DevChat(Photon.Pun.RpcTarget.All);
+                    ModUI.Settings.Find(x => x.Name == GlobalConstants.DevChat).Value = false;
+                    UI.instance.ForceRefresh();
+                }
+                else
+                {
+                    MelonLogger.Msg("Not in Room");
+                }
+            }
+            if ((bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.GetModList).Value == true)
+            {
+                if (PhotonHandler.instance.Client.InRoom)
+                {
+                    Baum_API.ModNetworking.NetworkHandler.RPC_RequestModString();
+                    ModUI.Settings.Find(x => x.Name == GlobalConstants.GetModList).Value = false;
+                    UI.instance.ForceRefresh();
+                }
+                else
+                {
+                    MelonLogger.Msg("Not in Room");
+                }
+            }
+            VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.VRMenuInput).Value;
         }
 
-        //Overrides
-        public override void OnSceneWasLoaded(int buildIndex, string sceneName)
-        {
-            base.OnSceneWasLoaded(buildIndex, sceneName);
-            Delay.Delay_Start(3);
-        }
     }
 }
 

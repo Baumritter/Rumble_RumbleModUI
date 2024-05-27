@@ -538,7 +538,7 @@ namespace RumbleModUI
             #region Set Background Settings
             TB_Background.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             TB_Background.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToBGTheme(TB_Background);
+            //ThemeHandler.AddToBGTheme(TB_Background);
             if (DebugWindow) { MelonLogger.Msg("ToggleBox - Background set"); }
             #endregion
 

@@ -13,6 +13,17 @@ using static RumbleModUI.Window;
 
 namespace RumbleModUI
 {
+    public static class GlobalConstants
+    {
+        public static string VerChck = "Version Checker";
+        public static string DevChat = "RPC - Send TestMessage";
+        public static string GetModList = "RPC - Fetch Mods";
+        public static string VRMenuInput = "VR Menu Input";
+        public static string LightTheme = "Light Theme";
+        public static string DarkTheme = "Dark Theme";
+        public static string HCTheme = "High Contrast Theme";
+        public static string EntryPersistence = "Remember Dropdown Entries";
+    }
     public class UI
     {
         private const string ModName = BuildInfo.ModName;
@@ -21,6 +32,7 @@ namespace RumbleModUI
             "This is the Mod UI by Baumritter.";
 
         public static UI instance = new UI();
+
 
         #region Positions
         private Vector3 Pos_MainWindow;
@@ -54,22 +66,22 @@ namespace RumbleModUI
         private Color Dark_Text = Color.white;
         private Color HighContrast_Text = Color.yellow;
 
-        private Color Light_Text_Error = Color.red;
-        private Color Dark_Text_Error = Color.red;
-        private Color HighContrast_Text_Error = Color.magenta;
+        private Color Light_Text_Error = new Color(0.7f, 0.0f, 0.0f, 1.0f);
+        private Color Dark_Text_Error = new Color(0.7f, 0.0f, 0.0f, 1.0f);
+        private Color HighContrast_Text_Error = new Color(1.0f, 0.0f, 1.0f, 1.0f);
 
-        private Color Light_Text_Valid = Color.green;
-        private Color Dark_Text_Valid = Color.green;
-        private Color HighContrast_Text_Valid = Color.green;
+        private Color Light_Text_Valid = new Color (0.0f, 0.7f, 0.0f, 1.0f);
+        private Color Dark_Text_Valid = new Color(0.0f, 0.7f, 0.0f, 1.0f);
+        private Color HighContrast_Text_Valid = new Color(0.0f, 1.0f, 0.0f, 1.0f);
 
-        private Color Light_FG = new Color(.9f, .9f, .9f, .9f);
-        private Color Light_BG = new Color(.7f, .7f, .7f, .9f);
+        private Color Light_FG = new Color(0.9f, 0.9f, 0.9f, 1.0f);
+        private Color Light_BG = new Color(0.7f, 0.7f, 0.7f, 0.8f);
 
-        private Color Dark_FG = new Color(.3f, .3f, .3f, .9f);
-        private Color Dark_BG = new Color(.1f, .1f, .1f, .9f);
+        private Color Dark_FG = new Color(0.3f, 0.3f, 0.3f, 1.0f);
+        private Color Dark_BG = new Color(0.1f, 0.1f, 0.1f, 0.8f);
 
-        private Color HighContrast_FG = new Color(0f, .7f, 1f, 1f);
-        private Color HighContrast_BG = new Color(1f, 0f, .7f, 1f);
+        private Color HighContrast_FG = new Color(0.0f, 0.7f, 1.0f, 1.0f);
+        private Color HighContrast_BG = new Color(1.0f, 0.0f, 0.7f, 1.0f);
         #endregion
 
         #region Variables
@@ -82,6 +94,7 @@ namespace RumbleModUI
 
         private int ModSelection = 0;
         private int SettingsSelection = 0;
+        private int SettingsOverride = 0;
         private int OtherSettings = 0;
 
         private GameObject UI_Parent;
@@ -274,11 +287,14 @@ namespace RumbleModUI
             };
             Mod_UI.SetFolder("ModUI");
             Mod_UI.AddDescription("Description","", ModDescription, true,false);
-            Mod_UI.AddDescription("VersionChecker", BuildInfo.ModVersion, "",false,true);
-            Mod_UI.AddToList("Enable VR Menu Input", true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time");
-            Mod_UI.AddToList("Light Theme", true, 1, "Turns Light Theme on/off.");
-            Mod_UI.AddToList("Dark Theme", false, 1, "Turns Dark Theme on/off.");
-            Mod_UI.AddToList("High Contrast Theme", false, 1, "Turns High Contrast Theme on/off.");
+            Mod_UI.AddDescription(GlobalConstants.VerChck, BuildInfo.ModVersion, "",false,true);
+            Mod_UI.AddToList(GlobalConstants.DevChat, false, 0, "Yes.");
+            Mod_UI.AddToList(GlobalConstants.GetModList, false, 0, "Yes.");
+            Mod_UI.AddToList(GlobalConstants.EntryPersistence, false, 0, "Changes the selection of the dropdown entries to be persistent after closing and reopening.");
+            Mod_UI.AddToList(GlobalConstants.VRMenuInput, true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time");
+            Mod_UI.AddToList(GlobalConstants.LightTheme, true, 1, "Turns Light Theme on/off.");
+            Mod_UI.AddToList(GlobalConstants.DarkTheme, false, 1, "Turns Dark Theme on/off.");
+            Mod_UI.AddToList(GlobalConstants.HCTheme, false, 1, "Turns High Contrast Theme on/off.");
             Mod_UI.SetLinkGroup(1, "Themes");
             Mod_UI.GetFromFile();
 
@@ -337,36 +353,77 @@ namespace RumbleModUI
 
             list.Clear();
 
-            foreach (ModSetting setting in Mod_Options[0].Settings)
+            if ((bool)Mod_Options[0].Settings.Find(x => x.Name == GlobalConstants.EntryPersistence).SavedValue && ModSelection != 0)
             {
-                if (setting.ValueType == ModSetting.AvailableTypes.Boolean && setting.LinkGroup != 0)
+                SettingsOverride = SettingsSelection;
+                UI_DropDown_Mod.GetComponent<TMP_Dropdown>().value = ModSelection;
+            }
+            else
+            {
+                foreach (ModSetting setting in Mod_Options[0].Settings)
                 {
-                    LinkGroup temp = Mod_Options[0].LinkGroups.Find(x => x.Index == setting.LinkGroup);
-                    list.Add(temp.Name + " - " + setting.Name);
+                    if (setting.ValueType == ModSetting.AvailableTypes.Boolean && setting.LinkGroup != 0)
+                    {
+                        LinkGroup temp = Mod_Options[0].LinkGroups.Find(x => x.Index == setting.LinkGroup);
+                        list.Add(temp.Name + " - " + setting.Name);
+                    }
+                    else
+                    {
+                        list.Add(setting.Name);
+                    }
+                }
+
+                UI_DropDown_Settings.GetComponent<TMP_Dropdown>().ClearOptions();
+                UI_DropDown_Settings.GetComponent<TMP_Dropdown>().AddOptions(list);
+
+                if ((bool)Mod_Options[0].Settings.Find(x => x.Name == GlobalConstants.EntryPersistence).SavedValue && SettingsSelection != 0)
+                {
+                    UI_DropDown_Settings.GetComponent<TMP_Dropdown>().value = SettingsSelection;
                 }
                 else
                 {
-                    list.Add(setting.Name);
+                    UI_ToggleBox.SetActive(false);
+                    UI_InputField.SetActive(true);
+
+                    ModSelection = 0;
+                    SettingsSelection = 0;
+                    SettingsOverride = 0;
                 }
             }
-
-            UI_DropDown_Settings.GetComponent<TMP_Dropdown>().ClearOptions();
-            UI_DropDown_Settings.GetComponent<TMP_Dropdown>().AddOptions(list);
-
-            UI_ToggleBox.SetActive(false);
-            UI_InputField.SetActive(true);
-
-            ModSelection = 0;
-            SettingsSelection = 0;
 
             Inputfield_SetPlaceholder();
 
             UI_Description.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = Mod_Options[ModSelection].Settings[SettingsSelection].Description;
 
-            MainWindow.ParentObject.transform.position = Pos_MainWindow;
+            MainWindow.ParentObject.transform.position = CheckBounds(MainWindow.ParentObject,false);
+
             foreach(Window window in SubWindow)
             {
-                window.ParentObject.transform.position = Pos_SubWindow;
+                window.ParentObject.transform.position = CheckBounds(window.ParentObject, true);
+            }
+        }
+        private Vector3 CheckBounds(GameObject Object, bool IsSub)
+        {
+            RectTransform rectTransform = Object.GetComponent<RectTransform>();
+            float X_Pos = (float)Screen.width - ((rectTransform.sizeDelta.x - 50) * 0.5f * rectTransform.lossyScale.x) ;
+            float Y_Pos = (float)Screen.height - ((rectTransform.sizeDelta.y - 25) * 0.5f * rectTransform.lossyScale.y);
+            float X_Neg = ((rectTransform.sizeDelta.x - 50) * 0.5f * rectTransform.lossyScale.x);
+            float Y_Neg = ((rectTransform.sizeDelta.y - 25) * 0.5f * rectTransform.lossyScale.y);
+
+            if (Object.transform.position.x > X_Pos || Object.transform.position.y > Y_Pos || Object.transform.position.x < X_Neg || Object.transform.position.y < Y_Neg)
+            {
+                if (IsSub)
+                {
+                    return Pos_SubWindow;
+                }
+                else
+                {
+                    return Pos_MainWindow;
+                }
+            }
+            else
+            {
+                return Object.transform.position;
             }
         }
         private void DoOnHide()
@@ -378,7 +435,6 @@ namespace RumbleModUI
         private void DoOnModSelect()
         {
             Il2CppSystem.Collections.Generic.List<string> list = new Il2CppSystem.Collections.Generic.List<string>();
-
 
             foreach (ModSetting setting in Mod_Options[ModSelection].Settings)
             {
@@ -392,9 +448,20 @@ namespace RumbleModUI
                     list.Add(setting.Name);
                 }
             }
+
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().ClearOptions();
-            SettingsSelection = 0;
             UI_DropDown_Settings.GetComponent<TMP_Dropdown>().AddOptions(list);
+
+            if (SettingsOverride != 0)
+            {
+                SettingsSelection = SettingsOverride ;
+                UI_DropDown_Settings.GetComponent<TMP_Dropdown>().value = SettingsOverride;
+                SettingsOverride = 0;
+            }
+            else
+            {
+                SettingsSelection = 0;
+            }
 
             DoOnSettingsSelect();
 
@@ -438,11 +505,15 @@ namespace RumbleModUI
                     Mod_Options[ModSelection].LinkGroups.Find(x => x.Index == Mod_Options[ModSelection].Settings[SettingsSelection].LinkGroup).HasChanged = true;
                 }
 
+                UI_ToggleBox.transform.GetChild(0).GetComponent<Image>().color = ThemeHandler.ActiveTheme.Color_Text_Valid;
+
                 if (debug_UI) { MelonLogger.Msg("Enum - Toggle true"); }
             }
             else
             {
                 Mod_Options[ModSelection].ChangeValue(Mod_Options[ModSelection].Settings[SettingsSelection].Name, "false");
+
+                UI_ToggleBox.transform.GetChild(0).GetComponent<Image>().color = ThemeHandler.ActiveTheme.Color_Text_Error;
 
                 if (debug_UI) { MelonLogger.Msg("Enum - Toggle false"); }
             }
@@ -453,10 +524,12 @@ namespace RumbleModUI
             if ((bool)Mod_Options[ModSelection].Settings[SettingsSelection].Value == true)
             {
                 UI_ToggleBox.GetComponent<Toggle>().isOn = true;
+                UI_ToggleBox.transform.GetChild(0).GetComponent<Image>().color = ThemeHandler.ActiveTheme.Color_Text_Valid;
             }
             else
             {
                 UI_ToggleBox.GetComponent<Toggle>().isOn = false;
+                UI_ToggleBox.transform.GetChild(0).GetComponent<Image>().color = ThemeHandler.ActiveTheme.Color_Text_Error;
             }
 
         }

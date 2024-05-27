@@ -1,5 +1,6 @@
 ﻿using MelonLoader;
 using RumbleModUI;
+using UnityEngine.InputSystem;
 
 namespace TestMod
 {
