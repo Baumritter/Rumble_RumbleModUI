@@ -23,10 +23,7 @@ namespace RumbleModUI
         private bool VRButtonsPressed = false;
         private bool VRButtonsAllowed = false;
 
-        //objects
-        Baum_API.Delay Delay = new Baum_API.Delay { name = "Delay" };
-
-        private static UnityEngine.InputSystem.InputActionMap map = new InputActionMap("Tha Map");
+        private static InputActionMap map = new InputActionMap("Tha Map");
         private static InputAction rightTrigger = map.AddAction("Right Trigger");
         private static InputAction rightPrimary = map.AddAction("Right Primary");
         private static InputAction leftTrigger  = map.AddAction("Left Trigger");
@@ -52,12 +49,12 @@ namespace RumbleModUI
 
             Baum_API.LoadHandler.StartupDone += InitUI;
 
+            VersionStatus = ThunderStoreRequest.Status.LocalNewer;
             ThunderStoreRequest.LocalVersion = BuildInfo.ModVersion;
             ThunderStoreRequest.OnVersionGet += VersionCheck;
             ThunderStoreRequest.CheckVersion(new PackageData("Baumritter", "RumbleModUI"));
         }
 
-        //Run every update
         public override void OnUpdate()
         {
             //Base Updates
@@ -120,7 +117,32 @@ namespace RumbleModUI
             ModUI = UI.instance.InitUI();
             ModUI.ModSaved += OnModSaved;
             VersionCheckCheck();
+            ModUI.Settings.Find(x => x.Name == GlobalConstants.DebugPass).CurrentValueChanged += PasswordValidation;
+            ModUI.Settings.Find(x => x.Name == GlobalConstants.ToggleDebug).CurrentValueChanged += DebugWindowHandler;
             VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.VRMenuInput).Value;
+        }
+        private void PasswordValidation(object sender, EventArgs Event)
+        {
+            ValueChange<string> Change = Event as ValueChange<string>;
+
+            if (Change.Value == Baum_API.MemeClass.TheGame()) MelonLogger.Msg("Correct Password.");
+            else MelonLogger.Msg("Wrong Password.");
+        }
+        private void DebugWindowHandler(object sender, EventArgs Event)
+        {
+            ValueChange<bool> Change = Event as ValueChange<bool>;
+
+            if ((string)ModUI.Settings.Find(x => x.Name == GlobalConstants.DebugPass).Value == Baum_API.MemeClass.TheGame())
+            {
+                if (Change.Value)
+                {
+                    UI.instance.SubWindow.Find(x => x.Name == "DebugWindow").ShowWindow();
+                }
+                else
+                {
+                    UI.instance.SubWindow.Find(x => x.Name == "DebugWindow").HideWindow();
+                }
+            }
         }
         private void OnModSaved()
         {
@@ -130,35 +152,8 @@ namespace RumbleModUI
                 VersionCheckCheck();
                 ModUI.LinkGroups[0].HasChanged = false;
             }
-            if ((bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.DevChat).Value == true)
-            {
-                if (PhotonHandler.instance.Client.InRoom)
-                {
-                    Baum_API.ModNetworking.NetworkHandler.RPC_DevChat(Photon.Pun.RpcTarget.All);
-                    ModUI.Settings.Find(x => x.Name == GlobalConstants.DevChat).Value = false;
-                    UI.instance.ForceRefresh();
-                }
-                else
-                {
-                    MelonLogger.Msg("Not in Room");
-                }
-            }
-            if ((bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.GetModList).Value == true)
-            {
-                if (PhotonHandler.instance.Client.InRoom)
-                {
-                    Baum_API.ModNetworking.NetworkHandler.RPC_RequestModString();
-                    ModUI.Settings.Find(x => x.Name == GlobalConstants.GetModList).Value = false;
-                    UI.instance.ForceRefresh();
-                }
-                else
-                {
-                    MelonLogger.Msg("Not in Room");
-                }
-            }
             VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.VRMenuInput).Value;
         }
 
     }
 }
-

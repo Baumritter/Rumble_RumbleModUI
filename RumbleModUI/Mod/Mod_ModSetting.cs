@@ -27,24 +27,30 @@ namespace RumbleModUI
         public int LinkGroup = 0;
 
         public ValidationParameters ValidationParameters = new ValidationTemplate();
-        public DescriptionTags Tags = new DescriptionTags(false, false);
+        public Tags Tags = new Tags();
 
-        public virtual event System.Action CurrentValueChanged;
-        public event System.Action SavedValueChanged;
+        public virtual event EventHandler<EventArgs> CurrentValueChanged;
+        public virtual event EventHandler<EventArgs> SavedValueChanged;
         #endregion
 
-        protected void OnCurrentValueChange() { CurrentValueChanged?.Invoke(); }
-        protected void OnSavedValueChange() { SavedValueChanged?.Invoke(); }
 
         public abstract string GetValueAsString();
         public abstract object Value { get; set; }
         public abstract object SavedValue { get; set; }
 
     }
+    public class ValueChange<T> : EventArgs
+    {
+        public ValueChange(T value) { Value = value; }
+        public T Value { get; set; }
+    }
     public class ModSetting<T> : ModSetting
     {
+
         private T BG_SaveVariable;
         private T BG_TempVariable;
+        public override event EventHandler<EventArgs> CurrentValueChanged;
+        public override event EventHandler<EventArgs> SavedValueChanged;
         public override object Value
         {
             get => BG_TempVariable;
@@ -52,7 +58,7 @@ namespace RumbleModUI
             {
                 if (!value.Equals(BG_TempVariable))
                 {
-                    OnCurrentValueChange();
+                    CurrentValueChanged?.Invoke(this, new ValueChange<T>((T)value));
                     BG_TempVariable = (T)value; 
                 }
             }
@@ -64,11 +70,12 @@ namespace RumbleModUI
             {
                 if (!value.Equals(BG_SaveVariable))
                 {
-                    OnSavedValueChange();
+                    SavedValueChanged?.Invoke(this, new ValueChange<T>((T)value));
                     BG_SaveVariable = (T)value;
                 }
             }
         }
+
 
         public override string GetValueAsString()
         {
@@ -80,16 +87,23 @@ namespace RumbleModUI
         }
 
     }
-    public class DescriptionTags
+    public class Tags
     {
-        public DescriptionTags() { }
-        public DescriptionTags(bool isSummary, bool isEmpty)
-        {
-            IsSummary = isSummary;
-            IsEmpty = isEmpty;
+        public Tags() 
+        { 
+            IsSummary = false;
+            IsEmpty = false;
+            IsCustom = false;
+            CustomString = ""; 
+            IsPassword = false;
+            DoNotSave = false;
         }
 
         public bool IsSummary { get; set; }
         public bool IsEmpty { get; set; }
+        public bool IsCustom { get; set; }
+        public string CustomString { get; set; }
+        public bool IsPassword { get; set; }
+        public bool DoNotSave { get; set; }
     }
 }

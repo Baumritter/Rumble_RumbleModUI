@@ -76,7 +76,6 @@ namespace RumbleModUI
                 }
             }
         }
-
         public class Folders
         {
             private readonly bool debug = false;
@@ -206,7 +205,6 @@ namespace RumbleModUI
             #endregion
 
         }
-
         public static class StringExtension
         {
             public static string SanitizeName(string Input)
@@ -314,7 +312,7 @@ namespace RumbleModUI
         }
         public static class ThunderStore
         {
-            public class PackageMetrics
+            public class PackageMetricsV1
             {
                 public int Downloads { get; set; }
                 public int Rating_score { get; set; }
@@ -345,16 +343,16 @@ namespace RumbleModUI
                 private static string Command = "api/v1/package-metrics";
                 private static HttpClient client = new HttpClient();
 
-                private static PackageMetrics PackageMetrics { get; set; }
+                private static PackageMetricsV1 PackageMetrics { get; set; }
+                private static bool RequestFailed = false;
                 public static string LocalVersion;
                 public static event Action<Status> OnVersionGet;
 
-                public static void CheckVersion(PackageData data)
+                public async static void CheckVersion(PackageData data)
                 {
-                    RequestData(data).GetAwaiter().GetResult();
-                    OnVersionGet?.Invoke(OnMetricsGet());
+                    RequestFailed = false;
+                    await RequestData(data);
                 }
-
                 private static Status OnMetricsGet()
                 {
                     Version Local = new Version(LocalVersion);
@@ -368,9 +366,9 @@ namespace RumbleModUI
 
                 }
 
-                private static PackageMetrics DeserializeResponse(string response)
+                private static PackageMetricsV1 DeserializeResponse(string response)
                 {
-                    PackageMetrics metrics = new PackageMetrics();
+                    PackageMetricsV1 metrics = new PackageMetricsV1();
                     string[] Split;
                     string placeholder = response;
 
@@ -399,6 +397,10 @@ namespace RumbleModUI
                         packageMetrics = await response.Content.ReadAsStringAsync();
                         if (debug) MelonLogger.Msg("Package get");
                     }
+                    else
+                    {
+                        RequestFailed = true;
+                    }
                     return packageMetrics;
                 }
 
@@ -414,11 +416,16 @@ namespace RumbleModUI
 
                         if (debug) MelonLogger.Msg("API - Response: " + temp);
 
+                        if(RequestFailed)
+                        {
+                            return;
+                        }
+
                         if (temp != null)
                         {
                             PackageMetrics = DeserializeResponse(temp);
+                            OnVersionGet?.Invoke(OnMetricsGet());
                         }
-
                     }
                     catch (Exception ex)
                     {
@@ -437,7 +444,7 @@ namespace RumbleModUI
 
                 public void ModStringHandler(string Message)
                 {
-                    MelonLogger.Msg("String received.");
+                    NetworkHandler.ModStrings.Add(Message);
                 }
                 public void Initialize()
                 {
@@ -454,7 +461,7 @@ namespace RumbleModUI
             public static class NetworkHandler
             {
                 public static HandlerObject NetworkedObject = new HandlerObject();
-
+                public static List<string> ModStrings = new List<string>();
 
                 public static void RPC_DevChat(RpcTarget Target, string Nickname = "User", string Message = "Message")
                 {
@@ -503,24 +510,6 @@ namespace RumbleModUI
                     if (debug) MelonLogger.Msg("SpawnPlayerController 1 Postfix");
                 }
             }
-            [HarmonyPatch(typeof(PlayerManager), "SpawnPlayerControllers")]
-            public static class Patch1
-            {
-                private static void Postfix()
-                {
-                    //OnPlayersLoaded?.Invoke();
-                    if (debug) MelonLogger.Msg("SpawnPlayerControllers Postfix");
-                }
-            }
-            [HarmonyPatch(typeof(PlayerManager), "SpawnPlayerController", new Type[] { typeof(Player), typeof(Vector3), typeof(Quaternion)})]
-            public static class Patch2
-            {
-                private static void Postfix()
-                {
-                    //OnPlayersLoaded?.Invoke();
-                    if (debug) MelonLogger.Msg("SpawnPlayerController 2 Postfix");
-                }
-            }
 
             [HarmonyPatch(typeof(ParkBoardGymVariant), "OnPlayerEnteredTrigger")]
             public static class Patch3
@@ -532,6 +521,12 @@ namespace RumbleModUI
                 }
             }
         }
-
+        public static class MemeClass
+        {
+            public static string TheGame()
+            {
+                return "YouJustLostTheGame";
+            }
+        }
     }
 }

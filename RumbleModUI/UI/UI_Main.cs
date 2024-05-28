@@ -1,6 +1,7 @@
 ﻿using Harmony;
 using Il2CppSystem;
 using MelonLoader;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,13 +17,13 @@ namespace RumbleModUI
     public static class GlobalConstants
     {
         public static string VerChck = "Version Checker";
-        public static string DevChat = "RPC - Send TestMessage";
-        public static string GetModList = "RPC - Fetch Mods";
+        public static string EntryPersistence = "Remember Dropdown Entries";
         public static string VRMenuInput = "VR Menu Input";
         public static string LightTheme = "Light Theme";
         public static string DarkTheme = "Dark Theme";
         public static string HCTheme = "High Contrast Theme";
-        public static string EntryPersistence = "Remember Dropdown Entries";
+        public static string ToggleDebug = "Toggles Debug Menu";
+        public static string DebugPass = "Allow Debug Usage";
     }
     public class UI
     {
@@ -95,21 +96,14 @@ namespace RumbleModUI
         private int ModSelection = 0;
         private int SettingsSelection = 0;
         private int SettingsOverride = 0;
-        private int OtherSettings = 0;
 
         private GameObject UI_Parent;
         private GameObject Obj_MainWdw;
         private Window MainWindow;
         public List<Window> SubWindow = new List<Window>();
 
-        private GameObject UI_Title;
-        private GameObject UI_Description;
-        private GameObject UI_DropDown_Mod;
-        private GameObject UI_DropDown_Settings;
-        private GameObject UI_InputField;
-        private GameObject UI_ToggleBox;
-        private GameObject UI_ButtonSave;
-        private GameObject UI_ButtonDisc;
+        private GameObject UI_Title, UI_Description, UI_DropDown_Mod, UI_DropDown_Settings, UI_InputField, UI_ToggleBox, UI_ButtonSave, UI_ButtonDisc;
+        private GameObject UI_Debug_Title;
 
         private object Enum_Save;
         private object Enum_Discard;
@@ -143,9 +137,8 @@ namespace RumbleModUI
                 Pos_SubWindow = new Vector3((Screen.width / 2) + 300, Screen.height / 2, 0);
 
                 MainWindow = new Window("MainWindow", false);
-                Obj_MainWdw = new GameObject();
+                Obj_MainWdw = new GameObject("Mod_Setting_UI");
                 Obj_MainWdw.SetActive(false);
-                Obj_MainWdw.name = "Mod_Setting_UI";
                 Obj_MainWdw.transform.SetParent(UI_Parent.transform);
                 Obj_MainWdw.AddComponent<RectTransform>();
                 Obj_MainWdw.GetComponent<RectTransform>().sizeDelta = Size_Base;
@@ -181,6 +174,48 @@ namespace RumbleModUI
                 UI_ToggleBox.GetComponent<Toggle>().onValueChanged.AddListener(new System.Action<bool>(value => { OnToggleChange(value); }));
                 UI_ButtonSave.GetComponent<Button>().onClick.AddListener(new System.Action(() => { ButtonHandler(0); }));
                 UI_ButtonDisc.GetComponent<Button>().onClick.AddListener(new System.Action(() => { ButtonHandler(1); }));
+                #endregion
+
+                #region Debug Window
+                Window DebugWindow = new Window("DebugWindow");
+                GameObject DebugParent = new GameObject("DebugParent");
+                DebugParent.SetActive(false);
+                DebugParent.transform.SetParent(UI_Parent.transform);
+                DebugParent.AddComponent<RectTransform>();
+                DebugParent.GetComponent<RectTransform>().sizeDelta = Size_Base;
+                DebugParent.transform.position = Pos_SubWindow;
+                DebugParent.transform.localScale = new Vector3(1.5f, 1.5f, 0);
+
+                SetAnchors(DebugParent, AnchorPresets.MiddleCenter);
+                SetPivot(DebugParent, PivotPresets.MiddleCenter);
+
+                DebugWindow.ParentObject = DebugParent;
+
+                DebugWindow.CreateBackgroundBox("Outer BG", DebugWindow.ParentObject.transform, Pos_OuterBG);
+                UI_Debug_Title = DebugWindow.CreateTitle("Title", DebugWindow.ParentObject.transform, Pos_Title, Size_Title);
+                UI_Debug_Title.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Debug";
+
+                float HeightOffset;
+                Vector3 DebugButtonSize = new Vector3(120f,30f);
+
+                for (int i = 1; i <= 11; i++)
+                {
+                    HeightOffset = Size_Base.y - 30f - ((float)i * 40f);
+                    DebugWindow.CreateButton("LB" + i, DebugWindow.ParentObject.transform, new Vector3(10f, HeightOffset, 0f), DebugButtonSize, "");
+                }
+                for (int i = 1; i <= 11; i++)
+                {
+                    HeightOffset = Size_Base.y - 30f - ((float)i * 40f);
+                    DebugWindow.CreateButton("MB" + i, DebugWindow.ParentObject.transform, new Vector3(140f, HeightOffset, 0f), DebugButtonSize, "");
+                }
+                for (int i = 1; i <= 11; i++)
+                {
+                    HeightOffset = Size_Base.y - 30f - ((float)i * 40f);
+                    DebugWindow.CreateButton("RB" + i, DebugWindow.ParentObject.transform, new Vector3(270f, HeightOffset, 0f), DebugButtonSize, "");
+                }
+
+                SubWindow.Add(DebugWindow);
+                DebugButtonSetup();
                 #endregion
 
                 Mod temp = AddSelf();
@@ -286,28 +321,24 @@ namespace RumbleModUI
                 ModVersion = ModVersion
             };
             Mod_UI.SetFolder("ModUI");
-            Mod_UI.AddDescription("Description","", ModDescription, true,false);
-            Mod_UI.AddDescription(GlobalConstants.VerChck, BuildInfo.ModVersion, "",false,true);
-            Mod_UI.AddToList(GlobalConstants.DevChat, false, 0, "Yes.");
-            Mod_UI.AddToList(GlobalConstants.GetModList, false, 0, "Yes.");
-            Mod_UI.AddToList(GlobalConstants.EntryPersistence, false, 0, "Changes the selection of the dropdown entries to be persistent after closing and reopening.");
-            Mod_UI.AddToList(GlobalConstants.VRMenuInput, true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time");
-            Mod_UI.AddToList(GlobalConstants.LightTheme, true, 1, "Turns Light Theme on/off.");
-            Mod_UI.AddToList(GlobalConstants.DarkTheme, false, 1, "Turns Dark Theme on/off.");
-            Mod_UI.AddToList(GlobalConstants.HCTheme, false, 1, "Turns High Contrast Theme on/off.");
+            Mod_UI.AddDescription("Description", "", ModDescription, new Tags { IsSummary = true }) ;
+            Mod_UI.AddDescription(GlobalConstants.VerChck, BuildInfo.ModVersion, "", new Tags { IsEmpty = true });
+            Mod_UI.AddToList(GlobalConstants.EntryPersistence, false, 0, "Changes the selection of the dropdown entries to be persistent after closing and reopening.", new Tags());
+            Mod_UI.AddToList(GlobalConstants.VRMenuInput, true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time", new Tags());
+
+            Mod_UI.AddToList(GlobalConstants.LightTheme, true, 1, "Turns Light Theme on/off.", new Tags());
+            Mod_UI.AddToList(GlobalConstants.DarkTheme, false, 1, "Turns Dark Theme on/off.", new Tags());
+            Mod_UI.AddToList(GlobalConstants.HCTheme, false, 1, "Turns High Contrast Theme on/off.", new Tags());
+
+            ModSetting<bool> Temp1 = Mod_UI.AddToList(GlobalConstants.ToggleDebug, false, 0, $"Toggles the debug window if the correct password is set in {GlobalConstants.DebugPass}.", new Tags { DoNotSave = true });
+            ModSetting<string> Temp2 = Mod_UI.AddToList(GlobalConstants.DebugPass, "", "Enter the password for debugging.", new Tags { DoNotSave = true, IsPassword = true, IsCustom = true, CustomString = "Enter Password..." });
+
             Mod_UI.SetLinkGroup(1, "Themes");
+
             Mod_UI.GetFromFile();
 
             AddMod(Mod_UI);
 
-            //Initial Theme Application
-            foreach (ModSetting setting in Mod_UI.Settings)
-            {
-                if (setting.LinkGroup != 1)
-                {
-                    OtherSettings++;
-                }
-            }
             RefreshTheme();
 
             return Mod_UI;
@@ -484,6 +515,9 @@ namespace RumbleModUI
                 UI_ToggleBox.SetActive(false);
                 UI_InputField.SetActive(true);
 
+                if (Mod_Options[ModSelection].Settings[SettingsSelection].Tags.IsPassword) UI_InputField.GetComponent<TMP_InputField>().inputType = TMP_InputField.InputType.Password;
+                else UI_InputField.GetComponent<TMP_InputField>().inputType = TMP_InputField.InputType.Standard;
+
                 Inputfield_SetPlaceholder();
             }
 
@@ -535,14 +569,16 @@ namespace RumbleModUI
         }
         private void Inputfield_SetPlaceholder(bool Valid = true)
         {
-            if (Mod_Options[ModSelection].Settings[SettingsSelection].ValueType == ModSetting.AvailableTypes.Description)
+            ModSetting LocalSetting = Mod_Options[ModSelection].Settings[SettingsSelection];
+
+            if (LocalSetting.ValueType == ModSetting.AvailableTypes.Description && !LocalSetting.Tags.IsCustom)
             {
-                if (Mod_Options[ModSelection].Settings[SettingsSelection].Tags.IsSummary)
+                if (LocalSetting.Tags.IsSummary)
                 {
                     UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
                         "Available Settings: " + (Mod_Options[ModSelection].Settings.Count - 1).ToString();
                 }
-                else if (Mod_Options[ModSelection].Settings[SettingsSelection].Tags.IsEmpty)
+                else if (LocalSetting.Tags.IsEmpty)
                 {
                     UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text = "";
                 }
@@ -550,14 +586,21 @@ namespace RumbleModUI
                 {
                     UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
                         "Current Value: " +
-                        Mod_Options[ModSelection].Settings[SettingsSelection].GetValueAsString();
+                        LocalSetting.GetValueAsString();
                 }
             }
             else
             {
-                UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
-                    "Current Value: " +
-                    Mod_Options[ModSelection].Settings[SettingsSelection].GetValueAsString();
+                if (LocalSetting.Tags.IsCustom && LocalSetting.Tags.CustomString != "")
+                {
+                    UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text = LocalSetting.Tags.CustomString;
+                }
+                else
+                {
+                    UI_InputField.transform.GetChild(0).FindChild("Placeholder").GetComponent<TextMeshProUGUI>().text =
+                        "Current Value: " +
+                        LocalSetting.GetValueAsString();
+                }
             }
 
             if (Valid)
@@ -646,7 +689,7 @@ namespace RumbleModUI
         public void AddTheme(Theme newTheme,string Description)
         {
             ThemeHandler.AvailableThemes.Add(newTheme);
-            Mod_Options.Find(x => x.ModName == ModName).AddToList(newTheme.Name, false, 1, Description);
+            Mod_Options.Find(x => x.ModName == ModName).AddToList(newTheme.Name, false, 1, Description, new Tags());
             Mod_Options.Find(x => x.ModName == ModName).GetFromFile();
             RefreshTheme();
         }
@@ -659,12 +702,15 @@ namespace RumbleModUI
             int index = 0;
             foreach (var setting in Mod_Options.Find(x => x.ModName == BuildInfo.ModName).Settings)
             {
-                if (setting.LinkGroup == 1 && (bool)setting.Value)
+                if (setting.LinkGroup == 1)
                 {
-                    ThemeHandler.ChangeTheme(index - OtherSettings);
-                    break;
+                    if ((bool)setting.Value)
+                    {
+                        ThemeHandler.ChangeTheme(index);
+                        break;
+                    }
+                    index++;
                 }
-                index++;
             }
             if (Enum_Theme != null) MelonCoroutines.Stop(Enum_Theme);
             yield return null;
@@ -672,6 +718,59 @@ namespace RumbleModUI
         #endregion
 
         #region Helpers
+        private void DebugButtonSetup()
+        {
+            foreach (var Element in SubWindow[0].Elements)
+            {
+                switch (Element.name)
+                {
+                    case "LB1":
+                        ButtonOverride(Element, "RPC - Message", new System.Action(() => { DebugActions("LB1"); }));
+                        break;
+                    case "LB2":
+                        ButtonOverride(Element, "RPC - GetMods", new System.Action(() => { DebugActions("LB2"); }));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        private void DebugActions(string ActionIndex)
+        {
+            switch(ActionIndex)
+            {
+                case "LB1":
+                    if (PhotonHandler.instance.Client.InRoom)
+                    {
+                        ModNetworking.NetworkHandler.RPC_DevChat(RpcTarget.All);
+                    }
+                    else
+                    {
+                        MelonLogger.Msg("Not in Room");
+                    }
+                    break;
+                case "LB2":
+                    if (PhotonHandler.instance.Client.InRoom)
+                    {
+                        ModNetworking.NetworkHandler.RPC_RequestModString();
+                    }
+                    else
+                    {
+                        MelonLogger.Msg("Not in Room");
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void ButtonOverride(GameObject Element, string NewName, System.Action ButtonAction)
+        {
+            Element.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = NewName;
+            Element.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSizeMin = 8f;
+            Element.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSizeMax = 20f;
+            Element.transform.GetChild(0).GetComponent<TextMeshProUGUI>().enableAutoSizing = true;
+            Element.GetComponent<Button>().onClick.AddListener(ButtonAction);
+        }
         private void SetAnchors(GameObject Input, AnchorPresets alignment)
         {
             switch (alignment)

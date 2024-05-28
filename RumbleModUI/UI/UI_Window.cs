@@ -701,7 +701,7 @@ namespace RumbleModUI
 
             #region Set RectTransform
             B_Obj.GetComponent<RectTransform>().sizeDelta = Size;
-            B_Text.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+            B_Text.GetComponent<RectTransform>().sizeDelta = new Vector2(-10f,0f);
 
             if (DebugWindow) { MelonLogger.Msg("Button - Image Transforms set"); }
             #endregion
@@ -714,7 +714,7 @@ namespace RumbleModUI
 
             #region Positioning and Scaling
             SetPosition(B_Obj, Position, Scl_1x1);
-            SetPosition(B_Text, Vector3.zero, Scl_1x1);
+            SetPosition(B_Text, Vector2.zero, Scl_1x1);
 
             if (DebugWindow) { MelonLogger.Msg("Button - Position set"); }
             #endregion

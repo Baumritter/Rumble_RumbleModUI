@@ -18,7 +18,6 @@ namespace RumbleModUI
     {
         public BaumPun(IntPtr ptr) : base(ptr) { }
 
-        public List<string> ModStrings = new List<string>();
         public string PersonalModString;
         public UnityEvent<string> OnModStringReceived = new UnityEvent<string>();
 
@@ -36,6 +35,8 @@ namespace RumbleModUI
 
             string Output = Baum_API.StringExtension.SanitizeName(PlayerManager.Instance.localPlayer.Data.GeneralData.PublicUsername);
             Output += EntrySep;
+            Output += PlayerManager.Instance.localPlayer.Data.GeneralData.InternalUsername;
+            Output += EntrySep;
 
             foreach (var Melon in MelonBase.RegisteredMelons)
             {
@@ -52,7 +53,6 @@ namespace RumbleModUI
         [NetworkRPC]
         public void RequestModString(string SenderName)
         {
-
             Player sender;
 
             for (int i = 1; i <= PhotonHandler.instance.Client.CurrentRoom.Players.Count; i++)
@@ -73,7 +73,6 @@ namespace RumbleModUI
         [NetworkRPC]
         public void ModListCallback(string Message)
         {
-            ModStrings.Add(Message);
             OnModStringReceived?.Invoke(Message);
         }
         #endregion

@@ -116,6 +116,7 @@ namespace RumbleModUI
         }
 
         #region AddToList - All Available Types
+        #region Deprecated Stuff
         /// <summary>
         /// Creates a instance of ModSetting with the type string.
         /// </summary>
@@ -148,11 +149,49 @@ namespace RumbleModUI
             Settings.Add(InputSetting);
             return InputSetting;
         }
+        [System.Obsolete("Use new overload.")]
+        public ModSetting<string> AddDescription(string Name,string Value = "", string Description = "",bool IsSummary = true, bool IsEmpty = false)
+        {
+            Tags temp = new Tags { IsSummary = IsSummary, IsEmpty = IsEmpty };
+            return AddDescription(Name,Value,Description,temp);
+        }
+        [System.Obsolete("Use new overload.")]
+        public ModSetting<string> AddToList(string Name, string Value = "", string Description = "")
+        {
+            Tags temp = new Tags();
+            return AddToList(Name, Value, Description, temp);
+        }
+        [System.Obsolete("Use new overload.")]
+        public ModSetting<bool> AddToList(string Name, bool Value = false, int LinkGroup = 0, string Description = "")
+        {
+            Tags temp = new Tags();
+            return AddToList(Name, Value, LinkGroup, Description, temp);
+        }
+        [System.Obsolete("Use new overload.")]
+        public ModSetting<int> AddToList(string Name, int Value = 0, string Description = "")
+        {
+            Tags temp = new Tags();
+            return AddToList(Name, Value, Description, temp);
+        }
+        [System.Obsolete("Use new overload.")]
+        public ModSetting<float> AddToList(string Name, float Value = 0.0f, string Description = "")
+        {
+            Tags temp = new Tags();
+            return AddToList(Name, Value, Description, temp);
+        }
+        [System.Obsolete("Use new overload.")]
+        public ModSetting<double> AddToList(string Name, double Value = 0.0, string Description = "")
+        {
+            Tags temp = new Tags();
+            return AddToList(Name, Value, Description, temp);
+        }
+        #endregion
+
         /// <summary>
         /// Creates a instance of ModSetting with the type string. <br/>
         /// The value cannot be modified by the user.
         /// </summary>
-        public ModSetting<string> AddDescription(string Name,string Value = "", string Description = "",bool IsSummary = false, bool IsEmpty = false)
+        public ModSetting<string> AddDescription(string Name, string Value, string Description, Tags tags)
         {
             if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
             {
@@ -168,23 +207,24 @@ namespace RumbleModUI
                 SavedValue = Value,
                 LinkGroup = 0,
                 ValueType = AvailableTypes.Description,
-                Tags = new DescriptionTags(IsSummary,IsEmpty)
             };
+
+            AddTags(InputSetting, tags);
 
             Settings.Add(InputSetting);
             return InputSetting;
         }
+
         /// <summary>
         /// Creates a instance of ModSetting with the type string.
         /// </summary>
-        public ModSetting<string> AddToList(string Name, string Value = "", string Description = "")
+        public ModSetting<string> AddToList(string Name, string Value, string Description, Tags tags)
         {
             if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
             {
                 MelonLogger.Msg(DuplicateErrorMsg + ": " + Name);
                 return null;
             }
-
 
             ModSetting<string> InputSetting = new ModSetting<string>
             {
@@ -196,13 +236,16 @@ namespace RumbleModUI
                 ValueType = AvailableTypes.String
             };
 
+            AddTags(InputSetting, tags);
+
             Settings.Add(InputSetting);
             return InputSetting;
         }
+
         /// <summary>
         /// Creates a instance of ModSetting with the type bool.
         /// </summary>
-        public ModSetting<bool> AddToList(string Name, bool Value = false, int LinkGroup = 0, string Description = "")
+        public ModSetting<bool> AddToList(string Name, bool Value, int LinkGroup, string Description, Tags tags)
         {
             if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
             {
@@ -223,13 +266,17 @@ namespace RumbleModUI
                 SetLinkGroup(LinkGroup);
                 LinkGroups.Find(x => x.Index == LinkGroup).Settings.Add(InputSetting);
             }
+
+            AddTags(InputSetting, tags);
+
             Settings.Add(InputSetting);
             return InputSetting;
         }
+
         /// <summary>
         /// Creates a instance of ModSetting with the type int.
         /// </summary>
-        public ModSetting<int> AddToList(string Name, int Value = 0, string Description = "")
+        public ModSetting<int> AddToList(string Name, int Value, string Description, Tags tags)
         {
             if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
             {
@@ -246,13 +293,16 @@ namespace RumbleModUI
                 ValueType = AvailableTypes.Integer
             };
 
+            AddTags(InputSetting, tags);
+
             Settings.Add(InputSetting);
             return InputSetting;
         }
+
         /// <summary>
         /// Creates a instance of ModSetting with the type float.
         /// </summary>
-        public ModSetting<float> AddToList(string Name, float Value = 0.0f, string Description = "")
+        public ModSetting<float> AddToList(string Name, float Value, string Description, Tags tags)
         {
             if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
             {
@@ -269,13 +319,16 @@ namespace RumbleModUI
                 ValueType = AvailableTypes.Float
             };
 
+            AddTags(InputSetting, tags);
+
             Settings.Add(InputSetting);
             return InputSetting;
         }
+
         /// <summary>
         /// Creates a instance of ModSetting with the type double.
         /// </summary>
-        public ModSetting<double> AddToList(string Name, double Value = 0.0, string Description = "")
+        public ModSetting<double> AddToList(string Name, double Value, string Description, Tags tags)
         {
             if (Settings.Count > 0 && Settings.Exists(x => x.Name == Name))
             {
@@ -292,10 +345,17 @@ namespace RumbleModUI
                 ValueType = AvailableTypes.Double
             };
 
+            AddTags(InputSetting, tags);
+
             Settings.Add(InputSetting);
             return InputSetting;
         }
         #endregion
+
+        public void AddTags(ModSetting modSetting, Tags tags)
+        {
+            modSetting.Tags = tags;
+        }
 
         public void AddValidation(string name, ValidationParameters parameters)
         {
@@ -410,7 +470,7 @@ namespace RumbleModUI
 
             foreach(ModSetting Setting in Settings)
             {
-                if(Setting.ValueType != AvailableTypes.Description)
+                if(!Setting.Tags.DoNotSave)
                 {
                     Output += Setting.Name + ": " + Setting.GetValueAsString() + Il2CppSystem.Environment.NewLine;
                 }
