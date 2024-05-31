@@ -16,9 +16,9 @@
 ## For Mod Creators
 - See link below for my "documentation":
 	- v1.0.0: https://docs.google.com/document/d/18P73ciBnnhWv-31Pk1L0MBggmbT5wNHxCqQLNRkNX28/edit?usp=sharing
-	- v1.4.0: https://docs.google.com/document/d/1T249iCcBqo6-hLivE69VM_eg9AQ2wVIJyjbc5StzR4s/edit?usp=sharing
+	- v1.5+: https://docs.google.com/document/d/1T249iCcBqo6-hLivE69VM_eg9AQ2wVIJyjbc5StzR4s/edit?usp=sharing
 - Contact Baumritter in the modding discord (link below) for further information or feature requests
-- Since 1.4.x is downwards compatible to 1.2.0, the old documentations have been removed for better readability
+- Since 1.5.x is downwards compatible to 1.2.0, the old documentations have been removed for better readability
 
 ## Other
 - The current mod version is downwards compatible up to 1.2.0.

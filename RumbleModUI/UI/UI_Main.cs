@@ -9,31 +9,48 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static RumbleModUI.Baum_API;
 using static RumbleModUI.Window;
+using static RumbleModUI.Baum_API;
+using static RumbleModUI.Baum_API.StringExtension;
+using static RumbleModUI.Baum_API.RectTransformExtension;
+using static RumbleModUI.Baum_API.ThunderStore;
+using System.Xml.Linq;
 
 namespace RumbleModUI
 {
-    public static class GlobalConstants
+    internal static class GlobalConstants
     {
-        public static string VerChck = "Version Checker";
         public static string EntryPersistence = "Remember Dropdown Entries";
         public static string VRMenuInput = "VR Menu Input";
-        public static string LightTheme = "Light Theme";
-        public static string DarkTheme = "Dark Theme";
-        public static string HCTheme = "High Contrast Theme";
+        public static string LightTheme = "Light";
+        public static string DarkTheme = "Dark";
+        public static string HCTheme = "High Contrast";
+        public static string Monokai = "Monokai";
         public static string ToggleDebug = "Toggles Debug Menu";
         public static string DebugPass = "Allow Debug Usage";
     }
+
+    /// <summary>
+    /// Main UI Class.
+    /// </summary>
     public class UI
     {
+        private class DebugButtonStatus
+        {
+            public string Name { get; set; }
+            public int Index { get; set; } 
+            public bool IsAllocated { get; set; }
+        }
+
         private const string ModName = BuildInfo.ModName;
         private const string ModVersion = BuildInfo.ModVersion;
         private const string ModDescription =
             "This is the Mod UI by Baumritter.";
 
+        /// <summary>
+        /// Instance member
+        /// </summary>
         public static UI instance = new UI();
-
 
         #region Positions
         private Vector3 Pos_MainWindow;
@@ -63,26 +80,30 @@ namespace RumbleModUI
         #endregion
 
         #region Base Theme Values
-        private Color Light_Text = Color.black;
-        private Color Dark_Text = Color.white;
-        private Color HighContrast_Text = Color.yellow;
-
+        private Color Light_Text_Basic = Color.black;
         private Color Light_Text_Error = new Color(0.7f, 0.0f, 0.0f, 1.0f);
+        private Color Light_Text_Valid = new Color(0.0f, 0.7f, 0.0f, 1.0f);
+        private Color Light_Foreground = new Color(0.9f, 0.9f, 0.9f, 0.7f);
+        private Color Light_Background = new Color(0.7f, 0.7f, 0.7f, 0.7f);
+
+        private Color Dark_Text_Basic = Color.white;
         private Color Dark_Text_Error = new Color(0.7f, 0.0f, 0.0f, 1.0f);
-        private Color HighContrast_Text_Error = new Color(1.0f, 0.0f, 1.0f, 1.0f);
-
-        private Color Light_Text_Valid = new Color (0.0f, 0.7f, 0.0f, 1.0f);
         private Color Dark_Text_Valid = new Color(0.0f, 0.7f, 0.0f, 1.0f);
+        private Color Dark_Foreground = new Color(0.3f, 0.3f, 0.3f, 0.8f);
+        private Color Dark_Background = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+
+        private Color HighContrast_Text_Basic = Color.yellow;
+        private Color HighContrast_Text_Error = new Color(1.0f, 0.0f, 0.0f, 1.0f);
         private Color HighContrast_Text_Valid = new Color(0.0f, 1.0f, 0.0f, 1.0f);
+        private Color HighContrast_Foreground = new Color(0.3f, 0.3f, 0.3f, 1.0f);
+        private Color HighContrast_Background = new Color(0.1f, 0.1f, 0.1f, 1.0f);
 
-        private Color Light_FG = new Color(0.9f, 0.9f, 0.9f, 1.0f);
-        private Color Light_BG = new Color(0.7f, 0.7f, 0.7f, 0.8f);
+        private Color Monokai_Text_Basic = new Color32(248, 248, 242, 255);
+        private Color Monokai_Text_Error = new Color32(249, 38, 114, 255);
+        private Color Monokai_Text_Valid = new Color32(166, 226, 46, 255);
+        private Color Monokai_Foreground = new Color32(39, 40, 34, 245);
+        private Color Monokai_Background = new Color32(30, 31, 28, 245);
 
-        private Color Dark_FG = new Color(0.3f, 0.3f, 0.3f, 1.0f);
-        private Color Dark_BG = new Color(0.1f, 0.1f, 0.1f, 0.8f);
-
-        private Color HighContrast_FG = new Color(0.0f, 0.7f, 1.0f, 1.0f);
-        private Color HighContrast_BG = new Color(1.0f, 0.0f, 0.7f, 1.0f);
         #endregion
 
         #region Variables
@@ -100,26 +121,35 @@ namespace RumbleModUI
         private GameObject UI_Parent;
         private GameObject Obj_MainWdw;
         private Window MainWindow;
-        public List<Window> SubWindow = new List<Window>();
 
-        private GameObject UI_Title, UI_Description, UI_DropDown_Mod, UI_DropDown_Settings, UI_InputField, UI_ToggleBox, UI_ButtonSave, UI_ButtonDisc;
-        private GameObject UI_Debug_Title;
+        /// <summary>
+        /// Contains all SubWindows. All Windows in this list will be closed when the main window closes.
+        /// </summary>
+        public List<Window> SubWindow = new List<Window>();
+        private List<DebugButtonStatus> DebugButtons = new List<DebugButtonStatus>();
+
+        private GameObject UI_Description, UI_DropDown_Mod, UI_DropDown_Settings, UI_InputField, UI_ToggleBox, UI_ButtonSave, UI_ButtonDisc;
 
         private object Enum_Save;
         private object Enum_Discard;
         private object Enum_Theme;
 
-        private List<Mod> Mod_Options = new List<Mod>();
+        internal List<Mod> Mod_Options = new List<Mod>();
 
+        /// <summary>
+        /// Gets invoked when UI is initialized. Attach your stuff ASAP.
+        /// </summary>
         public event System.Action UI_Initialized;
         #endregion
 
         #region General UI
+        [System.Obsolete("Use the UI_Initialized Event.")]
         public bool GetInit()
         {
             return IsInit;
         }
-        public Mod InitUI()
+
+        internal Mod InitUI()
         {
             if (!IsInit)
             {
@@ -127,9 +157,10 @@ namespace RumbleModUI
                 UI_Parent = GameObject.Find("Game Instance/UI");
                 this.Name = "Mod_Setting_UI";
 
-                ThemeHandler.AvailableThemes.Add(new Theme("Light", Light_Text, Light_Text_Valid, Light_Text_Error, Light_FG, Light_BG));
-                ThemeHandler.AvailableThemes.Add(new Theme("Dark", Dark_Text, Dark_Text_Valid, Dark_Text_Error, Dark_FG, Dark_BG));
-                ThemeHandler.AvailableThemes.Add(new Theme("HighContrast", HighContrast_Text, HighContrast_Text_Valid, HighContrast_Text_Error, HighContrast_FG, HighContrast_BG));
+                ThemeHandler.AvailableThemes.Add(new Theme("Light", Light_Text_Basic, Light_Text_Valid, Light_Text_Error, Light_Foreground, Light_Background));
+                ThemeHandler.AvailableThemes.Add(new Theme("Dark", Dark_Text_Basic, Dark_Text_Valid, Dark_Text_Error, Dark_Foreground, Dark_Background));
+                ThemeHandler.AvailableThemes.Add(new Theme("HighContrast", HighContrast_Text_Basic, HighContrast_Text_Valid, HighContrast_Text_Error, HighContrast_Foreground, HighContrast_Background));
+                ThemeHandler.AvailableThemes.Add(new Theme("Monokai", Monokai_Text_Basic, Monokai_Text_Valid, Monokai_Text_Error, Monokai_Foreground, Monokai_Background));
 
                 #region Main Window
 
@@ -151,8 +182,8 @@ namespace RumbleModUI
                 MainWindow.ParentObject = Obj_MainWdw;
 
                 MainWindow.CreateBackgroundBox("Outer BG", MainWindow.ParentObject.transform, Pos_OuterBG);
-                UI_Title = MainWindow.CreateTitle("Title", MainWindow.ParentObject.transform, Pos_Title, Size_Title);
-                UI_Title.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"{BuildInfo.ModName} V{BuildInfo.ModVersion}";
+                MainWindow.CreateTitle("Title", MainWindow.ParentObject.transform, Pos_Title, Size_Title);
+                MainWindow.SetTitleText($"{BuildInfo.ModName} V{BuildInfo.ModVersion}", 20);
                 UI_Description = MainWindow.CreateTextBox("Description", MainWindow.ParentObject.transform, Pos_DescBG, Pos_DescText, Size_DescBG, Size_DescText);
                 UI_DropDown_Mod = MainWindow.CreateDropdown("DropDown_Mods", MainWindow.ParentObject.transform, Pos_DD1, Size_DD, Size_DD_Ext);
                 UI_DropDown_Settings = MainWindow.CreateDropdown("DropDown_Settings", MainWindow.ParentObject.transform, Pos_DD2, Size_DD, Size_DD_Ext);
@@ -192,8 +223,8 @@ namespace RumbleModUI
                 DebugWindow.ParentObject = DebugParent;
 
                 DebugWindow.CreateBackgroundBox("Outer BG", DebugWindow.ParentObject.transform, Pos_OuterBG);
-                UI_Debug_Title = DebugWindow.CreateTitle("Title", DebugWindow.ParentObject.transform, Pos_Title, Size_Title);
-                UI_Debug_Title.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Debug";
+                DebugWindow.CreateTitle("Title", DebugWindow.ParentObject.transform, Pos_Title, Size_Title);
+                DebugWindow.SetTitleText("Debug", 20);
 
                 float HeightOffset;
                 Vector3 DebugButtonSize = new Vector3(120f,30f);
@@ -215,7 +246,7 @@ namespace RumbleModUI
                 }
 
                 SubWindow.Add(DebugWindow);
-                DebugButtonSetup();
+                PresetDebugButtons();
                 #endregion
 
                 Mod temp = AddSelf();
@@ -233,7 +264,8 @@ namespace RumbleModUI
                 return null;
             }
         }
-        public void ShowUI()
+
+        internal void ShowUI()
         {
             if (IsInit)
             {
@@ -242,7 +274,8 @@ namespace RumbleModUI
                 if (debug_UI) { MelonLogger.Msg("UI - Shown"); }
             }
         }
-        public void HideUI()
+
+        internal void HideUI()
         {
             if (IsInit)
             {
@@ -251,20 +284,36 @@ namespace RumbleModUI
                 if (debug_UI) { MelonLogger.Msg("UI - Hidden"); }
             }
         }
+
+        /// <summary>
+        /// Refreshes the UI. Updates text variables and such.
+        /// </summary>
         public void ForceRefresh()
         {
             OnSettingsSelectionChange(SettingsSelection);
         }
+
+        /// <summary>
+        /// Returns true if <paramref name="name"/> matches the <see cref="Mod.ModName"/> of the current selection.
+        /// </summary>
         public bool IsModSelected(string name)
         {
             if (Mod_Options[ModSelection].ModName == name) return true;
             else return false;
         }
+
+        /// <summary>
+        /// Returns true if <paramref name="name"/> matches the <see cref="ModSetting.Name"/> of the current selection.
+        /// </summary>
         public bool IsOptionSelected(string name)
         {
             if (Mod_Options[ModSelection].Settings[SettingsSelection].Name == name) return true;
             else return false;
         }
+
+        /// <summary>
+        /// Returns true if UI is active.
+        /// </summary>
         public bool IsUIVisible()
         {
             return IsVisible;
@@ -272,6 +321,9 @@ namespace RumbleModUI
         #endregion
 
         #region Data Management
+        /// <summary>
+        /// Use this to add your mod to the selection.
+        /// </summary>
         public void AddMod(Mod Input)
         {
             bool IsExist = false;
@@ -295,6 +347,9 @@ namespace RumbleModUI
                 if (Input.ModName == "" || Input.ModVersion == "" || Input.GetFolder() == "") MelonLogger.Msg("Mandatory Values not set.");
             }
         }
+        /// <summary>
+        /// Use this to remove your mod from the selection.
+        /// </summary>
         public void RemoveMod(Mod Input)
         {
             bool IsExist = false;
@@ -322,16 +377,16 @@ namespace RumbleModUI
             };
             Mod_UI.SetFolder("ModUI");
             Mod_UI.AddDescription("Description", "", ModDescription, new Tags { IsSummary = true }) ;
-            Mod_UI.AddDescription(GlobalConstants.VerChck, BuildInfo.ModVersion, "", new Tags { IsEmpty = true });
             Mod_UI.AddToList(GlobalConstants.EntryPersistence, false, 0, "Changes the selection of the dropdown entries to be persistent after closing and reopening.", new Tags());
             Mod_UI.AddToList(GlobalConstants.VRMenuInput, true, 0, "Allows the user to open/close the menu by pressing both triggers and primary buttons at the same time", new Tags());
 
             Mod_UI.AddToList(GlobalConstants.LightTheme, true, 1, "Turns Light Theme on/off.", new Tags());
             Mod_UI.AddToList(GlobalConstants.DarkTheme, false, 1, "Turns Dark Theme on/off.", new Tags());
             Mod_UI.AddToList(GlobalConstants.HCTheme, false, 1, "Turns High Contrast Theme on/off.", new Tags());
+            Mod_UI.AddToList(GlobalConstants.Monokai, false, 1, "Turns Monokai Theme on/off.", new Tags());
 
-            ModSetting<bool> Temp1 = Mod_UI.AddToList(GlobalConstants.ToggleDebug, false, 0, $"Toggles the debug window if the correct password is set in {GlobalConstants.DebugPass}.", new Tags { DoNotSave = true });
-            ModSetting<string> Temp2 = Mod_UI.AddToList(GlobalConstants.DebugPass, "", "Enter the password for debugging.", new Tags { DoNotSave = true, IsPassword = true, IsCustom = true, CustomString = "Enter Password..." });
+            Mod_UI.AddToList(GlobalConstants.ToggleDebug, false, 0, $"Toggles the debug window if the correct password is set in {GlobalConstants.DebugPass}.", new Tags { DoNotSave = true });
+            Mod_UI.AddToList(GlobalConstants.DebugPass, "", "Enter the password for debugging.", new Tags { DoNotSave = true, IsPassword = true, IsCustom = true, CustomString = "Enter Password..." });
 
             Mod_UI.SetLinkGroup(1, "Themes");
 
@@ -376,7 +431,23 @@ namespace RumbleModUI
 
             foreach (Mod entry in Mod_Options)
             {
-                list.Add(entry.ModVersion + " " + entry.ModName);
+                string VersionString = "";
+                switch (entry.VersionStatus)
+                {
+                    case ThunderStoreRequest.Status.BothSame:
+                        VersionString = ReturnHexedString("=", ThemeHandler.ActiveTheme.Color_Text_Valid);
+                        break;
+                    case ThunderStoreRequest.Status.LocalNewer:
+                        VersionString = ReturnHexedString("<", Color.blue);
+                        break;
+                    case ThunderStoreRequest.Status.GlobalNewer:
+                        VersionString = ReturnHexedString(">", ThemeHandler.ActiveTheme.Color_Text_Error);
+                        break;
+                    case ThunderStoreRequest.Status.Undefined:
+                        VersionString = ReturnHexedString("?", ThemeHandler.ActiveTheme.Color_Text_Error);
+                        break;
+                }
+                list.Add(VersionString + " | " + entry.ModVersion + " | " + entry.ModName);
             }
 
             UI_DropDown_Mod.GetComponent<TMP_Dropdown>().ClearOptions();
@@ -686,6 +757,10 @@ namespace RumbleModUI
         #endregion
 
         #region Theme
+
+        /// <summary>
+        /// Use this to add your theme to the selection.
+        /// </summary>
         public void AddTheme(Theme newTheme,string Description)
         {
             ThemeHandler.AvailableThemes.Add(newTheme);
@@ -693,10 +768,12 @@ namespace RumbleModUI
             Mod_Options.Find(x => x.ModName == ModName).GetFromFile();
             RefreshTheme();
         }
-        public void RefreshTheme()
+
+        internal void RefreshTheme()
         {
             Enum_Theme = MelonCoroutines.Start(UpdateTheme());
         }
+
         private IEnumerator UpdateTheme()
         {
             int index = 0;
@@ -718,22 +795,45 @@ namespace RumbleModUI
         #endregion
 
         #region Helpers
-        private void DebugButtonSetup()
+        /// <summary>
+        /// Adds a Debug button to the list that executes <paramref name="ButtonAction"/> when clicked. <br/>
+        /// There is a limited amount of buttons available.
+        /// </summary>
+        public void AddDebugButton(string ButtonText, System.Action ButtonAction)
         {
+            foreach (var DB in DebugButtons)
+            {
+                if (!DB.IsAllocated)
+                {
+                    ButtonOverride(SubWindow[0].Elements.Find(x => x.name == DB.Name), ButtonText, ButtonAction);
+                    DB.Name = ButtonText;
+                    return;
+                }
+            }
+            MelonLogger.Msg("No Debug buttons free.");
+        }
+        private void PresetDebugButtons()
+        {
+            int Index = 0;
             foreach (var Element in SubWindow[0].Elements)
             {
                 switch (Element.name)
                 {
                     case "LB1":
                         ButtonOverride(Element, "RPC - Message", new System.Action(() => { DebugActions("LB1"); }));
+                        DebugButtons.Add(new DebugButtonStatus { Name = Element.name, Index = Index, IsAllocated = true });
                         break;
                     case "LB2":
                         ButtonOverride(Element, "RPC - GetMods", new System.Action(() => { DebugActions("LB2"); }));
+                        DebugButtons.Add(new DebugButtonStatus { Name = Element.name, Index = Index, IsAllocated = true });
                         break;
                     default:
+                        if (Element.name.Contains("LB") || Element.name.Contains("MB") || Element.name.Contains("RB")) DebugButtons.Add(new DebugButtonStatus { Name = Element.name, Index = Index, IsAllocated = false });
                         break;
                 }
+                Index++;
             }
+
         }
         private void DebugActions(string ActionIndex)
         {
@@ -742,7 +842,7 @@ namespace RumbleModUI
                 case "LB1":
                     if (PhotonHandler.instance.Client.InRoom)
                     {
-                        ModNetworking.NetworkHandler.RPC_DevChat(RpcTarget.All);
+                        ModNetworking.NetworkHandler.RPC_Chat(RpcTarget.All);
                     }
                     else
                     {
@@ -770,101 +870,6 @@ namespace RumbleModUI
             Element.transform.GetChild(0).GetComponent<TextMeshProUGUI>().fontSizeMax = 20f;
             Element.transform.GetChild(0).GetComponent<TextMeshProUGUI>().enableAutoSizing = true;
             Element.GetComponent<Button>().onClick.AddListener(ButtonAction);
-        }
-        private void SetAnchors(GameObject Input, AnchorPresets alignment)
-        {
-            switch (alignment)
-            {
-                case (AnchorPresets.TopLeft):
-                    AnchorHelper(Input, 0, 1, 0, 1);
-                    break;
-                case (AnchorPresets.TopCenter):
-                    AnchorHelper(Input, .5f, 1, .5f, 1);
-                    break;
-                case (AnchorPresets.TopRight):
-                    AnchorHelper(Input, 1, 1, 1, 1);
-                    break;
-                case (AnchorPresets.MiddleLeft):
-                    AnchorHelper(Input, 0, .5f, 0, .5f);
-                    break;
-                case (AnchorPresets.MiddleCenter):
-                    AnchorHelper(Input, .5f, .5f, .5f, .5f);
-                    break;
-                case (AnchorPresets.MiddleRight):
-                    AnchorHelper(Input, 1, .5f, 1, .5f);
-                    break;
-                case (AnchorPresets.BottomLeft):
-                    AnchorHelper(Input, 0, 0, 0, 0);
-                    break;
-                case (AnchorPresets.BottomCenter):
-                    AnchorHelper(Input, .5f, 0, .5f, 0);
-                    break;
-                case (AnchorPresets.BottomRight):
-                    AnchorHelper(Input, 1, 0, 1, 0);
-                    break;
-                case (AnchorPresets.BottomStretch):
-                    AnchorHelper(Input, 0, 0, 1, 0);
-                    break;
-                case (AnchorPresets.VertStretchLeft):
-                    AnchorHelper(Input, 0, 0, 0, 1);
-                    break;
-                case (AnchorPresets.VertStretchCenter):
-                    AnchorHelper(Input, .5f, 0, .5f, 1);
-                    break;
-                case (AnchorPresets.VertStretchRight):
-                    AnchorHelper(Input, 1, 0, 1, 1);
-                    break;
-                case (AnchorPresets.HorStretchTop):
-                    AnchorHelper(Input, 0, 1, 1, 1);
-                    break;
-                case (AnchorPresets.HorStretchMiddle):
-                    AnchorHelper(Input, 0, .5f, 1, .5f);
-                    break;
-                case (AnchorPresets.HorStretchBottom):
-                    AnchorHelper(Input, 0, 0, 1, 0);
-                    break;
-                case (AnchorPresets.StretchAll):
-                    AnchorHelper(Input, 0, 0, 1, 1);
-                    break;
-            }
-        }
-        private void SetPivot(GameObject Input, PivotPresets pivot)
-        {
-            switch (pivot)
-            {
-                case (PivotPresets.TopLeft):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-                    break;
-                case (PivotPresets.TopCenter):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(.5f, 1);
-                    break;
-                case (PivotPresets.TopRight):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
-                    break;
-                case (PivotPresets.MiddleLeft):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(0, .5f);
-                    break;
-                case (PivotPresets.MiddleCenter):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(.5f, .5f);
-                    break;
-                case (PivotPresets.MiddleRight):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(1, .5f);
-                    break;
-                case (PivotPresets.BottomLeft):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
-                    break;
-                case (PivotPresets.BottomCenter):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(.5f, 0);
-                    break;
-                case (PivotPresets.BottomRight):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
-                    break;
-            }
-        }
-        private void AnchorHelper(GameObject Input, float xmin, float ymin, float xmax, float ymax)
-        {
-            Input.GetComponent<RectTransform>().anchorMin = new Vector2(xmin, ymin);
-            Input.GetComponent<RectTransform>().anchorMax = new Vector2(xmax, ymax);
         }
         #endregion
     }

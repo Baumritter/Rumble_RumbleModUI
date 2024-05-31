@@ -10,6 +10,10 @@ using UnityEngine;
 
 namespace RumbleModUI
 {
+    /// <summary>
+    /// Class that patches the PUNRPC attribute.<br/>
+    /// Made by nickklmao
+    /// </summary>
     internal static class NetworkRPCManager
     {
         /// <summary>

@@ -46,23 +46,23 @@ namespace TestMod
             Mod.ModName = BuildInfo.ModName;
             Mod.ModVersion = BuildInfo.ModVersion;
             Mod.SetFolder("Test");
-            Mod.AddDescription("Description", "", BuildInfo.Description);
+            Mod.AddDescription("Description", "", BuildInfo.Description,new Tags{ IsSummary = true });
 
-            Mod.AddToList("Bool Setting 1", true, 1, "Is Bool.");
-            Mod.AddToList("Bool Setting 2", false, 1, "Is Bool.");
+            Mod.AddToList("Bool Setting 1", true, 1, "Is Bool.",new Tags());
+            Mod.AddToList("Bool Setting 2", false, 1, "Is Bool.",new Tags());
             Mod.SetLinkGroup(1, "Bools");
 
-            Mod.AddToList("Useless 1", true, 2, "Is also Bool.");
-            Mod.AddToList("Useless 2", false, 2, "Is also Bool");
+            Mod.AddToList("Useless 1", true, 2, "Is also Bool.",new Tags());
+            Mod.AddToList("Useless 2", false, 2, "Is also Bool",new Tags());
 
-            Mod.AddToList("Int Setting", 0, "Is Integer.");
+            Mod.AddToList("Int Setting", 0, "Is Integer.",new Tags());
 
-            Mod.AddToList("Float Setting", 0.0f, "Is Float");
+            Mod.AddToList("Float Setting", 0.0f, "Is Float",new Tags());
 
-            Mod.AddToList("Double Setting", 0.0, "Is Double.");
+            Mod.AddToList("Double Setting", 0.0, "Is Double.",new Tags());
 
-            Mod.AddToList("String Setting 1", "1", "Is 1-character string.");
-            Mod.AddToList("String Setting 2", "Test", "Is 4-character string.");
+            Mod.AddToList("String Setting 1", "1", "Is 1-character string.",new Tags());
+            Mod.AddToList("String Setting 2", "Test", "Is 4-character string.",new Tags());
 
             Mod.AddValidation("String Setting 1", new Validation(1));
             Mod.AddValidation("String Setting 2", new Validation(4));

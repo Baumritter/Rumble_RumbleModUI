@@ -2,6 +2,9 @@
 
 namespace RumbleModUI
 {
+    /// <summary>
+    /// See GoogleDoc for explanation.
+    /// </summary>
     public abstract class ModSetting
     {
         #region Constructor
@@ -39,11 +42,19 @@ namespace RumbleModUI
         public abstract object SavedValue { get; set; }
 
     }
+
+    /// <summary>
+    /// EventArgs override.
+    /// </summary>
     public class ValueChange<T> : EventArgs
     {
         public ValueChange(T value) { Value = value; }
         public T Value { get; set; }
     }
+
+    /// <summary>
+    /// See GoogleDoc for explanation.
+    /// </summary>
     public class ModSetting<T> : ModSetting
     {
 

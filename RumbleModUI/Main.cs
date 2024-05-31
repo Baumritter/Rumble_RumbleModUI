@@ -7,14 +7,20 @@ using static RumbleModUI.Baum_API.ThunderStore;
 
 namespace RumbleModUI
 {
+    /// <summary>
+    /// Contains global assembly information.
+    /// </summary>
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.5.0";
+        public const string ModVersion = "1.5.5";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
     }
+    /// <summary>
+    /// Main Melon Class.
+    /// </summary>
     public class RumbleModUIClass : MelonMod
     {
         //constants
@@ -33,7 +39,6 @@ namespace RumbleModUI
         public static UI UI_Obj = UI.instance;
 
         private Mod ModUI;
-        private ThunderStoreRequest.Status VersionStatus;
 
         public override void OnInitializeMelon()
         {
@@ -49,10 +54,6 @@ namespace RumbleModUI
 
             Baum_API.LoadHandler.StartupDone += InitUI;
 
-            VersionStatus = ThunderStoreRequest.Status.LocalNewer;
-            ThunderStoreRequest.LocalVersion = BuildInfo.ModVersion;
-            ThunderStoreRequest.OnVersionGet += VersionCheck;
-            ThunderStoreRequest.CheckVersion(new PackageData("Baumritter", "RumbleModUI"));
         }
 
         public override void OnUpdate()
@@ -89,50 +90,29 @@ namespace RumbleModUI
             }
             return false;
         }
-        private void VersionCheck(ThunderStoreRequest.Status Input)
-        {
-            VersionStatus = Input;
-        }
-        private void VersionCheckCheck()
-        {
-            switch (VersionStatus)
-            {
-                case ThunderStoreRequest.Status.BothSame:
-                    ModUI.Settings.Find(x => x.Name == GlobalConstants.VerChck).Description = 
-                        Baum_API.StringExtension.ReturnHexedString("Version up-to-date", ThemeHandler.ActiveTheme.Color_Text_Valid);
-                    break;
-                case ThunderStoreRequest.Status.LocalNewer:
-                    ModUI.Settings.Find(x => x.Name == GlobalConstants.VerChck).Description =
-                        Baum_API.StringExtension.ReturnHexedString("Dev Build", Color.blue);
-                    break;
-                case ThunderStoreRequest.Status.GlobalNewer:
-                    ModUI.Settings.Find(x => x.Name == GlobalConstants.VerChck).Description =
-                        Baum_API.StringExtension.ReturnHexedString("Newer Version available", ThemeHandler.ActiveTheme.Color_Text_Error);
-                    break;
-            }
-        }
 
         private void InitUI()
         {
             ModUI = UI.instance.InitUI();
+            Baum_API.SetMod(ModUI);
             ModUI.ModSaved += OnModSaved;
-            VersionCheckCheck();
             ModUI.Settings.Find(x => x.Name == GlobalConstants.DebugPass).CurrentValueChanged += PasswordValidation;
             ModUI.Settings.Find(x => x.Name == GlobalConstants.ToggleDebug).CurrentValueChanged += DebugWindowHandler;
             VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.VRMenuInput).Value;
+            Baum_API.ModNetworking.NetworkHandler.CheckAllVersions();
         }
         private void PasswordValidation(object sender, EventArgs Event)
         {
             ValueChange<string> Change = Event as ValueChange<string>;
 
-            if (Change.Value == Baum_API.MemeClass.TheGame()) MelonLogger.Msg("Correct Password.");
+            if (Change.Value == Baum_API.Serious_Business.TheGame()) MelonLogger.Msg("Correct Password.");
             else MelonLogger.Msg("Wrong Password.");
         }
         private void DebugWindowHandler(object sender, EventArgs Event)
         {
             ValueChange<bool> Change = Event as ValueChange<bool>;
 
-            if ((string)ModUI.Settings.Find(x => x.Name == GlobalConstants.DebugPass).Value == Baum_API.MemeClass.TheGame())
+            if ((string)ModUI.Settings.Find(x => x.Name == GlobalConstants.DebugPass).Value == Baum_API.Serious_Business.TheGame())
             {
                 if (Change.Value)
                 {
@@ -149,7 +129,6 @@ namespace RumbleModUI
             if (ModUI.LinkGroups[0].HasChanged)
             {
                 UI.instance.RefreshTheme();
-                VersionCheckCheck();
                 ModUI.LinkGroups[0].HasChanged = false;
             }
             VRButtonsAllowed = (bool)ModUI.Settings.Find(x => x.Name == GlobalConstants.VRMenuInput).Value;

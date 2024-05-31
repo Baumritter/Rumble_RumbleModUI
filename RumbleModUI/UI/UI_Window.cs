@@ -6,51 +6,19 @@ using UnityEngine.UI;
 using System.Collections;
 using Il2CppSystem;
 using System;
+using static RumbleModUI.Baum_API.RectTransformExtension;
 
 namespace RumbleModUI
 {
+    /// <summary>
+    /// Class for modular UI Window creation
+    /// </summary>
     public class Window
     {
+        /// <summary>
+        /// This is a constructor
+        /// </summary>
         public Window(string Name, bool debug = false) { this.Name = Name; this.DebugWindow = debug; }
-        public enum AnchorPresets
-        {
-            TopLeft,
-            TopCenter,
-            TopRight,
-
-            MiddleLeft,
-            MiddleCenter,
-            MiddleRight,
-
-            BottomLeft,
-            BottomCenter,
-            BottomRight,
-            BottomStretch,
-
-            VertStretchLeft,
-            VertStretchRight,
-            VertStretchCenter,
-
-            HorStretchTop,
-            HorStretchMiddle,
-            HorStretchBottom,
-
-            StretchAll
-        }
-        public enum PivotPresets
-        {
-            TopLeft,
-            TopCenter,
-            TopRight,
-
-            MiddleLeft,
-            MiddleCenter,
-            MiddleRight,
-
-            BottomLeft,
-            BottomCenter,
-            BottomRight,
-        }
 
         private Vector3 Scl_1x1 = new Vector3(1f, 1f, 0);
         private bool DebugWindow { get; set; }
@@ -58,15 +26,35 @@ namespace RumbleModUI
         private GameObject Obj_Title { get; set; }
         private object TitleDragger { get; set; }
 
+        /// <summary>
+        /// Name of the Window
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Should be set to the GameObject that has all the Child Elements attached
+        /// </summary>
         public GameObject ParentObject { get; set; }
 
+        /// <summary>
+        /// Contains all created child elements of this instance
+        /// </summary>
         public List<GameObject> Elements = new List<GameObject>();
 
+        /// <summary>
+        /// Gets invoked when the window is shown
+        /// </summary>
         public virtual event System.Action OnShow;
+
+        /// <summary>
+        /// Gets invoked when the window is hidden
+        /// </summary>
         public virtual event System.Action OnHide;
-       
+
         #region UI_Element_Creation
+        /// <summary>
+        /// Creates a Title Object. Text Content has to be set manually using <see cref="SetTitleText(string, float)"/>
+        /// </summary>
         public GameObject CreateTitle(string Name, Transform Parent , Vector3 Position, Vector2 Size)
         {
             if (HasTitle) return null;
@@ -104,7 +92,7 @@ namespace RumbleModUI
             #region Set Image
             T_Obj.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             T_Obj.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(T_Obj);
+            ThemeHandler.AddToFGTheme(T_Obj,false);
 
             if (DebugWindow) { MelonLogger.Msg("Title - Image set"); }
             #endregion
@@ -117,8 +105,8 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(T_Obj, Position, Scl_1x1);
-            SetPosition(T_Text, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(T_Obj, Position, Scl_1x1);
+            SetLocalPosAndScale(T_Text, Vector3.zero, Scl_1x1);
 
             if (DebugWindow) { MelonLogger.Msg("Title - Position set"); }
             #endregion
@@ -140,6 +128,10 @@ namespace RumbleModUI
 
             return T_Obj;
         }
+
+        /// <summary>
+        /// Creates a Background Object.
+        /// </summary>
         public GameObject CreateBackgroundBox(string Name, Transform Parent, Vector3 Position)
         {
             GameObject temp = new GameObject
@@ -148,14 +140,14 @@ namespace RumbleModUI
             };
             temp.transform.SetParent(Parent);
 
-            SetPosition(temp, Position, Scl_1x1);
+            SetLocalPosAndScale(temp, Position, Scl_1x1);
 
             temp.AddComponent<Image>();
 
             temp.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             temp.GetComponent<Image>().type = Image.Type.Tiled;
             temp.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
-            ThemeHandler.AddToFGTheme(temp);
+            ThemeHandler.AddToFGTheme(temp, false);
 
             SetAnchors(temp, AnchorPresets.StretchAll);
             SetPivot(temp, PivotPresets.TopLeft);
@@ -164,6 +156,10 @@ namespace RumbleModUI
 
             return temp;
         }
+
+        /// <summary>
+        /// Creates a Dropdown Object.
+        /// </summary>
         public GameObject CreateDropdown(string Name, Transform Parent, Vector3 Position, Vector2 DD_Size, Vector2 Ext_Size)
         {
             #region Objects
@@ -239,6 +235,12 @@ namespace RumbleModUI
             #region Set Text
             SetTextProperties(DD_Label, "", 20);
             SetTextProperties(DD_ItemLabel, "", 20);
+            DD_Label.GetComponent<TextMeshProUGUI>().fontSizeMax = 20f;
+            DD_Label.GetComponent<TextMeshProUGUI>().fontSizeMin = 8f;
+            DD_Label.GetComponent<TextMeshProUGUI>().enableAutoSizing = true;
+            DD_ItemLabel.GetComponent<TextMeshProUGUI>().fontSizeMax = 20f;
+            DD_ItemLabel.GetComponent<TextMeshProUGUI>().fontSizeMin = 8f;
+            DD_ItemLabel.GetComponent<TextMeshProUGUI>().enableAutoSizing = true;
 
             if (DebugWindow) { MelonLogger.Msg("DropDown - Text set"); }
             #endregion
@@ -249,34 +251,35 @@ namespace RumbleModUI
 
             DD_Obj.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             DD_Obj.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(DD_Obj);
+            ThemeHandler.AddToFGTheme(DD_Obj, false);
             DD_Handle.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             DD_Handle.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(DD_Handle);
+            ThemeHandler.AddToFGTheme(DD_Handle, false);
             DD_Template.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             DD_Template.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(DD_Template);
+            ThemeHandler.AddToFGTheme(DD_Template, false);
             DD_Scrollbar.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(2, true);
             DD_Scrollbar.GetComponent<Image>().type = Image.Type.Tiled;
             ThemeHandler.AddToBGTheme(DD_Scrollbar);
             DD_Viewport.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(3, true, 12);
             DD_Viewport.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(DD_Viewport);
+            ThemeHandler.AddToFGTheme(DD_Viewport, false);
 
-            ThemeHandler.AddToFGTheme(DD_ItemBG);
+            ThemeHandler.AddToFGTheme(DD_ItemBG, false);
 
             if (DebugWindow) { MelonLogger.Msg("DropDown - Images set"); }
             #endregion
 
             #region Set RectTransforms
             DD_Obj.GetComponent<RectTransform>().sizeDelta = DD_Size;
-            DD_Label.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+            DD_Label.GetComponent<RectTransform>().sizeDelta = new Vector2(-50, 0);
             DD_Arrow.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 20);         //Arrow Size
             DD_Template.GetComponent<RectTransform>().sizeDelta = Ext_Size;
-            DD_Content.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 40);        //Height of Content
+            DD_Content.GetComponent<RectTransform>().sizeDelta = new Vector2(-4, 44);        //Height of Content
+            DD_Viewport.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
             DD_Item.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 38);           //Height of Item
-            DD_ItemLabel.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
-            DD_ItemBG.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
+            DD_ItemLabel.GetComponent<RectTransform>().sizeDelta = new Vector2(-20, 0);
+            DD_ItemBG.GetComponent<RectTransform>().sizeDelta = new Vector2(-1, -1);
             DD_Scrollbar.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 0);      //Width of Scrollbar
             DD_Slide.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
             DD_Handle.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 0);
@@ -310,18 +313,18 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(DD_Obj, Position, Scl_1x1);
-            SetPosition(DD_Label, Vector3.zero, Scl_1x1);
-            SetPosition(DD_Arrow, Vector3.zero, Scl_1x1);
-            SetPosition(DD_Template, Vector3.zero, Scl_1x1);
-            SetPosition(DD_Viewport, Vector3.zero, Scl_1x1);
-            SetPosition(DD_Content, Vector3.zero, Scl_1x1);
-            SetPosition(DD_Item, Vector3.zero, Scl_1x1);
-            SetPosition(DD_ItemLabel, Vector3.zero, Scl_1x1);
-            SetPosition(DD_ItemBG, Vector3.zero, Scl_1x1);
-            SetPosition(DD_Scrollbar, Vector3.zero, Scl_1x1);
-            SetPosition(DD_Slide, Vector3.zero, Scl_1x1);
-            SetPosition(DD_Handle, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Obj, Position, Scl_1x1);
+            SetLocalPosAndScale(DD_Label, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Arrow, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Template, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Viewport, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Content, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Item, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_ItemLabel, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_ItemBG, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Scrollbar, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Slide, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(DD_Handle, Vector3.zero, Scl_1x1);
 
             if (DebugWindow) { MelonLogger.Msg("DropDown - Position set"); }
             #endregion
@@ -332,7 +335,7 @@ namespace RumbleModUI
 
             SetAnchors(DD_Label, AnchorPresets.StretchAll);
             SetPivot(DD_Label, PivotPresets.MiddleCenter);
-            SetAnchorPos(DD_Label, 10, 0);
+            SetAnchorPos(DD_Label, -15, 0);
 
             SetAnchors(DD_Arrow, AnchorPresets.MiddleRight);
             SetPivot(DD_Arrow, PivotPresets.MiddleCenter);
@@ -343,6 +346,7 @@ namespace RumbleModUI
 
             SetAnchors(DD_Viewport, AnchorPresets.StretchAll);
             SetPivot(DD_Viewport, PivotPresets.TopLeft);
+            SetAnchorPos(DD_Viewport, -1, -1);
 
             SetAnchors(DD_Content, AnchorPresets.HorStretchTop);
             SetPivot(DD_Content, PivotPresets.TopCenter);
@@ -352,10 +356,11 @@ namespace RumbleModUI
 
             SetAnchors(DD_ItemLabel, AnchorPresets.StretchAll);
             SetPivot(DD_ItemLabel, PivotPresets.MiddleCenter);
-            SetAnchorPos(DD_ItemLabel, 15, 0);
+            SetAnchorPos(DD_ItemLabel, 0, 1);
 
             SetAnchors(DD_ItemBG, AnchorPresets.StretchAll);
             SetPivot(DD_ItemBG, PivotPresets.MiddleCenter);
+            SetAnchorPos(DD_ItemBG, 1, 1);
 
             SetAnchors(DD_Scrollbar, AnchorPresets.VertStretchRight);
             SetPivot(DD_Scrollbar, PivotPresets.TopRight);
@@ -373,6 +378,10 @@ namespace RumbleModUI
 
             return DD_Obj;
         }
+
+        /// <summary>
+        /// Creates a InputField Object.
+        /// </summary>
         public GameObject CreateInputField(string Name, Transform Parent, Vector3 Position, Vector2 Size)
         {
             #region Objects
@@ -437,7 +446,7 @@ namespace RumbleModUI
             #region Set Images
             IF_Obj.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             IF_Obj.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(IF_Obj);
+            ThemeHandler.AddToFGTheme(IF_Obj, false);
 
             if (DebugWindow) { MelonLogger.Msg("InputField - Images set"); }
             #endregion
@@ -460,10 +469,10 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(IF_Obj, Position, Scl_1x1);
-            SetPosition(IF_TextArea, Vector3.zero, Scl_1x1);
-            SetPosition(IF_Placeholder, Vector3.zero, Scl_1x1);
-            SetPosition(IF_Text, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(IF_Obj, Position, Scl_1x1);
+            SetLocalPosAndScale(IF_TextArea, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(IF_Placeholder, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(IF_Text, Vector3.zero, Scl_1x1);
 
             if (DebugWindow) { MelonLogger.Msg("InputField - Positions set"); }
             #endregion
@@ -488,6 +497,10 @@ namespace RumbleModUI
 
             return IF_Obj;
         }
+
+        /// <summary>
+        /// Creates a Togglebox Object.
+        /// </summary>
         public GameObject CreateToggle(string Name, Transform Parent, Vector3 Position, Vector2 Size)
         {
             #region Objects
@@ -531,7 +544,7 @@ namespace RumbleModUI
             #region Set "Checkmark" Settings
             TB_Checkmark.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             TB_Checkmark.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(TB_Checkmark);
+            ThemeHandler.AddToFGTheme(TB_Checkmark, true);
             if (DebugWindow) { MelonLogger.Msg("ToggleBox - Checkmark set"); }
             #endregion
 
@@ -561,9 +574,9 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(TB_Obj, Position, Scl_1x1);
-            SetPosition(TB_Background, Vector3.zero, Scl_1x1);
-            SetPosition(TB_Checkmark, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(TB_Obj, Position, Scl_1x1);
+            SetLocalPosAndScale(TB_Background, Vector3.zero, Scl_1x1);
+            SetLocalPosAndScale(TB_Checkmark, Vector3.zero, Scl_1x1);
             //SetPosition(TB_Label, new Vector3(5, 0f), Scl_1x1);
 
             if (DebugWindow) { MelonLogger.Msg("ToggleBox - Positions set"); }
@@ -590,6 +603,10 @@ namespace RumbleModUI
             return TB_Obj;
 
         }
+
+        /// <summary>
+        /// Creates a TextBox Object.
+        /// </summary>
         public GameObject CreateTextBox(string Name,Transform Parent,Vector3 PositionBox, Vector3 PositionText, Vector2 SizeBox, Vector2 SizeText)
         {
             #region Objects
@@ -625,7 +642,7 @@ namespace RumbleModUI
             #region Set Image
             D_Obj.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             D_Obj.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(D_Obj);
+            ThemeHandler.AddToFGTheme(D_Obj, false);
 
             if (DebugWindow) { MelonLogger.Msg("Description - Image set"); }
             #endregion
@@ -638,8 +655,8 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(D_Obj, PositionBox, Scl_1x1);
-            SetPosition(D_Text, PositionText, Scl_1x1);
+            SetLocalPosAndScale(D_Obj, PositionBox, Scl_1x1);
+            SetLocalPosAndScale(D_Text, PositionText, Scl_1x1);
 
             if (DebugWindow) { MelonLogger.Msg("Description - Position set"); }
             #endregion
@@ -658,6 +675,10 @@ namespace RumbleModUI
 
             return D_Obj;
         }
+
+        /// <summary>
+        /// Creates a Button Object.
+        /// </summary>
         public GameObject CreateButton(string Name,Transform Parent, Vector3 Position, Vector2 Size, string Text)
         {
             #region Objects
@@ -694,7 +715,7 @@ namespace RumbleModUI
             #region Set Image
             B_Obj.GetComponent<Image>().sprite = TextureHandler.ConvertToSprite(1, true);
             B_Obj.GetComponent<Image>().type = Image.Type.Tiled;
-            ThemeHandler.AddToFGTheme(B_Obj);
+            ThemeHandler.AddToFGTheme(B_Obj, false);
 
             if (DebugWindow) { MelonLogger.Msg("Button - Image set"); }
             #endregion
@@ -713,8 +734,8 @@ namespace RumbleModUI
             #endregion
 
             #region Positioning and Scaling
-            SetPosition(B_Obj, Position, Scl_1x1);
-            SetPosition(B_Text, Vector2.zero, Scl_1x1);
+            SetLocalPosAndScale(B_Obj, Position, Scl_1x1);
+            SetLocalPosAndScale(B_Text, Vector2.zero, Scl_1x1);
 
             if (DebugWindow) { MelonLogger.Msg("Button - Position set"); }
             #endregion
@@ -735,111 +756,20 @@ namespace RumbleModUI
         }
         #endregion
 
+        /// <summary>
+        /// Sets Size and Text of the Title Object. <br/>
+        /// Only does something if a Title exists.
+        /// </summary>
+        public void SetTitleText(string title, float Size)
+        {
+            if (HasTitle) 
+            { 
+                SetTextProperties(Obj_Title.transform.GetChild(0).gameObject, title, Size);
+                Obj_Title.transform.GetChild(0).GetComponent<TextMeshProUGUI>().horizontalAlignment = HorizontalAlignmentOptions.Center;
+                Obj_Title.transform.GetChild(0).GetComponent<TextMeshProUGUI>().verticalAlignment = VerticalAlignmentOptions.Middle;
+            }
+        }
 
-        private void SetPosition(GameObject Input, Vector3 Pos, Vector3 Scale)
-        {
-            Input.transform.localPosition = Pos;
-            Input.transform.localScale = Scale;
-        }
-        private void SetAnchorPos(GameObject Input, float x, float y)
-        {
-            Input.GetComponent<RectTransform>().anchoredPosition = new Vector2(x, y);
-        }
-        private void SetAnchors(GameObject Input, AnchorPresets alignment)
-        {
-            switch (alignment)
-            {
-                case (AnchorPresets.TopLeft):
-                    AnchorHelper(Input, 0, 1, 0, 1);
-                    break;
-                case (AnchorPresets.TopCenter):
-                    AnchorHelper(Input, .5f, 1, .5f, 1);
-                    break;
-                case (AnchorPresets.TopRight):
-                    AnchorHelper(Input, 1, 1, 1, 1);
-                    break;
-                case (AnchorPresets.MiddleLeft):
-                    AnchorHelper(Input, 0, .5f, 0, .5f);
-                    break;
-                case (AnchorPresets.MiddleCenter):
-                    AnchorHelper(Input, .5f, .5f, .5f, .5f);
-                    break;
-                case (AnchorPresets.MiddleRight):
-                    AnchorHelper(Input, 1, .5f, 1, .5f);
-                    break;
-                case (AnchorPresets.BottomLeft):
-                    AnchorHelper(Input, 0, 0, 0, 0);
-                    break;
-                case (AnchorPresets.BottomCenter):
-                    AnchorHelper(Input, .5f, 0, .5f, 0);
-                    break;
-                case (AnchorPresets.BottomRight):
-                    AnchorHelper(Input, 1, 0, 1, 0);
-                    break;
-                case (AnchorPresets.BottomStretch):
-                    AnchorHelper(Input, 0, 0, 1, 0);
-                    break;
-                case (AnchorPresets.VertStretchLeft):
-                    AnchorHelper(Input, 0, 0, 0, 1);
-                    break;
-                case (AnchorPresets.VertStretchCenter):
-                    AnchorHelper(Input, .5f, 0, .5f, 1);
-                    break;
-                case (AnchorPresets.VertStretchRight):
-                    AnchorHelper(Input, 1, 0, 1, 1);
-                    break;
-                case (AnchorPresets.HorStretchTop):
-                    AnchorHelper(Input, 0, 1, 1, 1);
-                    break;
-                case (AnchorPresets.HorStretchMiddle):
-                    AnchorHelper(Input, 0, .5f, 1, .5f);
-                    break;
-                case (AnchorPresets.HorStretchBottom):
-                    AnchorHelper(Input, 0, 0, 1, 0);
-                    break;
-                case (AnchorPresets.StretchAll):
-                    AnchorHelper(Input, 0, 0, 1, 1);
-                    break;
-            }
-        }
-        private void SetPivot(GameObject Input, PivotPresets pivot)
-        {
-            switch (pivot)
-            {
-                case (PivotPresets.TopLeft):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
-                    break;
-                case (PivotPresets.TopCenter):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(.5f, 1);
-                    break;
-                case (PivotPresets.TopRight):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(1, 1);
-                    break;
-                case (PivotPresets.MiddleLeft):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(0, .5f);
-                    break;
-                case (PivotPresets.MiddleCenter):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(.5f, .5f);
-                    break;
-                case (PivotPresets.MiddleRight):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(1, .5f);
-                    break;
-                case (PivotPresets.BottomLeft):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(0, 0);
-                    break;
-                case (PivotPresets.BottomCenter):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(.5f, 0);
-                    break;
-                case (PivotPresets.BottomRight):
-                    Input.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
-                    break;
-            }
-        }
-        private void AnchorHelper(GameObject Input, float xmin, float ymin, float xmax, float ymax)
-        {
-            Input.GetComponent<RectTransform>().anchorMin = new Vector2(xmin, ymin);
-            Input.GetComponent<RectTransform>().anchorMax = new Vector2(xmax, ymax);
-        }
         private void SetTextProperties(GameObject Input, string Text = "", float fontsize = 16, bool IsPlaceholder = false)
         {
             ThemeHandler.AddToTextTheme(Input);
@@ -886,6 +816,9 @@ namespace RumbleModUI
             TitleDragger = MelonCoroutines.Start(Dragger());
         }
 
+        /// <summary>
+        /// Shows the window.
+        /// </summary>
         public virtual void ShowWindow()
         {
             ParentObject.SetActive(true);
@@ -893,6 +826,10 @@ namespace RumbleModUI
             if (HasTitle) TitleDragger = MelonCoroutines.Start(Dragger());
             if (DebugWindow) { MelonLogger.Msg(Name + " - Shown"); }
         }
+
+        /// <summary>
+        /// Hides the window.
+        /// </summary>
         public virtual void HideWindow()
         {
             if (HasTitle && TitleDragger != null) MelonCoroutines.Stop(TitleDragger);

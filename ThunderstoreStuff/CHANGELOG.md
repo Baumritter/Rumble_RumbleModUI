@@ -1,11 +1,33 @@
+# Version 1.5.5
+- Fixed Delay subclass
+# Version 1.5.4
+- Deactivated an internal override that always set the park size to 2.
+# Version 1.5.3
+- Internal Changes.
+# Version 1.5.2
+- Refined the Dictionary for Modnames ingame <-> Modnames on Thunderstore (again)
+- Added a Dictionary for Authors 
+# Version 1.5.1
+- Added new state for Version checker
+		- "?" -> Mod has not been found on Thunderstore or check is still running.
+- Refined the Dictionary for Modnames ingame <-> Modnames on Thunderstore
 # Version 1.5.0
 - Added Setting to make Dropdown Selection persistent
 - Window Position will only get reset if it is out of bounds
 - Changed the background color of the togglebox to improve readability
-- Removed the see-through aspect of light/dark theme (Looked horrendous with the above change)
 - Added some public calls for mod creators (Class: Baum_API)
 - Added basic networking using Photon RPCs (Credits to nickklmao for the PunRPC workaround)
 - Added a call for the Thunderstore API 
+- Moved some functions into the Baum_API class for public use
+- Added a new theme 
+- Reworked old themes (especially the High Contrast Theme)
+- Added a version checker.
+	- This will add an entry to the Menu for every installed mod
+	- A symbol will be added to the start of the name depending on status
+		- ">" -> Mod is older than the version in the Thunderstore
+		- "=" -> Mod is the same as the version in the Thunderstore
+		- "<" -> Mod is newer than the version in the Thunderstore
+- Added a lot of documentation to public methods
 # Version 1.4.5
 - Fixed some broken code
 - Revised the ReadMe/Changelog/Documentation

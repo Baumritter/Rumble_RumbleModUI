@@ -2,6 +2,9 @@
 
 namespace RumbleModUI
 {
+    /// <summary>
+    /// See GoogleDoc for explanation.
+    /// </summary>
     public abstract class ValidationParameters
     {
         public abstract bool DoValidation(string Input);

@@ -3,19 +3,33 @@ using MelonLoader;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using static RumbleModUI.Baum_API.ThunderStore;
 using static RumbleModUI.ModSetting;
 
 namespace RumbleModUI
 {
+    /// <summary>
+    /// See GoogleDoc for explanation.
+    /// </summary>
     public class LinkGroup
     {
         public string Name { get; set; }
         public int Index { get; set; }
         public bool HasChanged { get; set; }
+        public bool AddedToDD { get; set; }
         public List<ModSetting> Settings = new List<ModSetting>();
     }
+
+    /// <summary>
+    /// See GoogleDoc for explanation.
+    /// </summary>
     public class Mod
     {
+        public Mod()
+        {
+            VersionStatus = ThunderStoreRequest.Status.Undefined;
+        }
+
         public string SettingsFile = "Settings.txt";
 
         private const string DuplicateErrorMsg = "AddToList failed: Name not unique";
@@ -26,6 +40,7 @@ namespace RumbleModUI
         private bool IsFileLoaded { get; set; }
         private bool IsSaved { get; set; }
         private bool IsAdded { get; set; }
+        public ThunderStoreRequest.Status VersionStatus { get; set; }
 
         public event System.Action ModSaved;
 
@@ -76,6 +91,7 @@ namespace RumbleModUI
             return IsAdded;
         }
         #endregion
+
         [System.Obsolete("Use event ModSaved", true)]
         public void ConfirmSave()
         {
@@ -114,8 +130,13 @@ namespace RumbleModUI
                 LinkGroups.Add(temp2);
             }
         }
+        public void SetStatus(ThunderStoreRequest.Status Version)
+        {
+            VersionStatus = Version;
+        }
 
         #region AddToList - All Available Types
+
         #region Deprecated Stuff
         /// <summary>
         /// Creates a instance of ModSetting with the type string.
@@ -152,7 +173,7 @@ namespace RumbleModUI
         [System.Obsolete("Use new overload.")]
         public ModSetting<string> AddDescription(string Name,string Value = "", string Description = "",bool IsSummary = true, bool IsEmpty = false)
         {
-            Tags temp = new Tags { IsSummary = IsSummary, IsEmpty = IsEmpty };
+            Tags temp = new Tags { IsSummary = IsSummary, IsEmpty = IsEmpty, DoNotSave = true };
             return AddDescription(Name,Value,Description,temp);
         }
         [System.Obsolete("Use new overload.")]
@@ -208,6 +229,8 @@ namespace RumbleModUI
                 LinkGroup = 0,
                 ValueType = AvailableTypes.Description,
             };
+
+            tags.DoNotSave = true;
 
             AddTags(InputSetting, tags);
 
@@ -351,6 +374,7 @@ namespace RumbleModUI
             return InputSetting;
         }
         #endregion
+
 
         public void AddTags(ModSetting modSetting, Tags tags)
         {
@@ -542,18 +566,21 @@ namespace RumbleModUI
                     foreach (string line in Lines)
                     {
                         foreach(ModSetting setting in Settings) 
-                        { 
-                            if(line.Contains(setting.Name))
+                        {
+                            if (setting.Name.Length + 2 < line.Length)
                             {
-                                bool Valid = ValueValidation(line.Substring(setting.Name.Length + 2),setting);
-                                if (Valid) setting.SavedValue = setting.Value;
-                                if (!Valid)
+                                if (line.Substring(0, setting.Name.Length) == setting.Name)
                                 {
-                                    MelonLogger.Msg(ModName + " - " +  setting.Name + " File Read Error.");
-                                }
-                                else if (true)
-                                {
-                                    if (debug) MelonLogger.Msg(ModName + " - " + setting.Name + " " + setting.Value.ToString());
+                                    bool Valid = ValueValidation(line.Substring(setting.Name.Length + 2), setting);
+                                    if (Valid) setting.SavedValue = setting.Value;
+                                    if (!Valid)
+                                    {
+                                        MelonLogger.Msg(ModName + " - " + setting.Name + " File Read Error.");
+                                    }
+                                    else if (true)
+                                    {
+                                        if (debug) MelonLogger.Msg(ModName + " - " + setting.Name + " " + setting.Value.ToString());
+                                    }
                                 }
                             }
                         }
@@ -567,5 +594,4 @@ namespace RumbleModUI
             }
         }
     }
-
 }

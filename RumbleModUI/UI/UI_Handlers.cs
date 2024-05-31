@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 namespace RumbleModUI
 {
-    public static class TextureHandler
+    internal static class TextureHandler
     {
-        public static bool IsInit = false;
+        private static bool IsInit = false;
 
-        public static bool debugTexture = false;
+        private static bool debugTexture = false;
 
         private static Texture2D[] CustomAssets = new Texture2D[4];
         private static string[] CustomAssetsNames = new string[4];
@@ -64,16 +64,17 @@ namespace RumbleModUI
             }
         }
     }
+
     public static class ThemeHandler
     {
-        public static bool debugThemes = false;
+        private static bool debugThemes = false;
 
         public static Theme ActiveTheme { get; set; }
 
         public static List<Theme> AvailableThemes = new List<Theme>();
 
         private static List<TextMeshProUGUI> Theme_Text = new List<TextMeshProUGUI>();
-        private static List<Image> Theme_Foreground = new List<Image>();
+        private static List<Foreground_Item> Theme_Foreground = new List<Foreground_Item>();
         private static List<Image> Theme_Background = new List<Image>();
 
         public static void ChangeTheme(int Theme)
@@ -91,9 +92,9 @@ namespace RumbleModUI
             if (debugThemes) { MelonLogger.Msg("Theme - Theme changed"); }
 
         }
-        public static void AddToFGTheme(GameObject Input)
+        public static void AddToFGTheme(GameObject Input, bool AlphaOverride)
         {
-            Theme_Foreground.Add(Input.GetComponent<Image>());
+            Theme_Foreground.Add(new Foreground_Item { Image = Input.GetComponent<Image>(), FullAlphaOverride = AlphaOverride });
         }
         public static void AddToBGTheme(GameObject Input)
         {
@@ -115,9 +116,10 @@ namespace RumbleModUI
         }
         private static void ChangeFGColor(Color Color)
         {
-            foreach (Image item in Theme_Foreground)
+            foreach (Foreground_Item item in Theme_Foreground)
             {
-                item.color = Color;
+                item.Image.color = Color;
+                if (item.FullAlphaOverride) item.Image.color = new Color(item.Image.color.r,item.Image.color.g,item.Image.color.b,1.0f);
             }
 
             if (debugThemes) { MelonLogger.Msg("Theme - Foreground Color changed"); }
@@ -132,7 +134,11 @@ namespace RumbleModUI
         }
 
     }
-
+    internal class Foreground_Item
+    {
+        public Image Image;
+        public bool FullAlphaOverride;
+    }
     public class Theme
     {
         public Theme() { }
