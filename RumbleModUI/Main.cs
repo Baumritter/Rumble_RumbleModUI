@@ -20,9 +20,7 @@ namespace RumbleModUI
     /// Main Melon Class.
     /// </summary>
     public class RumbleModUIClass : MelonMod
-    {
-        //constants
-
+    { 
         //variables
         private bool VRButtonsPressed = false;
         private bool VRButtonsAllowed = false;
