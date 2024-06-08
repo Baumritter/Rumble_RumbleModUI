@@ -1,11 +1,9 @@
-﻿using MelonLoader;
+﻿using Il2CppTMPro;
+using MelonLoader;
+using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
-using Il2CppSystem;
-using System;
 using static RumbleModUI.Baum_API.RectTransformExtension;
 
 namespace RumbleModUI

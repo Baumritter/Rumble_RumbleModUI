@@ -1,13 +1,11 @@
 ﻿using MelonLoader;
-using Photon.Pun;
+using Il2CppPhoton.Pun;
 using System;
-using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Il2CppSystem.Collections.Generic;
-using UnhollowerRuntimeLib;
-using RUMBLE.Managers;
-using Photon.Realtime;
+using Il2CppRUMBLE.Managers;
+using Il2CppPhoton.Realtime;
 using UnityEngine.Events;
 
 namespace RumbleModUI

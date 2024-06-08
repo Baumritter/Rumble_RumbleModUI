@@ -1,13 +1,12 @@
 ﻿using MelonLoader;
 using RumbleModUI; // The namespace of your mod class
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 // ...
 [assembly: MelonInfo(typeof(RumbleModUIClass), RumbleModUI.BuildInfo.ModName, RumbleModUI.BuildInfo.ModVersion, RumbleModUI.BuildInfo.Author)]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
-[assembly: VerifyLoaderVersion(0,5,7)]
-[assembly: MelonColor(System.ConsoleColor.DarkGreen)]
+[assembly: VerifyLoaderVersion(0, 6, 2)]
+[assembly: MelonColor(255, 0, 255, 0)]
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information

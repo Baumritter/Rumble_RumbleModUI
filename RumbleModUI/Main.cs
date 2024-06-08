@@ -1,9 +1,7 @@
 ﻿using MelonLoader;
-using Photon.Pun;
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static RumbleModUI.Baum_API.ThunderStore;
 
 namespace RumbleModUI
 {
@@ -13,7 +11,7 @@ namespace RumbleModUI
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "1.5.5";
+        public const string ModVersion = "2.0.0";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";

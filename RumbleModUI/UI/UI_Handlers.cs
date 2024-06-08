@@ -1,7 +1,7 @@
 ﻿using MelonLoader;
 using System.Collections.Generic;
 using System.Reflection;
-using TMPro;
+using Il2CppTMPro;
 using UnityEngine;
 using UnityEngine.UI;
 

@@ -1,22 +1,18 @@
-﻿using MelonLoader;
-using Photon.Pun;
+﻿using HarmonyLib;
+using Il2CppPhoton.Pun;
+using Il2CppRUMBLE.Managers;
+using Il2CppRUMBLE.Players;
+using MelonLoader;
+using MelonLoader.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using UnityEngine;
-using HarmonyLib;
-using RUMBLE.Managers;
-using RUMBLE.Players;
-using UnhollowerBaseLib;
-using RUMBLE.Environment;
-using static RumbleModUI.Window;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace RumbleModUI
 {
@@ -261,7 +257,7 @@ namespace RumbleModUI
             public string GetFolderString(string SubFolder = "", bool IgnoreList = false)
             {
                 string Output =
-                    MelonUtils.UserDataDirectory +
+                    MelonEnvironment.UserDataDirectory +
                     @"\" +
                     ModFolder;
                 if (SubFolder != "" && (SubFolders.Contains(SubFolder) || IgnoreList))
@@ -827,7 +823,7 @@ namespace RumbleModUI
 
                     cachedView.RPC("RequestModString", RpcTarget.Others,parameter);
                 }
-                internal static void RPC_RequestModString(Photon.Realtime.Player player)
+                internal static void RPC_RequestModString(Il2CppPhoton.Realtime.Player player)
                 {
                     PhotonView cachedView = NetworkedObject.GO.GetComponent<PhotonView>();
 
@@ -839,7 +835,7 @@ namespace RumbleModUI
                 }
                 internal static void ModStringHandler(string Message)
                 {
-                    string Folder = MelonUtils.UserDataDirectory + "\\" + ModUI.GetFolder() + "\\ModString";
+                    string Folder = MelonEnvironment.UserDataDirectory + "\\" + ModUI.GetFolder() + "\\ModString";
 
                     ModStrings.Add(Message);
 
@@ -957,10 +953,10 @@ namespace RumbleModUI
                         if (debug) MelonLogger.Msg("You joined a room.");
                     }
                 }
-                [HarmonyPatch(typeof(PhotonHandler), "OnPlayerEnteredRoom", new Type[] { typeof(Photon.Realtime.Player) })]
+                [HarmonyPatch(typeof(PhotonHandler), "OnPlayerEnteredRoom", new Type[] { typeof(Il2CppPhoton.Realtime.Player) })]
                 private static class OnPlayerEnteredRoomPatch
                 {
-                    private static void Postfix(Photon.Realtime.Player newPlayer)
+                    private static void Postfix(Il2CppPhoton.Realtime.Player newPlayer)
                     {
                         if (ModStringRequestWhitelist.Contains(PlayerManager.Instance.localPlayer.Data.GeneralData.InternalUsername))
                         {
