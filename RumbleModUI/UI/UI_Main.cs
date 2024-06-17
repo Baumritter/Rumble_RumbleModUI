@@ -814,14 +814,6 @@ namespace RumbleModUI
             {
                 switch (Element.name)
                 {
-                    case "LB1":
-                        ButtonOverride(Element, "RPC - Message", new System.Action(() => { DebugActions("LB1"); }));
-                        DebugButtons.Add(new DebugButtonStatus { Name = Element.name, Index = Index, IsAllocated = true });
-                        break;
-                    case "LB2":
-                        ButtonOverride(Element, "RPC - GetMods", new System.Action(() => { DebugActions("LB2"); }));
-                        DebugButtons.Add(new DebugButtonStatus { Name = Element.name, Index = Index, IsAllocated = true });
-                        break;
                     default:
                         if (Element.name.Contains("LB") || Element.name.Contains("MB") || Element.name.Contains("RB")) DebugButtons.Add(new DebugButtonStatus { Name = Element.name, Index = Index, IsAllocated = false });
                         break;
@@ -834,26 +826,6 @@ namespace RumbleModUI
         {
             switch(ActionIndex)
             {
-                case "LB1":
-                    if (PhotonHandler.instance.Client.InRoom)
-                    {
-                        ModNetworking.NetworkHandler.RPC_Chat(RpcTarget.All);
-                    }
-                    else
-                    {
-                        MelonLogger.Msg("Not in Room");
-                    }
-                    break;
-                case "LB2":
-                    if (PhotonHandler.instance.Client.InRoom)
-                    {
-                        ModNetworking.NetworkHandler.RPC_RequestModString();
-                    }
-                    else
-                    {
-                        MelonLogger.Msg("Not in Room");
-                    }
-                    break;
                 default:
                     break;
             }

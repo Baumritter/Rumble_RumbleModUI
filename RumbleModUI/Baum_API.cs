@@ -44,7 +44,7 @@ namespace RumbleModUI
             /// <summary>
             /// Name for debugging reasons.
             /// </summary>
-            public string name;
+            public string DelayName;
 
             /// <summary>
             /// Starts the timer. <br/>
@@ -60,7 +60,7 @@ namespace RumbleModUI
 
                     CRObj = MelonCoroutines.Start(Waiter(WaitTime,Callback));
 
-                    if (debug) MelonLogger.Msg(name + " - " + "Started");
+                    if (debug) MelonLogger.Msg(DelayName + " - " + "Started");
                 }
             }
 
@@ -77,7 +77,7 @@ namespace RumbleModUI
                     {
                         WaitDone.Invoke();
 
-                        if (debug) MelonLogger.Msg(name + " - Done.");
+                        if (debug) MelonLoggerExtension.Log(DelayName + " - Done.");
 
                         this.Running = false;
 
@@ -108,7 +108,7 @@ namespace RumbleModUI
 
                     CRObj = MelonCoroutines.Start(WaitLoop());
 
-                    if (debug) MelonLogger.Msg(name + " - " + "Started");
+                    if (debug) MelonLogger.Msg(DelayName + " - " + "Started");
                 }
             }
             [Obsolete("Do not use")]
@@ -117,11 +117,11 @@ namespace RumbleModUI
                 if (Done) this.Done = true;
                 if (Running) MelonCoroutines.Stop(CRObj);
                 this.Running = false;
-                if (debug && Done) MelonLogger.Msg(name + " - " + "Done");
-                if (debug && !Done) MelonLogger.Msg(name + " - " + "Stopped");
+                if (debug && Done) MelonLogger.Msg(DelayName + " - " + "Done");
+                if (debug && !Done) MelonLogger.Msg(DelayName + " - " + "Stopped");
 
                 TimeSpan temp = DateTime.Now - debugTime;
-                if (debug && Done) MelonLogger.Msg(name + " - " + temp.TotalMilliseconds);
+                if (debug && Done) MelonLogger.Msg(DelayName + " - " + temp.TotalMilliseconds);
             }
             [Obsolete("Do not use")]
             private IEnumerator WaitLoop()
@@ -599,6 +599,16 @@ namespace RumbleModUI
                 Input.GetComponent<RectTransform>().anchorMax = new Vector2(xmax, ymax);
             }
         }
+        /// <summary>
+        /// Attempts to fix the stack trace issues of the original logger
+        /// </summary>
+        public static class MelonLoggerExtension
+        {
+            public static void Log(string LogMessage)
+            {
+                MelonLogger.Msg(LogMessage);
+            }
+        }
 
         /// <summary>
         /// Utilizes the ThunderStore API to get information about the uploaded mod.<br/>
@@ -641,6 +651,7 @@ namespace RumbleModUI
                 }
 
                 private static bool debug = false;
+                private static bool ClientInit = false;
                 private static string URL = "https://thunderstore.io";
                 private static string Command = "api/v1/package-metrics";
                 private static HttpClient client = new HttpClient { Timeout = new TimeSpan(0, 0, 20) };
@@ -651,6 +662,7 @@ namespace RumbleModUI
 
                 public async static void CheckVersion(PackageData data)
                 {
+                    InitializeClient();
                     RequestFailed = false;
                     await RequestData(data);
                 }
@@ -710,10 +722,6 @@ namespace RumbleModUI
 
                 private static async Task RequestData(PackageData Input)
                 {
-                    client.BaseAddress = new Uri(URL);
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
                     try
                     {
                         string temp = await GetPackageMetrics(Command + "/" + Input.Team + "/" + Input.Package);
@@ -737,6 +745,17 @@ namespace RumbleModUI
                     }
 
                 }
+
+                private static void InitializeClient()
+                {
+                    if (!ClientInit)
+                    {
+                        client.BaseAddress = new Uri(URL);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        ClientInit = true;
+                    }
+                }
             }
         }
         /// <summary>
@@ -744,37 +763,11 @@ namespace RumbleModUI
         /// </summary>
         public static class ModNetworking
         {
-            public class HandlerObject
-            {
-                public GameObject GO { get; set; }
-                public BaumPun BaumPun { get; set; }
-
-                public void Initialize()
-                {
-                    GO = new GameObject("ModNetworkingObject");
-                    GameObject.DontDestroyOnLoad(GO);
-                    BaumPun = GO.AddComponent<BaumPun>();
-                    BaumPun.BuildPersonalModString();
-                    PhotonView view = GO.AddComponent<PhotonView>();
-                    view.ViewID = 2907;
-                    BaumPun.OnModStringReceived.AddListener(new System.Action<string>(value => { NetworkHandler.ModStringHandler(value); }));
-                }
-            }
-
             public static class NetworkHandler
             {
-                public static HandlerObject NetworkedObject = new HandlerObject();
-
                 private static bool debug = false;
                 private static bool TSRequestRunning = false;
                 private static object CRObj;
-                private static List<string> ModStrings = new List<string>();
-                private readonly static string[] ModStringRequestWhitelist = new string[]
-                {
-                    "34F4BAB2A770E391",
-                    "5832566FD2375E31",
-                    "3F73EBEC8EDD260F"
-                };
                 private readonly static string[] TSRequestBlacklist = new string[]
                 {
                     "UnityExplorer",
@@ -785,7 +778,6 @@ namespace RumbleModUI
                 private readonly static Dictionary<string,string> TSRequestNameEx = new Dictionary<string, string> 
                 {
                     { "LIV Camera Enabler","Rumble_LIV_Camera_Enabler" },
-                    { "StairFix","StairsFix" },
                     { "Equips THE Bucket","Bucket_Equipper" },
                     { "ModUI","RumbleModUI" },
                     { "Instant Park Searcher","InstantParkSearcher" },
@@ -801,55 +793,11 @@ namespace RumbleModUI
                     { "hlsl (Neon)","RightArrowSupremacy" }
                 };
                 private static Dictionary<string, string> TSRequestNameExInv;
-                private static Dictionary<string, string> TSRequestAuthorExInv;
-
-                public static void RPC_Chat(RpcTarget Target, string Nickname = "User", string Message = "Message")
-                {
-                    PhotonView cachedView = NetworkedObject.GO.GetComponent<PhotonView>();
-                    Il2CppSystem.Object[] parameters = new Il2CppSystem.Object[2];
-
-                    parameters[0] = Nickname;
-                    parameters[1] = Message;
-
-                    cachedView.RPC("DevChat", Target, parameters);
-                }
-                internal static void RPC_RequestModString()
-                {
-                    PhotonView cachedView = NetworkedObject.GO.GetComponent<PhotonView>();
-
-                    Il2CppSystem.Object[] parameter = new Il2CppSystem.Object[1];
-
-                    parameter[0] = PhotonHandler.instance.Client.LocalPlayer.NickName;
-
-                    cachedView.RPC("RequestModString", RpcTarget.Others,parameter);
-                }
-                internal static void RPC_RequestModString(Il2CppPhoton.Realtime.Player player)
-                {
-                    PhotonView cachedView = NetworkedObject.GO.GetComponent<PhotonView>();
-
-                    Il2CppSystem.Object[] parameter = new Il2CppSystem.Object[1];
-
-                    parameter[0] = PhotonHandler.instance.Client.LocalPlayer.NickName;
-
-                    cachedView.RPC("RequestModString", player, parameter);
-                }
-                internal static void ModStringHandler(string Message)
-                {
-                    string Folder = MelonEnvironment.UserDataDirectory + "\\" + ModUI.GetFolder() + "\\ModString";
-
-                    ModStrings.Add(Message);
-
-                    if (!Directory.Exists(Folder)) Directory.CreateDirectory(Folder);
-                    File.AppendAllText(Folder + "\\ModString.csv", Message);
-
-                    if (debug) MelonLogger.Msg("String from :" + Message.Split(';')[0]);
-                }
 
                 internal static void CheckAllVersions()
                 {
                     MelonLogger.Msg("Version Check Started. This may take about up to 15 seconds per mod.");
                     InvertDictionary(TSRequestNameEx, out TSRequestNameExInv);
-                    InvertDictionary(TSRequestAuthorEx, out TSRequestAuthorExInv);
                     ThunderStore.ThunderStoreRequest.OnVersionGet += EvaluateReturnData;
                     CRObj = MelonCoroutines.Start(VersionRequest());
                 }
@@ -933,40 +881,12 @@ namespace RumbleModUI
                             }
                         }
                     }
-                    MelonLogger.Msg("Version Check Done.");
+                    MelonLoggerExtension.Log("Version Check Done.");
                     if (CRObj != null) MelonCoroutines.Stop(CRObj);
                     yield return null;
                 }
 
 
-                #region Patches
-                [HarmonyPatch(typeof(PhotonHandler), "OnJoinedRoom")]
-                private static class JoinedRoomPatch
-                {
-                    private static void Postfix()
-                    {
-                        if (ModStringRequestWhitelist.Contains(PlayerManager.Instance.localPlayer.Data.GeneralData.InternalUsername))
-                        {
-                            RPC_RequestModString();
-                            if (debug) MelonLogger.Msg("Requested Modstrings as you are on the whitelist.");
-                        }
-                        if (debug) MelonLogger.Msg("You joined a room.");
-                    }
-                }
-                [HarmonyPatch(typeof(PhotonHandler), "OnPlayerEnteredRoom", new Type[] { typeof(Il2CppPhoton.Realtime.Player) })]
-                private static class OnPlayerEnteredRoomPatch
-                {
-                    private static void Postfix(Il2CppPhoton.Realtime.Player newPlayer)
-                    {
-                        if (ModStringRequestWhitelist.Contains(PlayerManager.Instance.localPlayer.Data.GeneralData.InternalUsername))
-                        {
-                            RPC_RequestModString(newPlayer);
-                            if (debug) MelonLogger.Msg("Requested Modstrings as you are on the whitelist.");
-                        }
-                        if (debug) MelonLogger.Msg("Player joined your Room.");
-                    }
-                }
-                #endregion
             }
         }
         /// <summary>
@@ -995,7 +915,6 @@ namespace RumbleModUI
                     if (!StartupToggle)
                     {
                         StartupToggle = true;
-                        StartupDone += ModNetworking.NetworkHandler.NetworkedObject.Initialize;
                         StartupDone?.Invoke();
                         if (debug) MelonLogger.Msg("Startup Load");
                     }

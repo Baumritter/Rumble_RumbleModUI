@@ -32,10 +32,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Baum_API.cs" />
-    <Compile Include="InjectedClasses.cs" />
     <Compile Include="Mod\Mod_Main.cs" />
     <Compile Include="Mod\Mod_ModSetting.cs" />
-    <Compile Include="NicksNetworkingThing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="UI\UI_Main.cs" />
@@ -273,6 +271,13 @@
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\MonoMod.Utils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Drawing.Common, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\net6\System.Drawing.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing.Primitives">
+      <HintPath>C:\Program Files\dotnet\shared\Microsoft.NETCore.App\6.0.30\System.Drawing.Primitives.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="Unity.InputSystem, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">

@@ -1,3 +1,9 @@
+# Version 2.1.1
+- Fixed some minor bugs
+# Version 2.1.0
+- Fixed some major bugs
+# Version 2.0.0
+- Updated to MelonLoader 0.6.2
 # Version 1.5.5
 - Fixed Delay subclass
 # Version 1.5.4

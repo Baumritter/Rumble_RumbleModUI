@@ -3,7 +3,6 @@ G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\WebSocketDotNet.dl
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\MelonLoader.xml
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleModUI.csproj.AssemblyReference.cache
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleModUI.csproj.CoreCompileInputs.cache
-G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleModUI.csproj.CopyComplete
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\ModUI.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\ModUI.pdb
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\ModUI.dll
@@ -192,3 +191,17 @@ G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\Microsoft.Diagnost
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Collections.Immutable.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Buffers.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\Microsoft.Diagnostics.NETCore.Client.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\obj\Debug\RumbleMo.AF302F24.Up2Date
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Drawing.Common.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Drawing.Primitives.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Runtime.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Collections.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Threading.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Runtime.InteropServices.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.ComponentModel.Primitives.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Numerics.Vectors.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Collections.NonGeneric.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.ObjectModel.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.ComponentModel.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Private.CoreLib.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Private.Uri.dll

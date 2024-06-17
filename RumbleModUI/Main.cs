@@ -11,7 +11,7 @@ namespace RumbleModUI
     public static class BuildInfo
     {
         public const string ModName = "ModUI";
-        public const string ModVersion = "2.0.0";
+        public const string ModVersion = "2.1.1";
         public const string Description = "Adds a universal UI for Mod Creators";
         public const string Author = "Baumritter";
         public const string Company = "";
@@ -39,8 +39,6 @@ namespace RumbleModUI
         public override void OnInitializeMelon()
         {
             base.OnInitializeMelon();
-
-            NetworkRPCManager.Initialize();
 
             rightTrigger.AddBinding("<XRController>{RightHand}/trigger");
             rightPrimary.AddBinding("<XRController>{RightHand}/primaryButton");

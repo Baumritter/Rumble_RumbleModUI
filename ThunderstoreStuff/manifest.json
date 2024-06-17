@@ -1,9 +1,8 @@
 {
   "name": "RumbleModUI",
-  "version_number": "1.5.5",
+  "version_number": "2.1.1",
   "website_url": "",
   "description": "Adds a pop-up window for centralized management of mod settings",
   "dependencies": [
-        "LavaGang-MelonLoader-0.5.7"
   ]
 }

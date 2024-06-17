@@ -1,14 +1,18 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\GitHub\\Rumble_RumbleModUI\\RumbleModUI\\",
+  "WorkspaceRootPath": "G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|c:\\github\\rumble_rumblemodui\\rumblemodui\\baum_api.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|solutionrelative:main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|g:\\01_rumble\\10_mods\\rumble_rumblemodui\\rumblemodui\\baum_api.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|solutionrelative:baum_api.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|c:\\github\\rumble_rumblemodui\\rumblemodui\\main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|solutionrelative:main.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CAA17032-5000-4195-B343-C26492084360}|RumbleModUI.csproj|solutionrelative:properties\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +22,44 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "Main.cs",
-              "DocumentMoniker": "C:\\GitHub\\Rumble_RumbleModUI\\RumbleModUI\\Main.cs",
-              "RelativeDocumentMoniker": "Main.cs",
-              "ToolTip": "C:\\GitHub\\Rumble_RumbleModUI\\RumbleModUI\\Main.cs",
-              "RelativeToolTip": "Main.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAnAAAA",
+              "DocumentIndex": 2,
+              "Title": "AssemblyInfo.cs",
+              "DocumentMoniker": "G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\Properties\\AssemblyInfo.cs",
+              "RelativeDocumentMoniker": "Properties\\AssemblyInfo.cs",
+              "ToolTip": "G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\Properties\\AssemblyInfo.cs",
+              "RelativeToolTip": "Properties\\AssemblyInfo.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAgAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-06T18:55:57.351Z",
+              "WhenOpened": "2024-06-15T08:09:16.979Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Baum_API.cs",
+              "DocumentMoniker": "G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\Baum_API.cs",
+              "RelativeDocumentMoniker": "Baum_API.cs",
+              "ToolTip": "G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\Baum_API.cs",
+              "RelativeToolTip": "Baum_API.cs",
+              "ViewState": "AQIAALABAAAAAAAAAAAswBMDAAAtAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-15T08:06:48.445Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Baum_API.cs",
-              "DocumentMoniker": "C:\\GitHub\\Rumble_RumbleModUI\\RumbleModUI\\Baum_API.cs",
-              "RelativeDocumentMoniker": "Baum_API.cs",
-              "ToolTip": "C:\\GitHub\\Rumble_RumbleModUI\\RumbleModUI\\Baum_API.cs",
-              "RelativeToolTip": "Baum_API.cs",
-              "ViewState": "AQIAAFcDAAAAAAAAAIA6wKoDAAARAAAA",
+              "Title": "Main.cs",
+              "DocumentMoniker": "G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\Main.cs",
+              "RelativeDocumentMoniker": "Main.cs",
+              "ToolTip": "G:\\01_Rumble\\10_Mods\\Rumble_RumbleModUI\\RumbleModUI\\Main.cs",
+              "RelativeToolTip": "Main.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABkAAAAuAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-06T18:52:31.818Z",
+              "WhenOpened": "2024-06-06T18:55:57.351Z",
               "EditorCaption": ""
             }
           ]
