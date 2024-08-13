@@ -1,3 +1,5 @@
+# Version 2.1.2
+- Updated MelonLoader Version to 0.6.4
 # Version 2.1.1
 - Fixed some minor bugs
 # Version 2.1.0

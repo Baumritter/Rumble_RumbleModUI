@@ -205,3 +205,5 @@ G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.ObjectModel
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.ComponentModel.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Private.CoreLib.dll
 G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\System.Private.Uri.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\MelonLoader.dll
+G:\01_Rumble\10_Mods\RUMBLE_RumbleModUI\RumbleModUI\bin\Debug\Microsoft.Win32.SystemEvents.dll

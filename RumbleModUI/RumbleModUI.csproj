@@ -236,9 +236,9 @@
     <Reference Include="IndexRange">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\IndexRange.dll</HintPath>
     </Reference>
-    <Reference Include="MelonLoader, Version=0.5.7.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MelonLoader, Version=0.6.2.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\MelonLoader.dll</HintPath>
+      <HintPath>A:\SteamLibrary\steamapps\common\RUMBLE\MelonLoader\net6\MelonLoader.dll</HintPath>
     </Reference>
     <Reference Include="MelonLoader.NativeHost">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\RUMBLE\MelonLoader\net6\MelonLoader.NativeHost.dll</HintPath>

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // ...
 [assembly: MelonInfo(typeof(RumbleModUIClass), RumbleModUI.BuildInfo.ModName, RumbleModUI.BuildInfo.ModVersion, RumbleModUI.BuildInfo.Author)]
 [assembly: MelonGame("Buckethead Entertainment", "RUMBLE")]
-[assembly: VerifyLoaderVersion(0, 6, 2)]
+[assembly: VerifyLoaderVersion(0, 6, 4, true)]
 [assembly: MelonColor(200, 0, 200, 0)]
 [assembly: MelonAuthorColor(200, 0, 200, 0)]
 
